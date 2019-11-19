@@ -1,0 +1,9 @@
+name: graphql-crystal
+version: 0.1.0
+
+authors:
+  - Gary Mardell <info@garymardell.co.uk>
+
+crystal: 0.31.1
+
+license: MIT
