@@ -5,18 +5,16 @@ class Charge
 end
 
 class ChargeType < Graphql::Schema::Object
-  field :id, null: false, description: "Identifier"
+  field :id, Graphql::Types::IDType, null: false, description: "Identifier"
 end
 
 class QueryType < Graphql::Schema::Object
-  field :charge, null: false, description: "Example charge"
+  field :charge, ChargeType, null: false, description: "Example charge"
 end
 
 class MySchema < Graphql::Schema
   query QueryType
 end
-
-
 
 describe Graphql do
   # TODO: Write tests

@@ -1,4 +1,5 @@
 require "./schema/*"
+require "./types/*"
 
 module Graphql
   class Schema

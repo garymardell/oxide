@@ -2,12 +2,13 @@ module Graphql
   class Schema
     class Field
       property name : Symbol
+      property type : Graphql::Schema::Member.class
       property null : Bool
       property description : String | Nil
       property deprecation_reason : String | Nil
       property arguments : Hash(Symbol, Graphql::Schema::Argument)
 
-      def initialize(@name, @null, @description = nil, @deprecation_reason = nil)
+      def initialize(@name, @type, @null, @description = nil, @deprecation_reason = nil)
         @arguments = {} of Symbol => Graphql::Schema::Argument
       end
 

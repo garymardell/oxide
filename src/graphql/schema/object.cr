@@ -1,11 +1,12 @@
 module Graphql
   class Schema
-    class Object
+    class Object < Member
       @@fields = {} of Symbol => Graphql::Schema::Field
 
-      macro field(name, null, description)
+      macro field(name, type, null, description)
         @@fields[{{name}}] = Graphql::Schema::Field.new(
           name: {{name}},
+          type: {{type}},
           null: {{null}},
           description: {{description}}
         )
