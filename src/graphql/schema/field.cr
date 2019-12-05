@@ -6,8 +6,9 @@ module Graphql
       property description : String | Nil
       property deprecation_reason : String | Nil
       property arguments : Array(Graphql::Schema::Argument)
+      property resolver : Resolver
 
-      def initialize(@name, @null, @description = nil, @deprecation_reason = nil, @arguments = [] of Graphql::Schema::Argument)
+      def initialize(@name, @null, @resolver, @description = nil, @deprecation_reason = nil, @arguments = [] of Graphql::Schema::Argument)
       end
 
       def add_argument(argument)

@@ -1,13 +1,15 @@
 module Graphql
   class Schema
-    class Object < Member
-      property fields : Array(Graphql::Schema::Field)
-
-      def initialize(@fields = [] of Graphql::Schema::Field)
+    class Object
+      def initialize(@fields : Array(Field))
       end
 
       def add_field(field)
         @fields << field
+      end
+
+      def get_field(name)
+        @fields.find(&.name.===(name))
       end
     end
   end
