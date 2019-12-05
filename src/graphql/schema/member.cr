@@ -1,6 +1,6 @@
 module Graphql
   class Schema
-    class Member
+    abstract class Member
     end
   end
 end
