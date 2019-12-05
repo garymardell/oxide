@@ -1,7 +1,7 @@
 module Graphql
   class Schema
-    class Object
-      def initialize(@fields : Array(Field))
+    class Object < Member
+      def initialize(@resolver, @fields = [] of Field)
       end
 
       def add_field(field)
