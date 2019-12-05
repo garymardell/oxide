@@ -1,7 +1,7 @@
 module Graphql
   class Schema
     class Argument
-      property name : Symbol
+      property name : String
 
       def initialize(@name)
       end

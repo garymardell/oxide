@@ -1,7 +1,7 @@
 module Graphql
   class Schema
     class Field
-      property name : Symbol
+      property name : String
       property type : Graphql::Schema::Member
       property null : Bool
       property description : String | Nil
