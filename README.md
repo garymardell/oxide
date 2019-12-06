@@ -1,7 +1,22 @@
 # Graphql in Crystal
 
-## Schema
+## Spec Implemented
 
-- Statically defined
-- Helps resolve query
-- Mapping of input type to output
+- [ ] Queries
+  - [ ] Selection set
+    - [x] Basic execution
+    - [ ] Collect fields into groups
+    - [ ] Variables
+  - [ ] Execute field
+    - [x] Basic execution
+    - [ ] Arguments
+  - [ ] Complete value
+    - [ ] Non-null
+    - [ ] Null
+    - [ ] List
+    - [x] Scalar
+    - [ ] Enum
+    - [x] Object
+    - [ ] Interface
+    - [ ] Union type
+- [ ] Mutations
