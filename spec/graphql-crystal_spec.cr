@@ -55,13 +55,29 @@ describe Graphql do
       mutation: nil
     )
 
-    if query = schema.query
-      object = query.resolver.try &.resolve(nil, "charge")
+    query = Graphql::Language::Nodes::Document.new(
+      definitions: [
+        Graphql::Language::Nodes::OperationDefinition.new(
+          operation_type: "query",
+          selections: [
+            Graphql::Language::Nodes::Field.new(
+              name: "charge",
+              selections: [
+                Graphql::Language::Nodes::Field.new(
+                  name: "id"
+                )
+              ]
+            )
+          ]
+        )
+      ]
+    )
 
-      if field = query.get_field("charge")
-        puts field.type.resolver.try &.resolve(object, "id")
-      end
-    end
+    runtime = Graphql::Execution::Interpreter::Runtime.new(
+      schema,
+      query
+    )
 
+    puts runtime.execute
   end
 end

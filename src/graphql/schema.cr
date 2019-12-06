@@ -1,5 +1,7 @@
 require "./schema/*"
 require "./types/*"
+require "./language/*"
+require "./execution"
 
 module Graphql
   class Schema
