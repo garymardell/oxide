@@ -20,7 +20,7 @@
     - [ ] Null
     - [x] List
     - [x] Scalar
-    - [ ] Enum
+    - [x] Enum
     - [x] Object
     - [ ] Interface
     - [ ] Union type

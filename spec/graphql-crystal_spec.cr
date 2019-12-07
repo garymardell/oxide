@@ -2,8 +2,9 @@ require "./spec_helper"
 
 class Charge
   property id : Int32
+  property status : String
 
-  def initialize(@id)
+  def initialize(@id, @status)
   end
 end
 
@@ -11,11 +12,11 @@ class QueryResolver < Graphql::Schema::Resolver
   def resolve(object, field_name)
     case field_name
     when "charge"
-      Charge.new(id: 1)
+      Charge.new(id: 1, status: "pending")
     when "charges"
       [
-        Charge.new(id: 1),
-        Charge.new(id: 2)
+        Charge.new(id: 1, status: "paid"),
+        Charge.new(id: 2, status: "pending")
       ]
     end
   end
@@ -26,6 +27,8 @@ class ChargeResolver < Graphql::Schema::Resolver
     case field_name
     when "id"
       object.id
+    when "status"
+      object.status
     end
   end
 end
@@ -38,6 +41,16 @@ describe Graphql do
         Graphql::Schema::Field.new(
           name: "id",
           type: Graphql::Schema::IdType.new,
+          null: false
+        ),
+        Graphql::Schema::Field.new(
+          name: "status",
+          type: Graphql::Schema::Enum.new(
+            values: [
+              Graphql::Schema::EnumValue.new(name: "PENDING", value: "pending"),
+              Graphql::Schema::EnumValue.new(name: "PAID", value: "paid")
+            ]
+          ),
           null: false
         )
       ]
@@ -79,6 +92,9 @@ describe Graphql do
               selections: [
                 Graphql::Language::Nodes::Field.new(
                   name: "id"
+                ),
+                Graphql::Language::Nodes::Field.new(
+                  name: "status"
                 )
               ]
             ),

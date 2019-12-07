@@ -78,8 +78,12 @@ module Graphql
           end
         end
 
-        def complete_value(field_type : Graphql::Schema::Enum, fields, result)
-          raise "enum not implemented"
+        def complete_value(field_type : Graphql::Schema::Enum, fields, result : ReturnType)
+          if enum_value = field_type.values.find(&.value.==(result))
+            enum_value.name
+          else
+            nil.as(ReturnType)
+          end
         end
 
         def complete_value(field_type : Graphql::Schema::NonNull, fields, result)
