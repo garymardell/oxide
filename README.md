@@ -6,6 +6,11 @@
   - [ ] Selection set
     - [x] Basic execution
     - [ ] Collect fields into groups
+      - [x] field
+      - [ ] @skip directive
+      - [ ] @include directive
+      - [ ] fragment spread
+      - [ ] inline fragment
     - [ ] Variables
   - [ ] Execute field
     - [x] Basic execution
@@ -13,7 +18,7 @@
   - [ ] Complete value
     - [ ] Non-null
     - [ ] Null
-    - [ ] List
+    - [x] List
     - [x] Scalar
     - [ ] Enum
     - [x] Object

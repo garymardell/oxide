@@ -47,17 +47,47 @@ module Graphql
 
           resolved_value = object_type.resolver.try &.resolve(object_value, field_name)
 
-          complete_value(field_type, field, resolved_value)
+          complete_value(field_type, fields, resolved_value)
         end
 
-        def complete_value(field_type : Graphql::Schema::Object, field, result)
+        def complete_value(field_type : Graphql::Schema::Object, fields, result)
+          field = fields.first
+
           object_type = field_type
 
           execute_selection_set(field.selections, object_type, result)
         end
 
-        def complete_value(field_type : Graphql::Schema::Scalar, field, result)
+        def complete_value(field_type : Graphql::Schema::Scalar, fields, result : ReturnType)
           result.as(ReturnType)
+        end
+
+        def complete_value(field_type : Graphql::Schema::List, fields, result)
+          if result.is_a?(Array)
+            inner_type = field_type.of_type
+
+            items = [] of ReturnType
+
+            result.each do |result_item|
+              items << complete_value(inner_type, fields, result_item)
+            end
+
+            items
+          else
+            raise "result is not a list"
+          end
+        end
+
+        def complete_value(field_type : Graphql::Schema::Enum, fields, result)
+          raise "enum not implemented"
+        end
+
+        def complete_value(field_type : Graphql::Schema::NonNull, fields, result)
+          raise "not null not implemented"
+        end
+
+        def complete_value(field_type, fields, result)
+          raise "should not be reached"
         end
 
         def collect_fields(object_type, selection_set) # TODO: variable_values, visited_fragments

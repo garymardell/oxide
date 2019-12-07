@@ -6,11 +6,5 @@ module Graphql
       def resolve(object, field_name)
       end
     end
-
-    class ScalarResolver < Resolver
-      def resolve(object, field_name)
-        object
-      end
-    end
   end
 end

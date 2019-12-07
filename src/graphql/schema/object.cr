@@ -1,3 +1,5 @@
+require "./member"
+
 module Graphql
   class Schema
     class Object < Member

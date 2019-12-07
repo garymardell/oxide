@@ -12,6 +12,11 @@ class QueryResolver < Graphql::Schema::Resolver
     case field_name
     when "charge"
       Charge.new(id: 1)
+    when "charges"
+      [
+        Charge.new(id: 1),
+        Charge.new(id: 2)
+      ]
     end
   end
 end
@@ -27,28 +32,37 @@ end
 
 describe Graphql do
   it "works" do
+    charge = Graphql::Schema::Object.new(
+      resolver: ChargeResolver.new,
+      fields: [
+        Graphql::Schema::Field.new(
+          name: "id",
+          type: Graphql::Schema::IdType.new,
+          null: false
+        )
+      ]
+    )
+
     schema = Graphql::Schema.new(
       query: Graphql::Schema::Object.new(
         resolver: QueryResolver.new,
         fields: [
           Graphql::Schema::Field.new(
             name: "charge",
-            type: Graphql::Schema::Object.new(
-              resolver: ChargeResolver.new,
-              fields: [
-                Graphql::Schema::Field.new(
-                  name: "id",
-                  type: Graphql::Schema::IdType.new,
-                  null: false
-                )
-              ]
-            ),
+            type: charge,
             null: false,
             arguments: [
               Graphql::Schema::Argument.new(
                 name: "id"
               )
             ]
+          ),
+          Graphql::Schema::Field.new(
+            name: "charges",
+            type: Graphql::Schema::List.new(
+              of_type: charge
+            ),
+            null: false
           )
         ]
       ),
@@ -62,6 +76,14 @@ describe Graphql do
           selections: [
             Graphql::Language::Nodes::Field.new(
               name: "charge",
+              selections: [
+                Graphql::Language::Nodes::Field.new(
+                  name: "id"
+                )
+              ]
+            ),
+            Graphql::Language::Nodes::Field.new(
+              name: "charges",
               selections: [
                 Graphql::Language::Nodes::Field.new(
                   name: "id"
