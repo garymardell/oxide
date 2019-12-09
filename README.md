@@ -16,8 +16,8 @@
     - [x] Basic execution
     - [ ] Arguments
   - [ ] Complete value
-    - [ ] Non-null
-    - [ ] Null
+    - [x] Non-null
+    - [x] Null
     - [x] List
     - [x] Scalar
     - [x] Enum

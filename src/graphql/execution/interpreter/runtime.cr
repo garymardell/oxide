@@ -87,7 +87,11 @@ module Graphql
         end
 
         def complete_value(field_type : Graphql::Schema::NonNull, fields, result)
-          raise "not null not implemented"
+          if result.nil?
+            raise "null issues"
+          else
+            complete_value(field_type.of_type, fields, result)
+          end
         end
 
         def complete_value(field_type, fields, result)

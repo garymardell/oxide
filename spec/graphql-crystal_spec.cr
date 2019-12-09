@@ -40,8 +40,7 @@ describe Graphql do
       fields: [
         Graphql::Schema::Field.new(
           name: "id",
-          type: Graphql::Schema::IdType.new,
-          null: false
+          type: Graphql::Schema::IdType.new
         ),
         Graphql::Schema::Field.new(
           name: "status",
@@ -50,8 +49,7 @@ describe Graphql do
               Graphql::Schema::EnumValue.new(name: "PENDING", value: "pending"),
               Graphql::Schema::EnumValue.new(name: "PAID", value: "paid")
             ]
-          ),
-          null: false
+          )
         )
       ]
     )
@@ -62,8 +60,7 @@ describe Graphql do
         fields: [
           Graphql::Schema::Field.new(
             name: "charge",
-            type: charge,
-            null: false,
+            type: Graphql::Schema::NonNull.new(of_type: charge),
             arguments: [
               Graphql::Schema::Argument.new(
                 name: "id"
@@ -72,10 +69,9 @@ describe Graphql do
           ),
           Graphql::Schema::Field.new(
             name: "charges",
-            type: Graphql::Schema::List.new(
-              of_type: charge
-            ),
-            null: false
+            type: Graphql::Schema::NonNull.new(
+              of_type: Graphql::Schema::List.new(of_type: charge)
+            )
           )
         ]
       ),
