@@ -24,4 +24,5 @@
     - [x] Object
     - [ ] Interface
     - [ ] Union type
+  - [ ] Error handling
 - [ ] Mutations

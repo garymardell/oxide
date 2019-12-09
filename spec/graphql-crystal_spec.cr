@@ -9,10 +9,10 @@ class Charge
 end
 
 class QueryResolver < Graphql::Schema::Resolver
-  def resolve(object, field_name)
+  def resolve(object, field_name, argument_values)
     case field_name
     when "charge"
-      Charge.new(id: 1, status: "pending")
+      Charge.new(id: argument_values["id"].as(Int32), status: "pending")
     when "charges"
       [
         Charge.new(id: 1, status: "paid"),
@@ -23,7 +23,7 @@ class QueryResolver < Graphql::Schema::Resolver
 end
 
 class ChargeResolver < Graphql::Schema::Resolver
-  def resolve(object : Charge, field_name)
+  def resolve(object : Charge, field_name, argument_values)
     case field_name
     when "id"
       object.id
@@ -63,7 +63,8 @@ describe Graphql do
             type: Graphql::Schema::NonNull.new(of_type: charge),
             arguments: [
               Graphql::Schema::Argument.new(
-                name: "id"
+                name: "id",
+                type: Graphql::Schema::IdType.new
               )
             ]
           ),
@@ -85,6 +86,12 @@ describe Graphql do
           selections: [
             Graphql::Language::Nodes::Field.new(
               name: "charge",
+              arguments: [
+                Graphql::Language::Nodes::Argument.new(
+                  name: "id",
+                  value: 12,
+                )
+              ],
               selections: [
                 Graphql::Language::Nodes::Field.new(
                   name: "id"

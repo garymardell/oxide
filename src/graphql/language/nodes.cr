@@ -1,8 +1,9 @@
 module Graphql
   module Language
     module Nodes
-      abstract class Node
+      alias Value = String | Int32 | Int64 | Float64 | Bool | Nil | Array(Value) | Hash(String, Value)
 
+      abstract class Node
       end
 
       class Document < Node
@@ -22,9 +23,18 @@ module Graphql
 
       class Field < Node
         property name : String
+        property arguments : Array(Argument)
         property selections : Array(Field)
 
-        def initialize(@name, @selections = [] of Field)
+        def initialize(@name, @arguments = [] of Argument, @selections = [] of Field)
+        end
+      end
+
+      class Argument < Node
+        property name : String
+        property value : Value
+        
+        def initialize(@name, @value)
         end
       end
     end

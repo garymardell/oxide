@@ -45,7 +45,9 @@ module Graphql
           field = fields.first
           field_name = field.name
 
-          resolved_value = object_type.resolver.try &.resolve(object_value, field_name)
+          argument_values = coerce_argument_values(object_type, field) # TODO: variable_values
+
+          resolved_value = object_type.resolver.try &.resolve(object_value, field_name, argument_values)
 
           complete_value(field_type, fields, resolved_value)
         end
@@ -116,6 +118,53 @@ module Graphql
           end
 
           grouped_fields
+        end
+
+        def coerce_argument_values(object_type, field)
+          coerced_values = {} of String => ReturnType
+          argument_values = field.arguments.each_with_object({} of String => Graphql::Language::Nodes::Value) do |argument, memo|
+            memo[argument.name] = argument.value
+          end
+
+          field_name = field.name
+          if schema_field = object_type.get_field(field_name)
+            argument_definitions = schema_field.arguments
+            argument_definitions.each do |argument_definition|
+              argument_name = argument_definition.name
+              argument_type = argument_definition.type
+
+              has_value = argument_values.has_key?(argument_name)
+
+              argument_value = argument_values.fetch(argument_name, nil)
+              
+              is_variable = false # TODO: Implement argument variables
+              value = if is_variable
+                # Let variableName be the name of argumentValue.
+                # Let hasValue be true if variableValues provides a value for the name variableName.
+                # Let value be the value provided in variableValues for the name variableName.
+                nil
+              else
+                argument_value
+              end
+
+              if !has_value && argument_definition.has_default_value?
+                coerced_values[argument_name] = argument_definition.default_value.as(ReturnType)
+              elsif argument_type.is_a?(Graphql::Schema::NonNull) && (!has_value || value.nil?)
+                raise "non nullable argument has null value"
+              elsif has_value
+                if value.nil?
+                  coerced_values[argument_name] = nil
+                elsif false #  if argumentValue is a Variable
+                  # Add an entry to coercedValues named argumentName with the value value.
+                else
+                  # If value cannot be coerced according to the input coercion rules of variableType, throw a field error.
+                  coerced_values[argument_name] = value.as(ReturnType)
+                end
+              end
+            end
+          end
+
+          coerced_values
         end
       end
     end
