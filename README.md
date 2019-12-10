@@ -14,7 +14,7 @@
     - [ ] Variables
   - [ ] Execute field
     - [x] Basic execution
-    - [ ] Arguments
+    - [x] Arguments
   - [ ] Complete value
     - [x] Non-null
     - [x] Null

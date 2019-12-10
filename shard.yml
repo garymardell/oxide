@@ -6,4 +6,9 @@ authors:
 
 crystal: 0.31.1
 
+dependencies:
+  promise:
+    github: spider-gazelle/promise
+    branch: master
+
 license: MIT

@@ -1,4 +1,5 @@
 require "json"
+require "promise"
 
 module Graphql
   module Execution
@@ -23,22 +24,31 @@ module Graphql
         end
 
         def execute_selection_set(selection_set, object_type, object_value) # TODO: variable_values
-          result = Hash(String, ReturnType).new
-
           grouped_field_set = collect_fields(object_type, selection_set)
-
-          grouped_field_set.each do |response_key, fields|
+          
+          lazy_results = grouped_field_set.map do |response_key, fields|
             field_name = fields.first.name
 
             if field = object_type.get_field(field_name)
               field_type = field.type
 
-              result[response_key] =
-                execute_field(object_type, object_value, field_type, fields)
+              {response_key, field_type, fields, execute_field(object_type, object_value, field_type, fields)}
             end
           end
 
-          result.as(ReturnType)
+          lazy_results.each_with_object({} of String => ReturnType) do |tuple, memo|
+            next unless tuple
+
+            value = tuple[3]
+
+            ret = if value.is_a?(Promise::DeferredPromise)
+              value.get
+            else
+              value
+            end
+
+            memo[tuple[0]] = complete_value(tuple[1], tuple[2], ret)
+          end
         end
 
         def execute_field(object_type, object_value, field_type, fields)
@@ -48,8 +58,6 @@ module Graphql
           argument_values = coerce_argument_values(object_type, field) # TODO: variable_values
 
           resolved_value = object_type.resolver.try &.resolve(object_value, field_name, argument_values)
-
-          complete_value(field_type, fields, resolved_value)
         end
 
         def complete_value(field_type : Graphql::Schema::Object, fields, result)
