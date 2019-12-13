@@ -11,15 +11,34 @@ module Graphql
         property query : Graphql::Language::Nodes::Document
         property response
 
-        def initialize(@schema, @query)
+        def initialize(@schema, @query) # Operation name from url
           @response = {} of String => JSON::Any
         end
 
         def execute
-          if query_object = schema.query
-            root_operation = query.definitions.first # OperationDefinition(operation_type: "Query")
+          operation = if query.definitions.size > 1
+            query.definitions.first # Find appropriate operation
+          else
+            query.definitions.first
+          end
 
-            execute_selection_set(root_operation.selections, query_object, nil)
+          case operation.operation_type
+          when "query"
+            execute_query(operation, schema)
+          when "mutation"
+            execute_mutation(operation, schema)
+          end
+        end
+
+        def execute_query(query, schema)
+          if query_type = schema.query
+            execute_selection_set(query.selections, query_type, nil)
+          end
+        end
+
+        def execute_mutation(mutation, schema)
+          if mutation_type = schema.mutation
+            execute_selection_set(mutation.selections, mutation_type, nil)
           end
         end
 
@@ -64,7 +83,7 @@ module Graphql
           field = fields.first
 
           object_type = field_type
-
+          
           execute_selection_set(field.selections, object_type, result)
         end
 

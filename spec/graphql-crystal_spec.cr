@@ -8,6 +8,13 @@ class Charge
   end
 end
 
+class CreateCharge
+  property charge : Charge
+
+  def initialize(@charge)
+  end
+end
+
 class QueryResolver < Graphql::Schema::Resolver
   def resolve(object, field_name, argument_values)
     case field_name
@@ -24,6 +31,24 @@ class QueryResolver < Graphql::Schema::Resolver
   end
 end
 
+class MutationResolver < Graphql::Schema::Resolver
+  def resolve(object, field_name, argument_values)
+    case field_name
+    when "createCharge"
+      CreateCharge.new(Charge.new(id: 1234, status: argument_values["status"].as(String)))
+    end
+  end
+end
+
+class CreateChargeResolver < Graphql::Schema::Resolver
+  def resolve(object : CreateCharge, field_name, argument_values)
+    case field_name
+    when "charge"
+      object.charge
+    end
+  end
+end
+
 class ChargeResolver < Graphql::Schema::Resolver
   def resolve(object : Charge, field_name, argument_values)
     case field_name
@@ -36,7 +61,7 @@ class ChargeResolver < Graphql::Schema::Resolver
 end
 
 describe Graphql do
-  it "works" do
+  it "performs a query" do
     charge = Graphql::Schema::Object.new(
       resolver: ChargeResolver.new,
       fields: [
@@ -119,6 +144,93 @@ describe Graphql do
     runtime = Graphql::Execution::Interpreter::Runtime.new(
       schema,
       query
+    )
+
+    puts runtime.execute
+  end
+
+  it "performs a mutation" do
+    charge = Graphql::Schema::Object.new(
+      resolver: ChargeResolver.new,
+      fields: [
+        Graphql::Schema::Field.new(
+          name: "id",
+          type: Graphql::Schema::IdType.new
+        ),
+        Graphql::Schema::Field.new(
+          name: "status",
+          type: Graphql::Schema::Enum.new(
+            values: [
+              Graphql::Schema::EnumValue.new(name: "PENDING", value: "pending"),
+              Graphql::Schema::EnumValue.new(name: "PAID", value: "paid")
+            ]
+          )
+        )
+      ]
+    )
+
+    schema = Graphql::Schema.new(
+      query: nil,
+      mutation: Graphql::Schema::Object.new(
+        resolver: MutationResolver.new,
+        fields: [
+          Graphql::Schema::Field.new(
+            name: "createCharge",
+            type: Graphql::Schema::Object.new(
+              fields: [
+                Graphql::Schema::Field.new(
+                  name: "charge",
+                  type: charge
+                )
+              ],
+              resolver: CreateChargeResolver.new
+            ),
+            arguments: [
+              Graphql::Schema::Argument.new(
+                name: "status",
+                type: Graphql::Schema::IdType.new
+              )
+            ]
+          )
+        ]
+      ) 
+    )
+
+    mutation = Graphql::Language::Nodes::Document.new(
+      definitions: [
+        Graphql::Language::Nodes::OperationDefinition.new(
+          operation_type: "mutation",
+          selections: [
+            Graphql::Language::Nodes::Field.new(
+              name: "createCharge",
+              arguments: [
+                Graphql::Language::Nodes::Argument.new(
+                  name: "status",
+                  value: "paid",
+                )
+              ],
+              selections: [
+                Graphql::Language::Nodes::Field.new(
+                  name: "charge",
+                  selections: [
+                    Graphql::Language::Nodes::Field.new(
+                      name: "id"
+                    ),
+                    Graphql::Language::Nodes::Field.new(
+                      name: "status"
+                    )
+                  ]
+                )
+              ]
+            )
+          ]
+        )
+      ]
+    )
+
+    runtime = Graphql::Execution::Interpreter::Runtime.new(
+      schema,
+      mutation
     )
 
     puts runtime.execute
