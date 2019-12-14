@@ -3,6 +3,7 @@ require "./spec_helper"
 describe Graphql do
   it "performs a query" do
     charge = Graphql::Schema::Object.new(
+      name: "Charge",
       resolver: ChargeResolver.new,
       fields: [
         Graphql::Schema::Field.new(
@@ -23,6 +24,7 @@ describe Graphql do
 
     schema = Graphql::Schema.new(
       query: Graphql::Schema::Object.new(
+        name: "Query",
         resolver: QueryResolver.new,
         fields: [
           Graphql::Schema::Field.new(
@@ -48,6 +50,18 @@ describe Graphql do
 
     query = Graphql::Language::Nodes::Document.new(
       definitions: [
+        Graphql::Language::Nodes::FragmentDefinition.new(
+          name: "ChargeWithDetails",
+          type_condition: "Charge",
+          selections: [
+            Graphql::Language::Nodes::Field.new(
+              name: "id"
+            ).as(Graphql::Language::Nodes::Selection),
+            Graphql::Language::Nodes::Field.new(
+              name: "status"
+            ).as(Graphql::Language::Nodes::Selection)
+          ]
+        ),
         Graphql::Language::Nodes::OperationDefinition.new(
           operation_type: "query",
           selections: [
@@ -60,24 +74,21 @@ describe Graphql do
                 )
               ],
               selections: [
-                Graphql::Language::Nodes::Field.new(
-                  name: "id"
-                ),
-                Graphql::Language::Nodes::Field.new(
-                  name: "status"
-                )
+                Graphql::Language::Nodes::FragmentSpread.new(
+                  name: "ChargeWithDetails"
+                ).as(Graphql::Language::Nodes::Selection)
               ]
-            ),
+            ).as(Graphql::Language::Nodes::Selection),
             Graphql::Language::Nodes::Field.new(
               name: "charges",
               selections: [
-                Graphql::Language::Nodes::Field.new(
-                  name: "id"
-                )
+                Graphql::Language::Nodes::FragmentSpread.new(
+                  name: "ChargeWithDetails"
+                ).as(Graphql::Language::Nodes::Selection)
               ]
-            )
+            ).as(Graphql::Language::Nodes::Selection)
           ]
-        )
+        ).as(Graphql::Language::Nodes::Definition)
       ]
     )
 

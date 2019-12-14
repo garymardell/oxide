@@ -16,10 +16,12 @@ module Graphql
         end
 
         def execute
-          operation = if query.definitions.size > 1
-            query.definitions.first # Find appropriate operation
+          definitions = query.definitions.select(type: Graphql::Language::Nodes::OperationDefinition)
+
+          operation = if definitions.size > 1
+            definitions.first # Find appropriate operation
           else
-            query.definitions.first
+            definitions.first
           end
 
           case operation.operation_type
@@ -43,7 +45,7 @@ module Graphql
         end
 
         def execute_selection_set(selection_set, object_type, object_value) # TODO: variable_values
-          grouped_field_set = collect_fields(object_type, selection_set)
+          grouped_field_set = collect_fields(object_type, selection_set, nil, nil)
           
           lazy_results = grouped_field_set.map do |response_key, fields|
             field_name = fields.first.name
@@ -127,8 +129,9 @@ module Graphql
           raise "should not be reached"
         end
 
-        def collect_fields(object_type, selection_set) # TODO: variable_values, visited_fragments
+        def collect_fields(object_type, selection_set, variable_values, visited_fragments) # TODO: variable_values, visited_fragments
           grouped_fields = {} of String => Array(Graphql::Language::Nodes::Field)
+          visited_fragments = [] of String
 
           selection_set.each do |selection|
             # TODO: @skip directive
@@ -139,8 +142,28 @@ module Graphql
 
               grouped_fields[response_key] ||= [] of Graphql::Language::Nodes::Field
               grouped_fields[response_key] << selection
+            when Graphql::Language::Nodes::FragmentSpread
+              fragment_spread_name = selection.name
+
+              next if visited_fragments.includes?(fragment_spread_name)
+
+              visited_fragments << fragment_spread_name
+
+              fragments = query.definitions.select(type: Graphql::Language::Nodes::FragmentDefinition)
+
+              next unless fragment = fragments.find(&.name.===(fragment_spread_name))
+              
+              fragment_type = fragment.type_condition
+
+              next unless does_fragment_type_apply(object_type, fragment_type)
+
+              fragment_selection_set = fragment.selections
+              fragment_grouped_field_set = collect_fields(object_type, fragment_selection_set, nil, visited_fragments)
+              fragment_grouped_field_set.each do |response_key, fields|
+                grouped_fields[response_key] ||= [] of Graphql::Language::Nodes::Field
+                grouped_fields[response_key].concat(fields)
+              end
             end
-            # TODO: fragment spread
             # TODO: inline fragment
           end
 
@@ -192,6 +215,10 @@ module Graphql
           end
 
           coerced_values
+        end
+
+        def does_fragment_type_apply(object_type, fragment_type) # TODO: Proper handling of fragment type
+          object_type.name == fragment_type
         end
       end
     end
