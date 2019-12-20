@@ -2,6 +2,7 @@ require "./models/*"
 require "./resolvers/*"
 
 ChargeType = Graphql::Schema::Object.new(
+  name: "Charge",
   resolver: ChargeResolver.new,
   fields: [
     Graphql::Schema::Field.new(
@@ -22,6 +23,7 @@ ChargeType = Graphql::Schema::Object.new(
 
 DummySchema = Graphql::Schema.new(
   query: Graphql::Schema::Object.new(
+    name: "Query",
     resolver: QueryResolver.new,
     fields: [
       Graphql::Schema::Field.new(
