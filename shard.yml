@@ -12,3 +12,7 @@ dependencies:
     branch: master
 
 license: MIT
+
+targets:
+  graphql-crystal:
+    main: src/graphql-crystal.cr
