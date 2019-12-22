@@ -1,7 +1,6 @@
 @[Link("graphqlparser")]
 lib LibGraphqlParser
-  # struct GraphQLAstNode; 
-  
+
   type GraphQLAstNode = Void*
   type GraphQLAstField = Void*
   type GraphQLAstName = Void*
@@ -121,7 +120,7 @@ lib LibGraphqlParser
 
     visit_type_extension_definition : (GraphQLAstNode, Void* -> Int32)
     end_visit_type_extension_definitionn : (GraphQLAstNode, Void* ->)
-    
+
     visit_directive_definition : (GraphQLAstNode, Void* -> Int32)
     end_visit_directive_definition : (GraphQLAstNode, Void* ->)
   end
@@ -134,6 +133,8 @@ lib LibGraphqlParser
   fun node_get_location = graphql_node_get_location(node : GraphQLAstNode*, location : GraphQLAstLocation*)
   fun node_free = graphql_node_free(node : GraphQLAstNode*)
 
+  fun GraphQLAstOperationDefinition_get_name(node : GraphQLAstNode) : GraphQLAstName
+  fun GraphQLAstOperationDefinition_get_operation(node : GraphQLAstNode) : LibC::Char*
   fun GraphQLAstField_get_name(node : GraphQLAstField) : GraphQLAstName
   fun GraphQLAstName_get_value(node : GraphQLAstName) : LibC::Char*
 end
