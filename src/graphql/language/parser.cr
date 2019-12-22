@@ -24,14 +24,6 @@ module Graphql
       def pop_node
         @stack.pop
       end
-
-      def start_visit(node_type)
-        
-      end
-
-      def end_visit(node_type)
-        
-      end
     end
 
     class Parser
@@ -54,7 +46,15 @@ module Graphql
         @callbacks.visit_operation_definition = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
           builder = data.as(Pointer(Builder)).value
 
-          operation_definition = Nodes::OperationDefinition.new("query") # Remove hard coded query type
+          operation = LibGraphqlParser.GraphQLAstOperationDefinition_get_operation(node)
+
+          operation_type = if (operation)
+            String.new(operation)
+          else
+            "query"
+          end
+
+          operation_definition = Nodes::OperationDefinition.new(operation_type) # Remove hard coded query type
 
           builder.current.as(Nodes::Document).definitions << operation_definition
           builder.push_node(operation_definition)
@@ -92,14 +92,10 @@ module Graphql
         }
 
         @callbacks.visit_named_type = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
-          builder = data.as(Pointer(Builder)).value
-          builder.start_visit("named_type")
           return 1
         }
+
         @callbacks.end_visit_named_type = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
-          builder = data.as(Pointer(Builder)).value
-          builder.end_visit("named_type")
-          return 1
         }
       end
       
