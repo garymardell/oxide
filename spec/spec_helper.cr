@@ -1,3 +1,3 @@
 require "spec"
-require "../src/graphql-crystal"
+require "../src/graphql"
 require "./dummy/schema"

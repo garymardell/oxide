@@ -1,4 +1,4 @@
-name: graphql-crystal
+name: graphql.cr
 version: 0.1.0
 
 authors:
@@ -14,5 +14,5 @@ dependencies:
 license: MIT
 
 targets:
-  graphql-crystal:
-    main: src/graphql-crystal.cr
+  graphql.cr:
+    main: src/graphql.cr
