@@ -7,7 +7,7 @@ ChargeType = Graphql::Schema::Object.new(
   fields: [
     Graphql::Schema::Field.new(
       name: "id",
-      type: Graphql::Schema::IdType.new
+      type: Graphql::Schema::Id.new
     ),
     Graphql::Schema::Field.new(
       name: "status",
@@ -32,7 +32,7 @@ DummySchema = Graphql::Schema.new(
         arguments: [
           Graphql::Schema::Argument.new(
             name: "id",
-            type: Graphql::Schema::IdType.new
+            type: Graphql::Schema::Id.new
           )
         ]
       ),

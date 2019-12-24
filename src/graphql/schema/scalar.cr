@@ -5,7 +5,7 @@ module Graphql
     abstract class Scalar < Member
     end
 
-    class IdType < Scalar
+    class Id < Scalar
     end
   end
 end
