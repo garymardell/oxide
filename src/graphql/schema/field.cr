@@ -1,21 +1,17 @@
 module Graphql
   class Schema
     class Field
-      property name : String
-      property type : Graphql::Schema::Member
-      property description : String | Nil
-      property deprecation_reason : String | Nil
-      property arguments : Array(Graphql::Schema::Argument)
+      getter name : String
+      getter type : Graphql::Schema::Member
+      getter description : String?
+      getter deprecation_reason : String?
+      getter arguments : Array(Graphql::Schema::Argument)
 
-      def initialize(@name, @type, @description = nil, @deprecation_reason = nil, @arguments = [] of Graphql::Schema::Argument)
+      def initialize(@name : String, @type : Graphql::Schema::Member, @description : String? = nil, @deprecation_reason : String? = nil, @arguments = [] of Graphql::Schema::Argument)
       end
 
-      def add_argument(argument)
+      def add_argument(argument : Graphql::Schema::Argument)
         @arguments << argument
-      end
-
-      def self.default_resolver
-        @@default_resolver ||= DefaultResolver.new
       end
     end
   end

@@ -7,9 +7,9 @@ module Graphql
       class Runtime
         alias ReturnType = String | Int32 | Int64 | Float64 | Bool | Nil | Array(ReturnType) | Hash(String, ReturnType)
 
-        property schema : Graphql::Schema
-        property query : Graphql::Language::Nodes::Document
-        property response
+        getter schema : Graphql::Schema
+        getter query : Graphql::Language::Nodes::Document
+        private property response
 
         def initialize(@schema, @query) # Operation name from url
           @response = {} of String => JSON::Any
@@ -32,19 +32,19 @@ module Graphql
           end
         end
 
-        def execute_query(query, schema)
+        private def execute_query(query, schema)
           if query_type = schema.query
             execute_selection_set(query.selections, query_type, nil)
           end
         end
 
-        def execute_mutation(mutation, schema)
+        private def execute_mutation(mutation, schema)
           if mutation_type = schema.mutation
             execute_selection_set(mutation.selections, mutation_type, nil)
           end
         end
 
-        def execute_selection_set(selection_set, object_type, object_value) # TODO: variable_values
+        private def execute_selection_set(selection_set, object_type, object_value) # TODO: variable_values
           grouped_field_set = collect_fields(object_type, selection_set, nil, nil)
           
           lazy_results = grouped_field_set.map do |response_key, fields|
@@ -72,7 +72,7 @@ module Graphql
           end
         end
 
-        def execute_field(object_type, object_value, field_type, fields)
+        private def execute_field(object_type, object_value, field_type, fields)
           field = fields.first
           field_name = field.name
 
@@ -81,7 +81,7 @@ module Graphql
           resolved_value = object_type.resolver.try &.resolve(object_value, field_name, argument_values)
         end
 
-        def complete_value(field_type : Graphql::Schema::Object, fields, result)
+        private def complete_value(field_type : Graphql::Schema::Object, fields, result)
           field = fields.first
 
           object_type = field_type
@@ -89,11 +89,11 @@ module Graphql
           execute_selection_set(field.selections, object_type, result)
         end
 
-        def complete_value(field_type : Graphql::Schema::Scalar, fields, result : ReturnType)
+        private def complete_value(field_type : Graphql::Schema::Scalar, fields, result : ReturnType)
           result.as(ReturnType)
         end
 
-        def complete_value(field_type : Graphql::Schema::List, fields, result)
+        private def complete_value(field_type : Graphql::Schema::List, fields, result)
           if result.is_a?(Array)
             inner_type = field_type.of_type
 
@@ -109,7 +109,7 @@ module Graphql
           end
         end
 
-        def complete_value(field_type : Graphql::Schema::Enum, fields, result : ReturnType)
+        private def complete_value(field_type : Graphql::Schema::Enum, fields, result : ReturnType)
           if enum_value = field_type.values.find(&.value.==(result))
             enum_value.name
           else
@@ -117,7 +117,7 @@ module Graphql
           end
         end
 
-        def complete_value(field_type : Graphql::Schema::NonNull, fields, result)
+        private def complete_value(field_type : Graphql::Schema::NonNull, fields, result)
           if result.nil?
             raise "null issues"
           else
@@ -125,11 +125,11 @@ module Graphql
           end
         end
 
-        def complete_value(field_type, fields, result)
+        private def complete_value(field_type, fields, result)
           raise "should not be reached"
         end
 
-        def collect_fields(object_type, selection_set, variable_values, visited_fragments) # TODO: variable_values, visited_fragments
+        private def collect_fields(object_type, selection_set, variable_values, visited_fragments) # TODO: variable_values, visited_fragments
           grouped_fields = {} of String => Array(Graphql::Language::Nodes::Field)
           visited_fragments = [] of String
 
@@ -170,7 +170,7 @@ module Graphql
           grouped_fields
         end
 
-        def coerce_argument_values(object_type, field)
+        private def coerce_argument_values(object_type, field)
           coerced_values = {} of String => ReturnType
           argument_values = field.arguments.each_with_object({} of String => Graphql::Language::Nodes::Value) do |argument, memo|
             memo[argument.name] = argument.value
@@ -217,7 +217,7 @@ module Graphql
           coerced_values
         end
 
-        def does_fragment_type_apply(object_type, fragment_type) # TODO: Proper handling of fragment type
+        private def does_fragment_type_apply(object_type, fragment_type) # TODO: Proper handling of fragment type
           object_type.name == fragment_type
         end
       end

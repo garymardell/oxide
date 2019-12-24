@@ -1,7 +1,7 @@
 module Graphql
   class Schema
     abstract class Member
-      property resolver : Resolver | Nil
+      getter resolver : Resolver?
     end
   end
 end

@@ -3,7 +3,7 @@ require "./libgraphqlparser"
 module Graphql
   module Language
     class Builder
-      property stack : Array(Nodes::Node)
+      private property stack : Array(Nodes::Node)
 
       def initialize
         @stack = [] of Nodes::Node
@@ -27,8 +27,8 @@ module Graphql
     end
 
     class Parser
-      property builder : Builder
-      property callbacks : LibGraphqlParser::GraphQLAstVisitorCallbacks
+      private property builder : Builder
+      private property callbacks : LibGraphqlParser::GraphQLAstVisitorCallbacks
 
       def initialize
         @builder = Builder.new

@@ -3,12 +3,12 @@ require "./member"
 module Graphql
   class Schema
     class Object < Member
-      property name : String
+      getter name : String
 
-      def initialize(@name, @resolver, @fields = [] of Field)
+      def initialize(@name : String, @resolver : Resolver, @fields = [] of Field)
       end
 
-      def add_field(field)
+      def add_field(field : Field)
         @fields << field
       end
 
