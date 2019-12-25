@@ -218,7 +218,7 @@ module Graphql
         end
 
         private def does_fragment_type_apply(object_type, fragment_type) # TODO: Proper handling of fragment type
-          object_type.name == fragment_type
+          object_type.typename == fragment_type
         end
       end
     end
