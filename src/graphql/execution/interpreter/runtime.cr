@@ -81,7 +81,7 @@ module Graphql
           resolved_value = object_type.resolver.try &.resolve(object_value, field_name, argument_values)
         end
 
-        private def complete_value(field_type : Graphql::Schema::Object, fields, result)
+        private def complete_value(field_type : Graphql::Type::Object, fields, result)
           field = fields.first
 
           object_type = field_type
@@ -89,11 +89,11 @@ module Graphql
           execute_selection_set(field.selections, object_type, result)
         end
 
-        private def complete_value(field_type : Graphql::Schema::Scalar, fields, result : ReturnType)
+        private def complete_value(field_type : Graphql::Type::Scalar, fields, result : ReturnType)
           result.as(ReturnType)
         end
 
-        private def complete_value(field_type : Graphql::Schema::List, fields, result)
+        private def complete_value(field_type : Graphql::Type::List, fields, result)
           if result.is_a?(Array)
             inner_type = field_type.of_type
 
@@ -109,7 +109,7 @@ module Graphql
           end
         end
 
-        private def complete_value(field_type : Graphql::Schema::Enum, fields, result : ReturnType)
+        private def complete_value(field_type : Graphql::Type::Enum, fields, result : ReturnType)
           if enum_value = field_type.values.find(&.value.==(result))
             enum_value.name
           else
@@ -117,7 +117,7 @@ module Graphql
           end
         end
 
-        private def complete_value(field_type : Graphql::Schema::NonNull, fields, result)
+        private def complete_value(field_type : Graphql::Type::NonNull, fields, result)
           if result.nil?
             raise "null issues"
           else
@@ -199,7 +199,7 @@ module Graphql
 
               if !has_value && argument_definition.has_default_value?
                 coerced_values[argument_name] = argument_definition.default_value.as(ReturnType)
-              elsif argument_type.is_a?(Graphql::Schema::NonNull) && (!has_value || value.nil?)
+              elsif argument_type.is_a?(Graphql::Type::NonNull) && (!has_value || value.nil?)
                 raise "non nullable argument has null value"
               elsif has_value
                 if value.nil?

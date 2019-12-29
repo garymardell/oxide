@@ -4,16 +4,16 @@ module Graphql
       alias DefaultValue = String | Int32 | Int64 | Float64 | Bool | Nil | Array(DefaultValue) | Hash(String, DefaultValue)
 
       getter name : String
-      getter type : Graphql::Schema::Member
+      getter type : Graphql::Type
       getter default_value : DefaultValue
       getter? has_default_value : Bool
 
-      def initialize(@name : String, @type : Graphql::Schema::Member)
+      def initialize(@name : String, @type : Graphql::Type)
         @default_value = nil
         @has_default_value = false
       end
 
-      def initialize(@name : String, @type : Graphql::Schema::Member, @default_value : DefaultValue)
+      def initialize(@name : String, @type : Graphql::Type, @default_value : DefaultValue)
         @has_default_value = true
       end
     end

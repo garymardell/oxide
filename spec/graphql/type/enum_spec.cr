@@ -1,7 +1,7 @@
 require "../../spec_helper"
 
 def build_enum_value(name = "paid", description = "Item is paid", value = nil, deprecation_reason = nil)
-  Graphql::Schema::EnumValue.new(
+  Graphql::Type::EnumValue.new(
     name: name,
     description: description,
     value: value,
@@ -9,12 +9,12 @@ def build_enum_value(name = "paid", description = "Item is paid", value = nil, d
   )
 end
 
-describe Graphql::Schema::Enum do
+describe Graphql::Type::Enum do
   describe "#new" do
     it "accepts an array of EnumValues" do
       values = [build_enum_value]
 
-      e = Graphql::Schema::Enum.new(
+      e = Graphql::Type::Enum.new(
         values: values
       )
 
@@ -22,7 +22,7 @@ describe Graphql::Schema::Enum do
     end
   end
 
-  describe Graphql::Schema::EnumValue do
+  describe Graphql::Type::EnumValue do
     describe "#new" do
       it "defaults value to name if not specified" do
         enum_value = build_enum_value(name: "paid", value: nil)
