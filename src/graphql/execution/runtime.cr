@@ -45,29 +45,17 @@ module Graphql
 
       private def execute_selection_set(selection_set, object_type, object_value) # TODO: variable_values
         grouped_field_set = collect_fields(object_type, selection_set, nil, nil)
-        
-        lazy_results = grouped_field_set.map do |response_key, fields|
+
+        grouped_field_set.each_with_object({} of String => ReturnType) do |(response_key, fields), memo|
           field_name = fields.first.name
 
-          if field = object_type.get_field(field_name)
+          if field_name == "__typename"
+            memo["__typename"] = object_type.typename
+          elsif field = object_type.get_field(field_name)
             field_type = field.type
 
-            {response_key, field_type, fields, execute_field(object_type, object_value, field_type, fields)}
+            memo[response_key] = execute_field(object_type, object_value, field.type, fields)
           end
-        end
-
-        lazy_results.each_with_object({} of String => ReturnType) do |tuple, memo|
-          next unless tuple
-
-          value = tuple[3]
-
-          ret = if value.is_a?(Promise::DeferredPromise)
-            value.get
-          else
-            value
-          end
-
-          memo[tuple[0]] = complete_value(tuple[1], tuple[2], ret)
         end
       end
 
@@ -78,6 +66,8 @@ module Graphql
         argument_values = coerce_argument_values(object_type, field) # TODO: variable_values
 
         resolved_value = object_type.resolver.try &.resolve(object_value, field_name, argument_values)
+
+        complete_value(field_type, fields, resolved_value)
       end
 
       private def complete_value(field_type : Graphql::Type::Object, fields, result)
