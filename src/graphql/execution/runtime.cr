@@ -92,7 +92,7 @@ module Graphql
       end
 
       private def complete_value(field_type : Graphql::Type::Scalar, fields, result : ReturnType)
-        result.as(ReturnType)
+        field_type.coerce(result).as(ReturnType)
       end
 
       private def complete_value(field_type : Graphql::Type::List, fields, result)
