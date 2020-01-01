@@ -1,6 +1,5 @@
 require "./type/*"
 require "./schema/*"
-require "./types/*"
 require "./language/*"
 require "./execution"
 
@@ -10,6 +9,10 @@ module Graphql
     getter mutation : Graphql::Type::Object | Nil
 
     def initialize(@query = nil, @mutation = nil)
+    end
+
+    def possible_types(type)
+      PossibleTypes.new(self).possible_types(type)
     end
   end
 end

@@ -5,6 +5,7 @@ require "../type"
 module Graphql
   class Type
     class Object < Type
+      getter fields : Array(Schema::Field)
       getter typename : ::String
 
       def initialize(@typename : ::String, @resolver : Schema::Resolver, @fields = [] of Schema::Field)

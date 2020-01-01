@@ -1,6 +1,8 @@
 require "json"
 require "promise"
 
+require "../introspection/*"
+
 module Graphql
   module Execution
     class Runtime
@@ -49,13 +51,21 @@ module Graphql
         grouped_field_set.each_with_object({} of String => ReturnType) do |(response_key, fields), memo|
           field_name = fields.first.name
 
-          if field_name == "__typename"
-            memo["__typename"] = object_type.typename
-          elsif field = object_type.get_field(field_name)
+          if field = get_field(object_type, field_name)
             field_type = field.type
 
             memo[response_key] = execute_field(object_type, object_value, field.type, fields)
           end
+        end
+      end
+
+      private def get_field(object_type, field_name)
+        if schema.query == object_type && field_name == "__schema"
+          Graphql::Schema::Field.new(name: "__schema", type: Graphql::Introspection::Schema)
+        elsif field_name == "__typename"
+          Graphql::Schema::Field.new(name: "__typename", type: Graphql::Type::String.new)
+        else
+          object_type.get_field(field_name)
         end
       end
 
@@ -65,16 +75,19 @@ module Graphql
 
         argument_values = coerce_argument_values(object_type, field) # TODO: variable_values
 
-        resolved_value = object_type.resolver.try &.resolve(object_value, field_name, argument_values)
+        if resolver = object_type.resolver
+          resolver.schema = schema
+          resolved_value = resolver.resolve(object_value, field_name, argument_values)
 
-        complete_value(field_type, fields, resolved_value)
+          complete_value(field_type, fields, resolved_value)
+        end
       end
 
       private def complete_value(field_type : Graphql::Type::Object, fields, result)
         field = fields.first
 
         object_type = field_type
-        
+
         execute_selection_set(field.selections, object_type, result)
       end
 
@@ -108,7 +121,7 @@ module Graphql
 
       private def complete_value(field_type : Graphql::Type::NonNull, fields, result)
         if result.nil?
-          raise "null issues"
+          raise "expected field \"#{fields.first.name}\" of type #{field_type.of_type} to not be nil"
         else
           complete_value(field_type.of_type, fields, result)
         end
@@ -141,7 +154,7 @@ module Graphql
             fragments = query.definitions.select(type: Graphql::Language::Nodes::FragmentDefinition)
 
             next unless fragment = fragments.find(&.name.===(fragment_spread_name))
-            
+
             fragment_type = fragment.type_condition
 
             next unless does_fragment_type_apply(object_type, fragment_type)
@@ -175,7 +188,7 @@ module Graphql
             has_value = argument_values.has_key?(argument_name)
 
             argument_value = argument_values.fetch(argument_name, nil)
-            
+
             is_variable = false # TODO: Implement argument variables
             value = if is_variable
               # Let variableName be the name of argumentValue.
