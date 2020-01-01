@@ -10,5 +10,14 @@ module Graphql
 
     class String < Scalar
     end
+
+    class Int < Scalar
+    end
+
+    class Float < Scalar
+    end
+
+    class Boolean < Scalar
+    end
   end
 end
