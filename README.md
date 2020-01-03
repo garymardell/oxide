@@ -1,28 +1,12 @@
 # Graphql in Crystal
 
-## Spec Implemented
+## TODO
 
-- [ ] Queries
-  - [ ] Selection set
-    - [x] Basic execution
-    - [ ] Collect fields into groups
-      - [x] field
-      - [ ] @skip directive
-      - [ ] @include directive
-      - [ ] fragment spread
-      - [ ] inline fragment
-    - [ ] Variables
-  - [ ] Execute field
-    - [x] Basic execution
-    - [x] Arguments
-  - [ ] Complete value
-    - [x] Non-null
-    - [x] Null
-    - [x] List
-    - [x] Scalar
-    - [x] Enum
-    - [x] Object
-    - [ ] Interface
-    - [ ] Union type
-  - [ ] Error handling
+- [ ] Directives (@skip, @include)
+- [ ] Variables
+- [ ] Late bound types
+- [ ] Dataloader (promise support)
+- [ ] Introspection
+- [ ] Error handling
 - [ ] Mutations
+- [ ] DSL
