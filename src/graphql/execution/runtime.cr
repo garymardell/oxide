@@ -1,6 +1,8 @@
 require "json"
 require "promise"
 
+require "../query"
+require "../schema"
 require "../introspection/*"
 
 module Graphql
@@ -9,15 +11,18 @@ module Graphql
       alias ReturnType = String | Int32 | Int64 | Float64 | Bool | Nil | Array(ReturnType) | Hash(String, ReturnType)
 
       getter schema : Graphql::Schema
-      getter query : Graphql::Language::Nodes::Document
+      getter query : Graphql::Query
+
+      delegate document, to: query
+
       private property response
 
-      def initialize(@schema, @query) # Operation name from url
+      def initialize(@schema : Graphql::Schema, @query : Graphql::Query)
         @response = {} of String => JSON::Any
       end
 
       def execute
-        definitions = query.definitions.select(type: Graphql::Language::Nodes::OperationDefinition)
+        definitions = document.definitions.select(type: Graphql::Language::Nodes::OperationDefinition)
 
         operation = if definitions.size > 1
           definitions.first # Find appropriate operation
@@ -75,7 +80,9 @@ module Graphql
 
         argument_values = coerce_argument_values(object_type, field) # TODO: variable_values
 
-        if resolver = object_type.resolver
+        if field_name == "__typename"
+          object_type.typename
+        elsif resolver = object_type.resolver
           resolver.schema = schema
           resolved_value = resolver.resolve(object_value, field_name, argument_values)
 
@@ -151,7 +158,7 @@ module Graphql
 
             visited_fragments << fragment_spread_name
 
-            fragments = query.definitions.select(type: Graphql::Language::Nodes::FragmentDefinition)
+            fragments = document.definitions.select(type: Graphql::Language::Nodes::FragmentDefinition)
 
             next unless fragment = fragments.find(&.name.===(fragment_spread_name))
 

@@ -2,7 +2,7 @@ require "../spec_helper"
 
 describe Graphql do
   it "gets object __typename" do
-    query = <<-QUERY
+    query_string = <<-QUERY
       query {
         charges {
           id
@@ -11,20 +11,18 @@ describe Graphql do
       }
     QUERY
 
-    parser = Graphql::Language::Parser.new
-    
     runtime = Graphql::Execution::Runtime.new(
       DummySchema,
-      parser.parse(query)
+      Graphql::Query.new(query_string)
     )
 
     result = runtime.execute
 
-    result.should eq({ "charges" => [{ "id" => 1, "__typename" => "Charge" }, { "id" => 2, "__typename" => "Charge" }] })
+    result.should eq({ "charges" => [{ "id" => "1", "__typename" => "Charge" }, { "id" => "2", "__typename" => "Charge" }] })
   end
-  
+
   it "executes introspection query" do
-    query = <<-QUERY
+    query_string = <<-QUERY
     query IntrospectionQuery {
       __schema {
         queryType {
@@ -49,7 +47,7 @@ describe Graphql do
         }
       }
     }
-    
+
     fragment FullType on __Type {
       kind
       name
@@ -82,7 +80,7 @@ describe Graphql do
         ...TypeRef
       }
     }
-    
+
     fragment InputValue on __InputValue {
       name
       description
@@ -91,7 +89,7 @@ describe Graphql do
       }
       defaultValue
     }
-    
+
     fragment TypeRef on __Type {
       kind
       name
@@ -126,11 +124,30 @@ describe Graphql do
     }
     QUERY
 
-    parser = Graphql::Language::Parser.new
-    
     runtime = Graphql::Execution::Runtime.new(
       DummySchema,
-      parser.parse(query)
+      Graphql::Query.new(query_string)
+    )
+
+    puts runtime.execute
+  end
+
+  it "executes introspection query" do
+    query_string = <<-QUERY
+    query IntrospectionQuery {
+      __schema {
+        types {
+          ofType {
+            name
+          }
+        }
+      }
+    }
+    QUERY
+
+    runtime = Graphql::Execution::Runtime.new(
+      DummySchema,
+      Graphql::Query.new(query_string)
     )
 
     puts runtime.execute
