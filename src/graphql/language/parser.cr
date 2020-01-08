@@ -65,7 +65,7 @@ module Graphql
           builder = data.as(Pointer(Builder)).value
           builder.pop_node
         }
-      
+
         @callbacks.visit_field = ->(field : LibGraphqlParser::GraphQLAstField, data : Pointer(Void)) {
           builder = data.as(Pointer(Builder)).value
 
@@ -74,7 +74,7 @@ module Graphql
 
 
           field = Nodes::Field.new(String.new(field_name_value))
-          
+
           current_node = builder.current
           case current_node
           when Nodes::OperationDefinition, Nodes::Field
@@ -91,6 +91,53 @@ module Graphql
           builder.pop_node
         }
 
+        @callbacks.visit_argument = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+          builder = data.as(Pointer(Builder)).value
+
+          argument_name = LibGraphqlParser.GraphQLAstArgument_get_name(node)
+          argument_name_value = LibGraphqlParser.GraphQLAstName_get_value(argument_name)
+
+          argument = Nodes::Argument.new(String.new(argument_name_value))
+
+          current_node = builder.current
+          case current_node
+          when Nodes::Directive
+            current_node.arguments << argument
+          end
+
+          builder.push_node(argument)
+          return 1
+        }
+
+        @callbacks.end_visit_argument = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+          builder = data.as(Pointer(Builder)).value
+          builder.pop_node
+        }
+
+        @callbacks.visit_directive = -> (node : LibGraphqlParser::GraphQLAstNode, data: Pointer(Void)) {
+          builder = data.as(Pointer(Builder)).value
+
+          directive_name = LibGraphqlParser.GraphQLAstDirective_get_name(node)
+          directive_name_value = LibGraphqlParser.GraphQLAstName_get_value(directive_name)
+
+          directive = Nodes::Directive.new(String.new(directive_name_value))
+
+          current_node = builder.current
+
+          case current_node
+          when Nodes::Field, Nodes::FragmentDefinition
+            current_node.directives << directive
+          end
+
+          builder.push_node(directive)
+          return 1
+        }
+
+        @callbacks.end_visit_directive = -> (node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+          builder = data.as(Pointer(Builder)).value
+          builder.pop_node
+        }
+
         @callbacks.visit_named_type = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
           return 1
         }
@@ -98,16 +145,16 @@ module Graphql
         @callbacks.end_visit_named_type = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
         }
       end
-      
+
       def parse(string)
         node = LibGraphqlParser.parse_string(string, out error)
 
         if node.null?
           error_message = String.new(chars: error)
           LibGraphqlParser.error_free(error)
-        
+
           raise error_message
-        else        
+        else
           LibGraphqlParser.node_visit(node, pointerof(@callbacks), pointerof(@builder))
 
           @builder.document.as(Nodes::Document)

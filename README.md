@@ -2,7 +2,7 @@
 
 ## TODO
 
-- [ ] Directives (@skip, @include)
+- [x] Directives (@skip, @include)
 - [ ] Variables
 - [ ] Late bound types
 - [ ] Dataloader (promise support)

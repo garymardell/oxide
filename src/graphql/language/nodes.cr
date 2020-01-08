@@ -28,8 +28,9 @@ module Graphql
         property name : String
         property type_condition : String | Nil
         property selections : Array(Selection)
-        
-        def initialize(@name, @type_condition = nil, @selections = [] of Selection)
+        property directives : Array(Directive)
+
+        def initialize(@name, @type_condition = nil, @selections = [] of Selection, @directives = [] of Directive)
         end
       end
 
@@ -44,16 +45,35 @@ module Graphql
         property name : String
         property arguments : Array(Argument)
         property selections : Array(Selection)
+        property directives : Array(Directive)
 
-        def initialize(@name, @arguments = [] of Argument, @selections = [] of Selection)
+        def initialize(@name, @arguments = [] of Argument, @selections = [] of Selection, @directives = [] of Directive)
         end
       end
 
       class Argument < Node
         property name : String
         property value : Value
-        
+
         def initialize(@name, @value)
+        end
+      end
+
+      class Directive < Node
+        property name : String
+        property arguments : Array(Argument)
+
+        def initialize(@name, @arguments = [] of Argument)
+        end
+      end
+
+      class DirectiveDefinition < Node
+        property name : String
+        property description : String?
+        property locations : Array(String)
+        property arguments : Array(Argument)
+
+        def initialize(@name, @description = nil, @locations = [] of String, @arguments = [] of Argument)
         end
       end
     end
