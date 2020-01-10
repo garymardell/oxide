@@ -3,6 +3,7 @@ require "promise"
 
 require "../query"
 require "../schema"
+require "../introspection_system"
 require "../introspection/*"
 
 module Graphql
@@ -132,6 +133,17 @@ module Graphql
         else
           complete_value(field_type.of_type, fields, result)
         end
+      end
+
+      private def complete_value(field_type : Graphql::Type::LateBound, fields, result)
+        unwrapped_type = case field_type.typename
+        when "__Schema", "__Type", "__InputValue", "__Directive", "__EnumValue"
+          IntrospectionSystem.types[field_type.typename]
+        else
+          schema.types[field_type.typename]
+        end
+
+        complete_value(unwrapped_type, fields, result)
       end
 
       private def complete_value(field_type, fields, result)

@@ -19,74 +19,74 @@ module Graphql
 
     Type = Graphql::Type::Object.new(
       typename: "__Type",
-      resolver: TypeResolver.new
+      resolver: TypeResolver.new,
+      fields: [
+        Graphql::Schema::Field.new(
+          name: "kind",
+          type: Graphql::Type::NonNull.new(of_type: TypeKind)
+        ),
+        Graphql::Schema::Field.new(
+          name: "name",
+          type: Graphql::Type::String.new
+        ),
+        Graphql::Schema::Field.new(
+          name: "description",
+          type: Graphql::Type::String.new
+        ),
+        Graphql::Schema::Field.new(
+          name: "fields",
+          arguments: [
+            Graphql::Schema::Argument.new(
+              name: "includeDeprecated",
+              type: Graphql::Type::Boolean.new,
+              default_value: false
+            )
+          ],
+          type: Graphql::Type::List.new(
+            of_type: Graphql::Type::NonNull.new(
+              of_type: Graphql::Type::LateBound.new("__Field") # Introspection::Field
+            )
+          )
+        ),
+        Graphql::Schema::Field.new(
+          name: "interfaces",
+          type: Graphql::Type::List.new(
+            of_type: Graphql::Type::NonNull.new(
+              of_type: Graphql::Type::LateBound.new("__Type")  # Introspection::Type
+            )
+          )
+        ),
+        Graphql::Schema::Field.new(
+          name: "possibleTypes",
+          type: Graphql::Type::List.new(
+            of_type: Graphql::Type::NonNull.new(
+              of_type: Graphql::Type::LateBound.new("__Type")
+            )
+          )
+        ),
+        Graphql::Schema::Field.new(
+          name: "enumValues",
+          type: Graphql::Type::List.new(
+            of_type: Graphql::Type::NonNull.new(
+              of_type: Introspection::EnumValue
+            )
+          )
+        ),
+        Graphql::Schema::Field.new(
+          name: "inputFields",
+          type: Graphql::Type::List.new(
+            of_type: Graphql::Type::NonNull.new(
+              of_type: Graphql::Type::LateBound.new("__InputValue") # Introspection::InputValue
+            )
+          )
+        ),
+        Graphql::Schema::Field.new(
+          name: "ofType",
+          type: Graphql::Type::LateBound.new("__Type")
+        )
+      ]
     )
 
-    Type.add_field(Graphql::Schema::Field.new(
-      name: "kind",
-      type: Graphql::Type::NonNull.new(of_type: TypeKind)
-    ))
-
-    Type.add_field(Graphql::Schema::Field.new(
-      name: "name",
-      type: Graphql::Type::String.new
-    ))
-
-    Type.add_field(Graphql::Schema::Field.new(
-      name: "description",
-      type: Graphql::Type::String.new
-    ))
-    Type.add_field(Graphql::Schema::Field.new(
-      name: "fields",
-      arguments: [
-        Graphql::Schema::Argument.new(
-          name: "includeDeprecated",
-          type: Graphql::Type::Boolean.new,
-          default_value: false
-        )
-      ],
-      type: Graphql::Type::List.new(
-        of_type: Graphql::Type::NonNull.new(
-          of_type: Introspection::Field
-        )
-      )
-    ))
-    Type.add_field(Graphql::Schema::Field.new(
-      name: "interfaces", # interfaces: [__Type!]
-      type: Graphql::Type::List.new(
-        of_type: Graphql::Type::NonNull.new(
-          of_type: Introspection::Type
-        )
-      )
-    ))
-    Type.add_field(Graphql::Schema::Field.new(
-      name: "possibleTypes",
-      type: Graphql::Type::List.new(
-        of_type: Graphql::Type::NonNull.new(
-          of_type: Introspection::Type
-        )
-      )
-    ))
-    Type.add_field(Graphql::Schema::Field.new(
-      name: "enumValues",
-      type: Graphql::Type::List.new(
-        of_type: Graphql::Type::NonNull.new(
-          of_type: Introspection::EnumValue
-        )
-      )
-    ))
-    Type.add_field(Graphql::Schema::Field.new(
-      name: "inputFields",
-      type: Graphql::Type::List.new(
-        of_type: Graphql::Type::NonNull.new(
-          of_type: Introspection::InputValue
-        )
-      )
-    ))
-
-    Type.add_field(Graphql::Schema::Field.new(
-      name: "ofType",
-      type: Introspection::Type
-    ))
+    IntrospectionSystem.register_type("__Type", Type)
   end
 end

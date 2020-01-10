@@ -27,42 +27,41 @@ module Graphql
 
     Directive = Graphql::Type::Object.new(
       typename: "__Directive",
-      resolver: DirectiveResolver.new
+      resolver: DirectiveResolver.new,
+      fields: [
+        Graphql::Schema::Field.new(
+          name: "name",
+          type: Graphql::Type::NonNull.new(
+            of_type: Graphql::Type::String.new
+          )
+        ),
+        Graphql::Schema::Field.new(
+          name: "description",
+          type: Graphql::Type::String.new
+        ),
+        Graphql::Schema::Field.new(
+          name: "locations",
+          type: Graphql::Type::NonNull.new(
+            of_type: Graphql::Type::List.new(
+              of_type: Graphql::Type::NonNull.new(
+                of_type: DirectiveLocation
+              )
+            )
+          )
+        ),
+        Graphql::Schema::Field.new(
+          name: "args",
+          type: Graphql::Type::NonNull.new(
+            of_type: Graphql::Type::List.new(
+              of_type: Graphql::Type::NonNull.new(
+                of_type: Graphql::Type::LateBound.new("__InputValue")
+              )
+            )
+          )
+        )
+      ]
     )
 
-    Directive.add_field(Graphql::Schema::Field.new(
-      name: "name",
-      type: Graphql::Type::NonNull.new(
-        of_type: Graphql::Type::String.new
-      )
-    ))
-
-    Directive.add_field(Graphql::Schema::Field.new(
-      name: "description",
-      type: Graphql::Type::String.new
-    ))
-
-    Directive.add_field(Graphql::Schema::Field.new(
-      name: "locations",
-      type: Graphql::Type::NonNull.new(
-        of_type: Graphql::Type::List.new(
-          of_type: Graphql::Type::NonNull.new(
-            of_type: DirectiveLocation
-          )
-        )
-      )
-    ))
-
-    Directive.add_field(Graphql::Schema::Field.new(
-      name: "args",
-      type: Graphql::Type::NonNull.new(
-        of_type: Graphql::Type::List.new(
-          of_type: Graphql::Type::NonNull.new(
-            of_type: Introspection::InputValue
-          )
-        )
-      )
-    ))
-
+    IntrospectionSystem.register_type("__Directive", Directive)
   end
 end
