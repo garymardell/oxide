@@ -1,3 +1,12 @@
 language: crystal
+addons:
+  apt:
+    packages:
+    - cmake
+before_install:
+  - mkdir -p /usr/local/include/graphqlparser/c
+  - wget https://github.com/graphql/libgraphqlparser/archive/v0.5.0.tar.gz
+  - tar -xzvf v0.5.0.tar.gz
+  - pushd libgraphqlparser-0.5.0/ && cmake . && make && make install
 script:
   - crystal spec
