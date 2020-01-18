@@ -1,4 +1,4 @@
-require "../schema/resolver"
+require "../schema/resolvable"
 require "../schema/field"
 require "../type"
 
@@ -8,7 +8,7 @@ module Graphql
       getter fields : Array(Schema::Field)
       getter typename : ::String
 
-      def initialize(@typename : ::String, @resolver : Schema::Resolver, @fields = [] of Schema::Field)
+      def initialize(@typename : ::String, @resolver : Schema::Resolvable, @fields = [] of Schema::Field)
       end
 
       def add_field(field : Schema::Field)
