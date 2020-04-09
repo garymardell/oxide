@@ -3,3 +3,4 @@ module Graphql
 end
 
 require "./graphql/schema"
+require "./graphql/dsl"

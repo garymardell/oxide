@@ -1,8 +1,8 @@
-require "./input_value"
+require "./input_value_type"
 
 module Graphql
   module Introspection
-    DirectiveLocation = Graphql::Type::Enum.new(
+    DirectiveLocationType = Graphql::Type::Enum.new(
       values: [
         Graphql::Type::EnumValue.new(name: "QUERY"),
         Graphql::Type::EnumValue.new(name: "MUTATION"),
@@ -25,7 +25,7 @@ module Graphql
       ]
     )
 
-    Directive = Graphql::Type::Object.new(
+    DirectiveType = Graphql::Type::Object.new(
       typename: "__Directive",
       resolver: DirectiveResolver.new,
       fields: [
@@ -44,7 +44,7 @@ module Graphql
           type: Graphql::Type::NonNull.new(
             of_type: Graphql::Type::List.new(
               of_type: Graphql::Type::NonNull.new(
-                of_type: DirectiveLocation
+                of_type: DirectiveLocationType
               )
             )
           )
@@ -61,7 +61,5 @@ module Graphql
         )
       ]
     )
-
-    IntrospectionSystem.register_type("__Directive", Directive)
   end
 end

@@ -67,7 +67,7 @@ module Graphql
 
       private def get_field(object_type, field_name)
         if schema.query == object_type && field_name == "__schema"
-          Graphql::Schema::Field.new(name: "__schema", type: Graphql::Introspection::Schema)
+          Graphql::Schema::Field.new(name: "__schema", type: Graphql::Introspection::SchemaType)
         elsif field_name == "__typename"
           Graphql::Schema::Field.new(name: "__typename", type: Graphql::Type::String.new)
         else

@@ -1,8 +1,8 @@
-require "./type"
+require "./type_type"
 
 module Graphql
   module Introspection
-    InputValue = Graphql::Type::Object.new(
+    InputValueType = Graphql::Type::Object.new(
       typename: "__InputValue",
       resolver: InputValueResolver.new,
       fields: [
@@ -28,7 +28,5 @@ module Graphql
         )
       ]
     )
-
-    IntrospectionSystem.register_type("__InputValue", InputValue)
   end
 end

@@ -1,6 +1,8 @@
 module Graphql
   module Introspection
-    class SchemaResolver < Graphql::Schema::Resolver
+    class SchemaResolver
+      include Graphql::Schema::Resolvable
+
       def resolve(object, field_name, argument_values)
         case field_name
         when "types"

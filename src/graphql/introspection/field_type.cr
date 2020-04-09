@@ -1,8 +1,11 @@
+require "./type_type"
+require "./input_value_type"
+
 module Graphql
   module Introspection
-    EnumValue = Graphql::Type::Object.new(
-      typename: "__EnumValue",
-      resolver: EnumValueResolver.new,
+    FieldType = Graphql::Type::Object.new(
+      typename: "__Field",
+      resolver: FieldResolver.new,
       fields: [
         Graphql::Schema::Field.new(
           name: "name",
@@ -13,6 +16,22 @@ module Graphql
         Graphql::Schema::Field.new(
           name: "description",
           type: Graphql::Type::String.new
+        ),
+        Graphql::Schema::Field.new(
+          name: "args",
+          type: Graphql::Type::NonNull.new(
+            of_type: Graphql::Type::List.new(
+              of_type: Graphql::Type::NonNull.new(
+                of_type: Graphql::Type::LateBound.new("__InputValue")
+              )
+            )
+          )
+        ),
+        Graphql::Schema::Field.new(
+          name: "type",
+          type: Graphql::Type::NonNull.new(
+            of_type: Graphql::Type::LateBound.new("__Type")
+          )
         ),
         Graphql::Schema::Field.new(
           name: "isDeprecated",
@@ -26,7 +45,5 @@ module Graphql
         )
       ]
     )
-
-    IntrospectionSystem.register_type("__EnumValue", EnumValue)
   end
 end

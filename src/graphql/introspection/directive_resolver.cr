@@ -1,6 +1,8 @@
 module Graphql
   module Introspection
-    class DirectiveResolver < Graphql::Schema::Resolver
+    class DirectiveResolver
+      include Graphql::Schema::Resolvable
+
       def resolve(object, field_name, argument_values)
       end
     end

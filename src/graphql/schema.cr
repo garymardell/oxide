@@ -9,8 +9,11 @@ module Graphql
     getter mutation : Graphql::Type::Object | Nil
     getter types : Hash(String, Graphql::Type)
 
+    getter introspection : Graphql::IntrospectionSystem
+
     def initialize(@query = nil, @mutation = nil)
       @types = {} of String => Graphql::Type
+      @introspection = Graphql::IntrospectionSystem.new
     end
 
     def possible_types(type)

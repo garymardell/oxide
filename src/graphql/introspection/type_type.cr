@@ -1,10 +1,10 @@
-require "./field"
-require "./enum_value"
-require "./input_value"
+require "./field_type"
+require "./enum_value_type"
+require "./input_value_type"
 
 module Graphql
   module Introspection
-    TypeKind = Graphql::Type::Enum.new(
+    TypeKindType = Graphql::Type::Enum.new(
       values: [
         Graphql::Type::EnumValue.new(name: "SCALAR"),
         Graphql::Type::EnumValue.new(name: "OBJECT"),
@@ -17,13 +17,13 @@ module Graphql
       ]
     )
 
-    Type = Graphql::Type::Object.new(
+    TypeType = Graphql::Type::Object.new(
       typename: "__Type",
       resolver: TypeResolver.new,
       fields: [
         Graphql::Schema::Field.new(
           name: "kind",
-          type: Graphql::Type::NonNull.new(of_type: TypeKind)
+          type: Graphql::Type::NonNull.new(of_type: TypeKindType)
         ),
         Graphql::Schema::Field.new(
           name: "name",
@@ -68,7 +68,7 @@ module Graphql
           name: "enumValues",
           type: Graphql::Type::List.new(
             of_type: Graphql::Type::NonNull.new(
-              of_type: Introspection::EnumValue
+              of_type: Introspection::EnumValueType
             )
           )
         ),
@@ -86,7 +86,5 @@ module Graphql
         )
       ]
     )
-
-    IntrospectionSystem.register_type("__Type", Type)
   end
 end
