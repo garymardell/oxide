@@ -12,7 +12,7 @@ describe Graphql do
     QUERY
 
     runtime = Graphql::Execution::Runtime.new(
-      DummySchema.to_definition,
+      DummySchema,
       Graphql::Query.new(query_string)
     )
 
