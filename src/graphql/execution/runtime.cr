@@ -140,7 +140,7 @@ module Graphql
         when "__Schema", "__Type", "__InputValue", "__Directive", "__EnumValue"
           IntrospectionSystem.types[field_type.typename]
         else
-          schema.types[field_type.typename]
+          # schema.types[field_type.typename]
         end
 
         complete_value(unwrapped_type, fields, result)
