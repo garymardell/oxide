@@ -142,6 +142,9 @@ lib LibGraphqlParser
   fun GraphQLAstVariable_get_name(node : GraphQLAstNode) : GraphQLAstName
 
   fun GraphQLAstIntValue_get_value(node : GraphQLAstNode) : LibC::Char*
+  fun GraphQLAstFloatValue_get_value(node : GraphQLAstNode) : LibC::Char*
+  fun GraphQLAstBooleanValue_get_value(node : GraphQLAstNode) : Int32
+  fun GraphQLAstStringValue_get_value(node : GraphQLAstNode) : LibC::Char*
 
   fun GraphQLAstNamedType_get_name(node : GraphQLAstNode) : GraphQLAstName
 end

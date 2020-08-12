@@ -39,6 +39,10 @@ module Graphql
         puts {{callback}}
       end
 
+      macro extract_value(method, operator)
+        String.new(LibGraphqlParser.{{method.id}}(node)).{{operator.id}}
+      end
+
       def initialize
         @stack = Stack.new
         @callbacks = LibGraphqlParser::GraphQLAstVisitorCallbacks.new
@@ -211,11 +215,7 @@ module Graphql
           log_visit("visit_int_value")
 
           stack = data.as(Pointer(Stack)).value
-
-          int_value_string = String.new(LibGraphqlParser.GraphQLAstIntValue_get_value(node))
-
-          stack.push(Nodes::Value.new(int_value_string.to_i64))
-
+          stack.push(Nodes::Value.new(extract_value("GraphQLAstIntValue_get_value", "to_i64")))
           return 1
         }
 
@@ -225,6 +225,10 @@ module Graphql
 
         @callbacks.visit_float_value = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
           log_visit("visit_float_value")
+
+          stack = data.as(Pointer(Stack)).value
+          stack.push(Nodes::Value.new(extract_value("GraphQLAstFloatValue_get_value", "to_f64")))
+
           return 1
         }
 
@@ -234,6 +238,10 @@ module Graphql
 
         @callbacks.visit_string_value = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
           log_visit("visit_string_value")
+
+          stack = data.as(Pointer(Stack)).value
+          stack.push(Nodes::Value.new(extract_value("GraphQLAstStringValue_get_value", "to_s")))
+
           return 1
         }
 
@@ -243,6 +251,10 @@ module Graphql
 
         @callbacks.visit_boolean_value = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
           log_visit("visit_boolean_value")
+
+          stack = data.as(Pointer(Stack)).value
+          stack.push(Nodes::Value.new(!!LibGraphqlParser.GraphQLAstBooleanValue_get_value(node)))
+
           return 1
         }
 
@@ -252,6 +264,10 @@ module Graphql
 
         @callbacks.visit_null_value = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
           log_visit("visit_null_value")
+
+          stack = data.as(Pointer(Stack)).value
+          stack.push(Nodes::Value.new(nil))
+
           return 1
         }
 
