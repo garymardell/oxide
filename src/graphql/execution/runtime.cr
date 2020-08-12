@@ -31,28 +31,30 @@ module Graphql
           definitions.first
         end
 
+        coerced_variable_values = coerce_variable_values(schema, operation, @query.variables)
+
         case operation.operation_type
         when "query"
-          execute_query(operation, schema)
+          execute_query(operation, schema, coerced_variable_values)
         when "mutation"
-          execute_mutation(operation, schema)
+          execute_mutation(operation, schema, coerced_variable_values)
         end
       end
 
-      private def execute_query(query, schema)
+      private def execute_query(query, schema, coerced_variable_values)
         if query_type = schema.query
-          execute_selection_set(query.selections, query_type, nil)
+          execute_selection_set(query.selections, query_type, nil, coerced_variable_values)
         end
       end
 
-      private def execute_mutation(mutation, schema)
+      private def execute_mutation(mutation, schema, coerced_variable_values)
         if mutation_type = schema.mutation
-          execute_selection_set(mutation.selections, mutation_type, nil)
+          execute_selection_set(mutation.selections, mutation_type, nil, nil)
         end
       end
 
-      private def execute_selection_set(selection_set, object_type, object_value) # TODO: variable_values
-        grouped_field_set = collect_fields(object_type, selection_set, nil, nil)
+      private def execute_selection_set(selection_set, object_type, object_value, variable_values)
+        grouped_field_set = collect_fields(object_type, selection_set, variable_values, nil)
 
         grouped_field_set.each_with_object({} of String => ReturnType) do |(response_key, fields), memo|
           field_name = fields.first.name
@@ -60,7 +62,7 @@ module Graphql
           if field = get_field(object_type, field_name)
             field_type = field.type
 
-            memo[response_key] = execute_field(object_type, object_value, field.type, fields)
+            memo[response_key] = execute_field(object_type, object_value, field.type, fields, variable_values)
           end
         end
       end
@@ -75,11 +77,11 @@ module Graphql
         end
       end
 
-      private def execute_field(object_type, object_value, field_type, fields)
+      private def execute_field(object_type, object_value, field_type, fields, variable_values)
         field = fields.first
         field_name = field.name
 
-        argument_values = coerce_argument_values(object_type, field) # TODO: variable_values
+        argument_values = coerce_argument_values(object_type, field, variable_values)
 
         if field_name == "__typename"
           object_type.typename
@@ -96,7 +98,7 @@ module Graphql
 
         object_type = field_type
 
-        execute_selection_set(field.selections, object_type, result)
+        execute_selection_set(field.selections, object_type, result, nil)
       end
 
       private def complete_value(field_type : Graphql::Type::Scalar, fields, result : ReturnType)
@@ -152,11 +154,11 @@ module Graphql
 
       private def collect_fields(object_type, selection_set, variable_values, visited_fragments) # TODO: variable_values, visited_fragments
         grouped_fields = {} of String => Array(Graphql::Language::Nodes::Field)
-        visited_fragments = [] of String
+        visited_fragments ||= [] of String
 
         selection_set.each do |selection|
-          # TODO: @skip directive
-          # TODO: @include directive
+          # TODO: @skip directive, uses variable_values
+          # TODO: @include directive, uses variable_values
           case selection
           when Graphql::Language::Nodes::Field
             response_key = selection.name
@@ -179,7 +181,7 @@ module Graphql
             next unless does_fragment_type_apply(object_type, fragment_type)
 
             fragment_selection_set = fragment.selections
-            fragment_grouped_field_set = collect_fields(object_type, fragment_selection_set, nil, visited_fragments)
+            fragment_grouped_field_set = collect_fields(object_type, fragment_selection_set, variable_values, visited_fragments)
             fragment_grouped_field_set.each do |response_key, fields|
               grouped_fields[response_key] ||= [] of Graphql::Language::Nodes::Field
               grouped_fields[response_key].concat(fields)
@@ -191,9 +193,9 @@ module Graphql
         grouped_fields
       end
 
-      private def coerce_argument_values(object_type, field)
+      private def coerce_argument_values(object_type, field, variable_values)
         coerced_values = {} of String => ReturnType
-        argument_values = field.arguments.each_with_object({} of String => Graphql::Language::Nodes::Value) do |argument, memo|
+        argument_values = field.arguments.each_with_object({} of String => Graphql::Language::Nodes::ValueType) do |argument, memo|
           memo[argument.name] = argument.value
         end
 
@@ -208,12 +210,19 @@ module Graphql
 
             argument_value = argument_values.fetch(argument_name, nil)
 
-            is_variable = false # TODO: Implement argument variables
-            value = if is_variable
-              # Let variableName be the name of argumentValue.
-              # Let hasValue be true if variableValues provides a value for the name variableName.
-              # Let value be the value provided in variableValues for the name variableName.
-              nil
+            value = if argument_value.is_a?(Graphql::Language::Nodes::Variable)
+              variable = argument_value.as(Graphql::Language::Nodes::Variable)
+              variable_name = variable.name
+
+              unless variable_values.nil?
+                variable_value = variable_values.not_nil!.fetch(variable_name, nil)
+
+                has_value = !variable_value.nil?
+
+                variable_value
+              else
+                nil
+              end
             else
               argument_value
             end
@@ -225,17 +234,50 @@ module Graphql
             elsif has_value
               if value.nil?
                 coerced_values[argument_name] = nil
-              elsif false #  if argumentValue is a Variable
-                # Add an entry to coercedValues named argumentName with the value value.
+              elsif argument_value.is_a?(Graphql::Language::Nodes::Variable)
+                coerced_values[argument_name] = value.as(ReturnType)
               else
                 # If value cannot be coerced according to the input coercion rules of variableType, throw a field error.
-                coerced_values[argument_name] = value.as(ReturnType)
+                coerced_value = value.as(ReturnType)
+                coerced_values[argument_name] = coerced_value
               end
             end
           end
         end
 
         coerced_values
+      end
+
+      private def coerce_variable_values(schema, operation, variable_values)
+        coerced_variables = {} of String => JSON::Any::Type # TODO: Type may change
+
+        variable_definitions = operation.variable_definitions
+        variable_definitions.each do |variable_definition|
+          variable_name = variable_definition.variable.name
+          variable_type = variable_definition.type # TODO: Nodes::Type for now
+
+          # TODO: Assert IsInputType
+
+          default_value = variable_definition.default_value
+
+          has_value = variable_values.has_key?(variable_name)
+          value = variable_values.fetch(variable_name, nil)
+
+          if !has_value && !variable_definition.default_value.nil?
+            coerced_variables[variable_name] = variable_definition.default_value.not_nil!.value.as(JSON::Any::Type)
+          elsif variable_type.is_a?(Graphql::Language::Nodes::NonNullType) && (has_value || value.nil?)
+            raise "Variable is marked as non null but received a null value"
+          elsif has_value
+            if value.nil?
+              coerced_variables[variable_name] = nil.as(JSON::Any::Type)
+            else
+              # TODO: Coerce value based on rules of variable type
+              coerced_variables[variable_name] = value.as(JSON::Any::Type)
+            end
+          end
+        end
+
+        coerced_variables
       end
 
       private def does_fragment_type_apply(object_type, fragment_type) # TODO: Proper handling of fragment type

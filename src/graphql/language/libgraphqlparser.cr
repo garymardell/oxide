@@ -5,7 +5,7 @@ lib LibGraphqlParser
   type GraphQLAstField = Void*
   type GraphQLAstName = Void*
 
-  struct GraphQLAstLocation 
+  struct GraphQLAstLocation
     beginLine : Int32
     beginColumn : Int32
     endLine : Int32
@@ -84,7 +84,7 @@ lib LibGraphqlParser
 
     visit_name : (GraphQLAstNode, Void* -> Int32)
     end_visit_name : (GraphQLAstNode, Void* ->)
-    
+
     visit_schema_definition : (GraphQLAstNode, Void* -> Int32)
     end_visit_schema_definition : (GraphQLAstNode, Void* ->)
 
@@ -129,7 +129,7 @@ lib LibGraphqlParser
   fun error_free = graphql_error_free(error : LibC::Char*)
 
   fun node_visit = graphql_node_visit(node : GraphQLAstNode, callbacks : GraphQLAstVisitorCallbacks*, userData : Void*)
-  
+
   fun node_get_location = graphql_node_get_location(node : GraphQLAstNode*, location : GraphQLAstLocation*)
   fun node_free = graphql_node_free(node : GraphQLAstNode*)
 
@@ -137,4 +137,9 @@ lib LibGraphqlParser
   fun GraphQLAstOperationDefinition_get_operation(node : GraphQLAstNode) : LibC::Char*
   fun GraphQLAstField_get_name(node : GraphQLAstField) : GraphQLAstName
   fun GraphQLAstName_get_value(node : GraphQLAstName) : LibC::Char*
+
+  fun GraphQLAstArgument_get_name(node : GraphQLAstNode) : GraphQLAstName
+  fun GraphQLAstVariable_get_name(node : GraphQLAstNode) : GraphQLAstName
+
+  fun GraphQLAstIntValue_get_value(node : GraphQLAstNode) : LibC::Char*
 end

@@ -20,6 +20,56 @@ describe Graphql do
     result.should eq({ "charges" => [{ "id" => "1" }, { "id" => "2" }] })
   end
 
+  it "supports arguments", focus: false do
+    query_string = <<-QUERY
+      query($id: ID!) {
+        charge(id: $id) {
+          id
+        }
+      }
+    QUERY
+
+    variables = {
+      "id" => "10".as(JSON::Any::Type)
+    }
+
+    runtime = Graphql::Execution::Runtime.new(
+      DummySchema,
+      Graphql::Query.new(
+        query_string,
+        variables
+      )
+    )
+
+    result = runtime.execute
+
+    result.should eq({ "charge" => { "id" => "10" } })
+  end
+
+  it "supports arguments with default values", focus: false do
+    query_string = <<-QUERY
+      query($id: ID! = 1) {
+        charge(id: $id) {
+          id
+        }
+      }
+    QUERY
+
+    variables = {} of String => JSON::Any::Type
+
+    runtime = Graphql::Execution::Runtime.new(
+      DummySchema,
+      Graphql::Query.new(
+        query_string,
+        variables
+      )
+    )
+
+    result = runtime.execute
+
+    result.should eq({ "charge" => { "id" => "1" } })
+  end
+
   it "supports dynamically generated schema" do
     fields = [
       "foo",
