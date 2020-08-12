@@ -98,8 +98,10 @@ module Graphql
             nil
           end
 
+          type = stack.pop.as(Nodes::Type)
+
           variable = stack.pop.as(Nodes::Variable)
-          variable_definition = Nodes::VariableDefinition.new(variable, Nodes::Type.new, default_value)
+          variable_definition = Nodes::VariableDefinition.new(variable, type, default_value)
 
           stack.peek.as(Nodes::OperationDefinition).variable_definitions << variable_definition
         }
@@ -304,6 +306,14 @@ module Graphql
 
         @callbacks.visit_named_type = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
           log_visit("visit_named_type")
+
+          stack = data.as(Pointer(Stack)).value
+
+          named_type_name = LibGraphqlParser.GraphQLAstNamedType_get_name(node)
+          named_type_name_value = LibGraphqlParser.GraphQLAstName_get_value(named_type_name)
+
+          stack.push(Nodes::NamedType.new(String.new(named_type_name_value)))
+
           return 1
         }
 
@@ -327,6 +337,13 @@ module Graphql
 
         @callbacks.end_visit_non_null_type = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
           log_visit("end_visit_non_null_type")
+
+          # Pick up either the list type or named type
+          stack = data.as(Pointer(Stack)).value
+
+          type = stack.pop.as(Nodes::Type)
+
+          stack.push(Nodes::NonNullType.new(type))
         }
 
         @callbacks.visit_name = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {

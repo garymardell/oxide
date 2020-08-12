@@ -265,7 +265,7 @@ module Graphql
 
           if !has_value && !variable_definition.default_value.nil?
             coerced_variables[variable_name] = variable_definition.default_value.not_nil!.value.as(JSON::Any::Type)
-          elsif variable_type.is_a?(Graphql::Language::Nodes::NonNullType) && (has_value || value.nil?)
+          elsif variable_type.is_a?(Graphql::Language::Nodes::NonNullType) && (!has_value || value.nil?)
             raise "Variable is marked as non null but received a null value"
           elsif has_value
             if value.nil?
