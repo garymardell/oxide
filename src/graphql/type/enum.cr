@@ -7,6 +7,16 @@ module Graphql
 
       def initialize(@values : Array(EnumValue))
       end
+
+      def coerce(value)
+        enum_value = values.find { |ev| ev.value == value.to_s }
+
+        if enum_value
+          enum_value.value
+        else
+          raise "Value could be coerced into enum"
+        end
+      end
     end
 
     class EnumValue

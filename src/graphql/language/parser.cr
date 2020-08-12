@@ -36,7 +36,7 @@ module Graphql
       private property callbacks : LibGraphqlParser::GraphQLAstVisitorCallbacks
 
       macro log_visit(callback)
-        puts {{callback}}
+        # puts {{callback}}
       end
 
       macro extract_value(method, operator)

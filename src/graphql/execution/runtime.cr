@@ -254,10 +254,10 @@ module Graphql
         variable_definitions = operation.variable_definitions
         variable_definitions.each do |variable_definition|
           variable_name = variable_definition.variable.name
-          variable_type = variable_definition.type # TODO: Nodes::Type for now
+
+          variable_type = @schema.get_type_from_ast(variable_definition.type)
 
           # TODO: Assert IsInputType
-
           default_value = variable_definition.default_value
 
           has_value = variable_values.has_key?(variable_name)
@@ -271,8 +271,14 @@ module Graphql
             if value.nil?
               coerced_variables[variable_name] = nil.as(JSON::Any::Type)
             else
-              # TODO: Coerce value based on rules of variable type
-              coerced_variables[variable_name] = value.as(JSON::Any::Type)
+              # TODO: Support coercion for all types
+              coerced_value = if variable_type.responds_to?(:coerce)
+                variable_type.coerce(value)
+              else
+                value
+              end
+
+              coerced_variables[variable_name] = coerced_value.as(JSON::Any::Type)
             end
           end
         end

@@ -88,9 +88,9 @@ module Graphql
       end
 
       class ListType < Type
-        property types : Array(Type)
+        property of_type : NamedType | ListType
 
-        def initialize(@types = [] of Type)
+        def initialize(@of_type)
         end
       end
 
