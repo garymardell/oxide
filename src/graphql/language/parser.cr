@@ -29,14 +29,17 @@ module Graphql
       end
     end
 
-
-
     class Parser
       private property stack : Stack
       private property callbacks : LibGraphqlParser::GraphQLAstVisitorCallbacks
 
       macro log_visit(callback)
         # puts {{callback}}
+      end
+
+      macro log_visit(callback, name)
+        # puts {{callback}}
+        # puts {{name}}
       end
 
       macro extract_value(method, operator)
@@ -57,11 +60,12 @@ module Graphql
 
         @callbacks.end_visit_document = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
           log_visit("end_visit_document")
+
+          stack = data.as(Pointer(Stack)).value
         }
 
         @callbacks.visit_operation_definition = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
           log_visit("visit_operation_definition")
-          stack = data.as(Pointer(Stack)).value
 
           operation = LibGraphqlParser.GraphQLAstOperationDefinition_get_operation(node)
 
@@ -71,10 +75,9 @@ module Graphql
             "query"
           end
 
-          operation_definition = Nodes::OperationDefinition.new(operation_type) # Remove hard coded query type
+          stack = data.as(Pointer(Stack)).value
+          stack.push(Nodes::OperationDefinition.new(operation_type))
 
-          stack.peek.as(Nodes::Document).definitions << operation_definition
-          stack.push(operation_definition)
           return 1
         }
 
@@ -82,11 +85,17 @@ module Graphql
           log_visit("end_visit_operation_definition")
 
           stack = data.as(Pointer(Stack)).value
-          stack.pop
+
+          operation_definition = stack.pop.as(Nodes::OperationDefinition)
+
+          stack.peek.as(Nodes::Document).definitions << operation_definition
         }
 
         @callbacks.visit_variable_definition = -> (node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
           log_visit("visit_variable_definition")
+
+          stack = data.as(Pointer(Stack)).value
+          stack.push(Nodes::VariableDefinition.new)
 
           return 1
         }
@@ -102,43 +111,55 @@ module Graphql
             nil
           end
 
-          type = stack.pop.as(Nodes::Type)
-
-          variable = stack.pop.as(Nodes::Variable)
-          variable_definition = Nodes::VariableDefinition.new(variable, type, default_value)
+          variable_definition = stack.pop.as(Nodes::VariableDefinition)
+          variable_definition.default_value = default_value
 
           stack.peek.as(Nodes::OperationDefinition).variable_definitions << variable_definition
+
         }
 
         @callbacks.visit_selection_set = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
           log_visit("visit_selection_set")
+
+          stack = data.as(Pointer(Stack)).value
+          stack.push(Nodes::SelectionSet.new)
+
           return 1
         }
 
         @callbacks.end_visit_selection_set = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
           log_visit("end_visit_selection_set")
-        }
-
-        @callbacks.visit_field = ->(field : LibGraphqlParser::GraphQLAstField, data : Pointer(Void)) {
-          log_visit("visit_field")
 
           stack = data.as(Pointer(Stack)).value
 
-          field_name = LibGraphqlParser.GraphQLAstField_get_name(field)
-          field_name_value = LibGraphqlParser.GraphQLAstName_get_value(field_name)
+          selections = [] of Nodes::Selection
 
-
-          field = Nodes::Field.new(String.new(field_name_value))
-
-          peek_node = stack.peek
-          case peek_node
-          when Nodes::OperationDefinition, Nodes::Field
-            peek_node.selections << field
-          else
-            pp peek_node
+          while stack.peek.is_a?(Nodes::Field) || stack.peek.is_a?(Nodes::FragmentSpread)
+            selections << stack.pop
           end
 
-          stack.push(field)
+          selection_set = stack.pop.as(Nodes::SelectionSet)
+
+          case stack.peek
+          when Nodes::OperationDefinition
+            stack.peek.as(Nodes::OperationDefinition).selection_set = selection_set
+          when Nodes::Field
+            stack.peek.as(Nodes::Field).selection_set = selection_set
+          when Nodes::FragmentDefinition
+            stack.peek.as(Nodes::FragmentDefinition).selection_set = selection_set
+          else
+            pp stack.peek
+          end
+        }
+
+        @callbacks.visit_field = ->(node : LibGraphqlParser::GraphQLAstField, data : Pointer(Void)) {
+          log_visit("visit_field")
+
+          field_name = LibGraphqlParser.GraphQLAstField_get_name(node)
+          field_name_value = String.new(LibGraphqlParser.GraphQLAstName_get_value(field_name))
+
+          stack = data.as(Pointer(Stack)).value
+          stack.push(Nodes::Field.new(field_name_value))
 
           return 1
         }
@@ -147,11 +168,24 @@ module Graphql
           log_visit("end_visit_field")
 
           stack = data.as(Pointer(Stack)).value
-          stack.pop
+
+          field_name = LibGraphqlParser.GraphQLAstField_get_name(node)
+          field_name_value = String.new(LibGraphqlParser.GraphQLAstName_get_value(field_name))
+
+          field = stack.pop.as(Nodes::Field)
+
+          stack.peek.as(Nodes::SelectionSet).selections << field
         }
 
         @callbacks.visit_argument = -> (node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
           log_visit("visit_argument")
+
+          argument_name = LibGraphqlParser.GraphQLAstArgument_get_name(node)
+          argument_name_value = String.new(LibGraphqlParser.GraphQLAstName_get_value(argument_name))
+
+          stack = data.as(Pointer(Stack)).value
+          stack.push(Nodes::Argument.new(argument_name_value))
+
           return 1
         }
 
@@ -159,21 +193,46 @@ module Graphql
           log_visit("end_visit_argument")
 
           stack = data.as(Pointer(Stack)).value
-          variable = stack.pop.as(Nodes::Variable)
 
-          argument_name = LibGraphqlParser.GraphQLAstArgument_get_name(node)
-          argument_name_value = LibGraphqlParser.GraphQLAstName_get_value(argument_name)
+          # TODO: Value could be anything
+          value = stack.pop.as(Nodes::ValueType)
 
-          stack.peek.as(Nodes::Field).arguments << Nodes::Argument.new(String.new(argument_name_value), variable)
+          argument = stack.pop.as(Nodes::Argument)
+          argument.value = value
+
+          case stack.peek
+          when Nodes::Field
+            stack.peek.as(Nodes::Field).arguments << argument
+          else
+            pp "Not a field"
+          end
         }
 
         @callbacks.visit_fragment_spread = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
           log_visit("visit_fragment_spread")
+
+          stack = data.as(Pointer(Stack)).value
+
+          fragment_spread_name = LibGraphqlParser.GraphQLAstFragmentSpread_get_name(node)
+          fragment_spread_name_value = String.new(LibGraphqlParser.GraphQLAstName_get_value(fragment_spread_name))
+
+          # Directives?
+
+          fragment_spread = Nodes::FragmentSpread.new(fragment_spread_name_value)
+
+          stack.push(fragment_spread)
+
           return 1
         }
 
         @callbacks.end_visit_fragment_spread = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
           log_visit("end_visit_fragment_spread")
+
+          stack = data.as(Pointer(Stack)).value
+
+          fragment_spread = stack.pop.as(Nodes::FragmentSpread)
+
+          stack.peek.as(Nodes::SelectionSet).selections << fragment_spread
         }
 
         @callbacks.visit_inline_fragment = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
@@ -187,11 +246,25 @@ module Graphql
 
         @callbacks.visit_fragment_definition = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
           log_visit("visit_fragment_definition")
+
+          stack = data.as(Pointer(Stack)).value
+
+          fragment_name = LibGraphqlParser.GraphQLAstFragmentDefinition_get_name(node)
+          fragment_name_value = String.new(LibGraphqlParser.GraphQLAstName_get_value(fragment_name))
+
+          stack.push(Nodes::FragmentDefinition.new(fragment_name_value))
+
           return 1
         }
 
         @callbacks.end_visit_fragment_definition = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
           log_visit("end_visit_fragment_definition")
+
+          stack = data.as(Pointer(Stack)).value
+
+          fragment_definition = stack.pop.as(Nodes::FragmentDefinition)
+
+          stack.peek.as(Nodes::Document).definitions << fragment_definition
         }
 
         @callbacks.visit_variable = -> (node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
@@ -200,15 +273,27 @@ module Graphql
           stack = data.as(Pointer(Stack)).value
 
           variable_name = LibGraphqlParser.GraphQLAstVariable_get_name(node)
-          variable_name_value = LibGraphqlParser.GraphQLAstName_get_value(variable_name)
+          variable_name_value = String.new(LibGraphqlParser.GraphQLAstName_get_value(variable_name))
 
-          stack.push(Nodes::Variable.new(String.new(variable_name_value)))
+          stack.push(Nodes::Variable.new(variable_name_value))
 
           return 1
         }
 
         @callbacks.end_visit_variable = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
           log_visit("end_visit_variable")
+
+          stack = data.as(Pointer(Stack)).value
+
+          variable = stack.pop.as(Nodes::Variable)
+
+          case stack.peek
+          when Nodes::VariableDefinition
+            stack.peek.as(Nodes::VariableDefinition).variable = variable
+          when Nodes::Argument
+            # stack.peek.as(Nodes::Argument).value = variable
+            stack.push(variable) # TODO: Values are left on the stack for now
+          end
         }
 
         @callbacks.visit_int_value = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
@@ -335,6 +420,18 @@ module Graphql
 
         @callbacks.end_visit_named_type = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
           log_visit("end_visit_named_type")
+
+          stack = data.as(Pointer(Stack)).value
+          named_type = stack.pop.as(Nodes::NamedType)
+
+          case stack.peek
+          when Nodes::FragmentDefinition
+            stack.peek.as(Nodes::FragmentDefinition).type_condition = named_type
+          when Nodes::VariableDefinition
+            stack.peek.as(Nodes::VariableDefinition).type = named_type
+          when Nodes::NonNullType
+            stack.peek.as(Nodes::NonNullType).of_type = named_type
+          end
         }
 
         @callbacks.visit_list_type = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
@@ -348,6 +445,10 @@ module Graphql
 
         @callbacks.visit_non_null_type = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
           log_visit("visit_non_null_type")
+
+          stack = data.as(Pointer(Stack)).value
+          stack.push(Nodes::NonNullType.new)
+
           return 1
         }
 
@@ -357,9 +458,14 @@ module Graphql
           # Pick up either the list type or named type
           stack = data.as(Pointer(Stack)).value
 
-          type = stack.pop.as(Nodes::Type)
+          type = stack.pop.as(Nodes::NonNullType)
 
-          stack.push(Nodes::NonNullType.new(type))
+          case stack.peek
+          when Nodes::VariableDefinition
+            stack.peek.as(Nodes::VariableDefinition).type = type
+          end
+
+          # stack.push(Nodes::NonNullType.new(type))
         }
 
         @callbacks.visit_name = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {

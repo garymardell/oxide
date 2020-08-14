@@ -18,19 +18,26 @@ module Graphql
 
       class OperationDefinition < Node
         property operation_type : String
-        property selections : Array(Selection)
+        property selection_set : SelectionSet?
         property variable_definitions : Array(VariableDefinition)
 
-        def initialize(@operation_type, @selections = [] of Selection, @variable_definitions = [] of VariableDefinition)
+        def initialize(@operation_type, @selection_set = nil, @variable_definitions = [] of VariableDefinition)
+        end
+      end
+
+      class SelectionSet < Node
+        property selections : Array(Selection)
+
+        def initialize(@selections = [] of Selection)
         end
       end
 
       class FragmentDefinition < Node
         property name : String
-        property type_condition : String | Nil
-        property selections : Array(Selection)
+        property type_condition : NamedType?
+        property selection_set : SelectionSet?
 
-        def initialize(@name, @type_condition = nil, @selections = [] of Selection)
+        def initialize(@name, @type_condition = nil, @selection_set = nil)
         end
       end
 
@@ -44,28 +51,28 @@ module Graphql
       class Field < Node
         property name : String
         property arguments : Array(Argument)
-        property selections : Array(Selection)
+        property selection_set : SelectionSet?
 
-        def initialize(@name, @arguments = [] of Argument, @selections = [] of Selection)
+        def initialize(@name, @arguments = [] of Argument, @selection_set = nil)
         end
       end
 
       class Argument < Node
         property name : String
-        property value : ValueType
+        property value : ValueType?
 
-        def initialize(@name, @value)
+        def initialize(@name, @value = nil)
         end
       end
 
       class VariableDefinition < Node
-        property variable : Variable
+        property variable : Variable?
         #  property type : # TODO:  NamedType, ListType, NonNullType
-        property type : Type
+        property type : Type?
         property default_value : Value? # TODO: Support default value
         # getter? has_default_value : Bool
 
-        def initialize(@variable, @type, @default_value = nil)
+        def initialize(@variable = nil, @type = nil, @default_value = nil)
         end
       end
 
@@ -95,9 +102,9 @@ module Graphql
       end
 
       class NonNullType < Type
-        property of_type : NamedType | ListType
+        property of_type : NamedType | ListType | Nil
 
-        def initialize(@of_type)
+        def initialize(@of_type = nil)
         end
       end
 

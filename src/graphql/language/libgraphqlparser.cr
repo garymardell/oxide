@@ -135,6 +135,8 @@ lib LibGraphqlParser
 
   fun GraphQLAstOperationDefinition_get_name(node : GraphQLAstNode) : GraphQLAstName
   fun GraphQLAstOperationDefinition_get_operation(node : GraphQLAstNode) : LibC::Char*
+  fun GraphQLAstFragmentDefinition_get_name(node : GraphQLAstNode) : GraphQLAstName
+  fun GraphQLAstFragmentSpread_get_name(node : GraphQLAstNode) : GraphQLAstName
   fun GraphQLAstField_get_name(node : GraphQLAstField) : GraphQLAstName
   fun GraphQLAstName_get_value(node : GraphQLAstName) : LibC::Char*
 

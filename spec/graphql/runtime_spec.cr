@@ -20,6 +20,29 @@ describe Graphql do
     result.should eq({ "charges" => [{ "id" => "1" }, { "id" => "2" }] })
   end
 
+  it "supports fragment spread and variables", focus: false do
+    query_string = <<-QUERY
+      fragment ChargeInfo on Charge {
+        id
+      }
+
+      query($id: ID! = 1) {
+        charge(id: $id) {
+          ...ChargeInfo
+        }
+      }
+    QUERY
+
+    runtime = Graphql::Execution::Runtime.new(
+      DummySchema,
+      Graphql::Query.new(query_string)
+    )
+
+    result = runtime.execute
+
+    result.should eq({ "charge" => { "id" => "1" } })
+  end
+
   it "supports arguments", focus: false do
     query_string = <<-QUERY
       query($id: ID!) {
