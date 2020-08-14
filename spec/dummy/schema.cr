@@ -2,14 +2,36 @@ require "../../src/graphql"
 require "./models/*"
 require "./resolvers/*"
 
-ChargeType = Graphql::Type::Object.new(
-  typename: "Charge",
-  resolver: ChargeResolver.new,
+class TransactionTypeResolver < Graphql::Schema::TypeResolver
+  def resolve_type(object : Charge)
+    ChargeType
+  end
+
+  def resolve_type(object : Refund)
+    RefundType
+  end
+end
+
+TransactionInterface = Graphql::Type::Interface.new(
+  name: "Transaction",
+  type_resolver: TransactionTypeResolver.new,
   fields: [
     Graphql::Schema::Field.new(
       name: "id",
       type: Graphql::Type::Id.new
     ),
+    Graphql::Schema::Field.new(
+      name: "reference",
+      type: Graphql::Type::String.new
+    )
+  ]
+)
+
+ChargeType = Graphql::Type::Object.new(
+  typename: "Charge",
+  resolver: ChargeResolver.new,
+  implements: [TransactionInterface],
+  fields: [
     Graphql::Schema::Field.new(
       name: "status",
       type: Graphql::Type::Enum.new(
@@ -25,11 +47,8 @@ ChargeType = Graphql::Type::Object.new(
 RefundType = Graphql::Type::Object.new(
   typename: "Refund",
   resolver: RefundResolver.new,
+  implements: [TransactionInterface],
   fields: [
-    Graphql::Schema::Field.new(
-      name: "id",
-      type: Graphql::Type::Id.new
-    ),
     Graphql::Schema::Field.new(
       name: "status",
       type: Graphql::Type::Enum.new(
@@ -43,25 +62,6 @@ RefundType = Graphql::Type::Object.new(
       name: "partial",
       type: Graphql::Type::Boolean.new
     )
-  ]
-)
-
-class TransactionTypeResolver < Graphql::Schema::TypeResolver
-  def resolve_type(object : Charge)
-    ChargeType
-  end
-
-  def resolve_type(object : Refund)
-    RefundType
-  end
-end
-
-TransactionType = Graphql::Type::Union.new(
-  typename: "Transaction",
-  type_resolver: TransactionTypeResolver.new,
-  possible_types: [
-    ChargeType.as(Graphql::Type),
-    RefundType.as(Graphql::Type)
   ]
 )
 

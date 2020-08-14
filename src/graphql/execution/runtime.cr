@@ -110,6 +110,13 @@ module Graphql
         execute_selection_set(sub_selection_set, object_type, result, variable_values)
       end
 
+      private def complete_value(field_type : Graphql::Type::Interface, fields, result, variable_values)
+        object_type = resolve_abstract_type(field_type, result)
+
+        sub_selection_set = merge_selection_sets(fields)
+
+        execute_selection_set(sub_selection_set, object_type, result, variable_values)
+      end
 
       private def complete_value(field_type : Graphql::Type::Scalar, fields, result : ReturnType, variable_values)
         field_type.coerce(result).as(ReturnType)
