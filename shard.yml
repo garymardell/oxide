@@ -1,4 +1,4 @@
-name: graphql.cr
+name: graphql
 version: 0.1.0
 
 authors:
@@ -12,7 +12,3 @@ dependencies:
     branch: master
 
 license: MIT
-
-targets:
-  graphql.cr:
-    main: src/graphql.cr
