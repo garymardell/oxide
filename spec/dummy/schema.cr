@@ -65,6 +65,55 @@ TransactionType = Graphql::Type::Union.new(
   ]
 )
 
+CreditCardType = Graphql::Type::Object.new(
+  typename: "CreditCard",
+  resolver: CreditCardResolver.new,
+  fields: [
+    Graphql::Schema::Field.new(
+      name: "id",
+      type: Graphql::Type::Id.new
+    ),
+    Graphql::Schema::Field.new(
+      name: "last4",
+      type: Graphql::Type::String.new
+    )
+  ]
+)
+
+BankAccountType = Graphql::Type::Object.new(
+  typename: "BankAccount",
+  resolver: BankAccountResolver.new,
+  fields: [
+    Graphql::Schema::Field.new(
+      name: "id",
+      type: Graphql::Type::Id.new
+    ),
+    Graphql::Schema::Field.new(
+      name: "accountNumber",
+      type: Graphql::Type::String.new
+    )
+  ]
+)
+
+class PaymentMethodTypeResolver < Graphql::Schema::TypeResolver
+  def resolve_type(object : CreditCard)
+    CreditCardType
+  end
+
+  def resolve_type(object : BankAccount)
+    BankAccountType
+  end
+end
+
+PaymentMethodType = Graphql::Type::Union.new(
+  typename: "PaymentMethod",
+  type_resolver: PaymentMethodTypeResolver.new,
+  possible_types: [
+    CreditCardType.as(Graphql::Type),
+    BankAccountType.as(Graphql::Type)
+  ]
+)
+
 DummySchema = Graphql::Schema.new(
   query: Graphql::Type::Object.new(
     typename: "Query",
@@ -87,9 +136,9 @@ DummySchema = Graphql::Schema.new(
         )
       ),
       Graphql::Schema::Field.new(
-        name: "transactions",
+        name: "paymentMethods",
         type: Graphql::Type::NonNull.new(
-          of_type: Graphql::Type::List.new(of_type: TransactionType)
+          of_type: Graphql::Type::List.new(of_type: PaymentMethodType)
         )
       )
     ]

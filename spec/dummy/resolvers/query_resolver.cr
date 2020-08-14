@@ -14,6 +14,11 @@ class QueryResolver < Graphql::Schema::Resolver
         Charge.new(id: 1, status: "paid"),
         Refund.new(id: 32, status: "refunded", partial: true)
       ]
+    when "paymentMethods"
+      [
+        CreditCard.new(id: 1, last4: "4242"),
+        BankAccount.new(id: 32, account_number: "1234567")
+      ]
     end
   end
 end

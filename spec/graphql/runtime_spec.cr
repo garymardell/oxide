@@ -23,12 +23,15 @@ describe Graphql do
   it "supports unions", focus: false do
     query_string = <<-QUERY
       query {
-        transactions {
+        paymentMethods {
           id
-          status
 
-          ... on Refund {
-            partial
+          ... on CreditCard {
+            last4
+          }
+
+          ... on BankAccount {
+            accountNumber
           }
         }
       }
@@ -41,7 +44,12 @@ describe Graphql do
 
     result = runtime.execute
 
-    result.should eq({ "transactions" => [{ "id" => "1", "status" => "PAID" }, { "id" => "32", "status" => "REFUNDED", "partial" => true }] })
+    result.should eq({
+      "paymentMethods" => [
+        { "id" => "1", "last4" => "4242" },
+        { "id" => "32", "accountNumber" => "1234567" }
+      ]
+    })
   end
 
   it "supports fragment spread and variables", focus: false do
