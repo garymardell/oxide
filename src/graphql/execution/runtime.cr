@@ -101,6 +101,16 @@ module Graphql
         execute_selection_set(sub_selection_set, object_type, result, variable_values)
       end
 
+      # TODO: Merge into object above?
+      private def complete_value(field_type : Graphql::Type::Union, fields, result, variable_values)
+        object_type = resolve_abstract_type(field_type, result)
+
+        sub_selection_set = merge_selection_sets(fields)
+
+        execute_selection_set(sub_selection_set, object_type, result, variable_values)
+      end
+
+
       private def complete_value(field_type : Graphql::Type::Scalar, fields, result : ReturnType, variable_values)
         field_type.coerce(result).as(ReturnType)
       end
@@ -186,8 +196,18 @@ module Graphql
               grouped_fields[response_key] ||= [] of Graphql::Language::Nodes::Field
               grouped_fields[response_key].concat(fields)
             end
+          when Graphql::Language::Nodes::InlineFragment
+            fragment_type = schema.get_type_from_ast(selection.type_condition)
+
+            next if !fragment_type.nil? && !does_fragment_type_apply(object_type, fragment_type)
+
+            fragment_selection_set = selection.selection_set.not_nil!.selections
+            fragment_grouped_field_set = collect_fields(object_type, fragment_selection_set, variable_values, visited_fragments)
+            fragment_grouped_field_set.each do |response_key, fields|
+              grouped_fields[response_key] ||= [] of Graphql::Language::Nodes::Field
+              grouped_fields[response_key].concat(fields)
+            end
           end
-          # TODO: inline fragment
         end
 
         grouped_fields
@@ -303,10 +323,16 @@ module Graphql
         case fragment_type
         when Graphql::Type::Object
           object_type.typename == fragment_type.typename
+        when Graphql::Type::Union
+          fragment_type.possible_types.includes?(object_type)
         else
-          # TODO: Handle interface type and union
-          false
+          # TODO: Handle interface type
+          raise "Handle interface"
         end
+      end
+
+      private def resolve_abstract_type(field_type, result)
+        field_type.type_resolver.resolve_type(result)
       end
     end
   end

@@ -9,6 +9,11 @@ class QueryResolver < Graphql::Schema::Resolver
         Charge.new(id: 1, status: "paid"),
         Charge.new(id: 2, status: "pending")
       ]
+    when "transactions"
+      [
+        Charge.new(id: 1, status: "paid"),
+        Refund.new(id: 32, status: "refunded", partial: true)
+      ]
     end
   end
 end

@@ -2,6 +2,10 @@
 
 ## TODO
 
+- [ ] Support all value types
+- [x] Unions
+- [ ] Interfaces
+- [x] Inline fragments
 - [ ] Directives (@skip, @include)
 - [x] Variables
 - [ ] Late bound types
@@ -9,4 +13,3 @@
 - [ ] Introspection
 - [ ] Error handling
 - [ ] Mutations
-- [ ] DSL

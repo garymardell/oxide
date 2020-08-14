@@ -34,6 +34,13 @@ module Graphql
         end
       end
 
+      def visit(type : Graphql::Type::Union)
+        type.possible_types.each do |possible_type|
+          # pp possible_type
+          possible_type.accept(self)
+        end
+      end
+
       def visit(type : Graphql::Type::NonNull)
         type.of_type.accept(self)
       end

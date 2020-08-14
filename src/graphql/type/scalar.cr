@@ -76,6 +76,8 @@ module Graphql
       end
 
       def coerce(value)
+        return value if value.nil?
+
         !!value
       end
     end

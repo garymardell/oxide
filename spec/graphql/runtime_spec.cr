@@ -20,6 +20,30 @@ describe Graphql do
     result.should eq({ "charges" => [{ "id" => "1" }, { "id" => "2" }] })
   end
 
+  it "supports unions", focus: false do
+    query_string = <<-QUERY
+      query {
+        transactions {
+          id
+          status
+
+          ... on Refund {
+            partial
+          }
+        }
+      }
+    QUERY
+
+    runtime = Graphql::Execution::Runtime.new(
+      DummySchema,
+      Graphql::Query.new(query_string)
+    )
+
+    result = runtime.execute
+
+    result.should eq({ "transactions" => [{ "id" => "1", "status" => "PAID" }, { "id" => "32", "status" => "REFUNDED", "partial" => true }] })
+  end
+
   it "supports fragment spread and variables", focus: false do
     query_string = <<-QUERY
       fragment ChargeInfo on Charge {

@@ -147,6 +147,8 @@ module Graphql
             stack.peek.as(Nodes::Field).selection_set = selection_set
           when Nodes::FragmentDefinition
             stack.peek.as(Nodes::FragmentDefinition).selection_set = selection_set
+          when Nodes::InlineFragment
+            stack.peek.as(Nodes::InlineFragment).selection_set = selection_set
           else
             pp stack.peek
           end
@@ -237,11 +239,20 @@ module Graphql
 
         @callbacks.visit_inline_fragment = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
           log_visit("visit_inline_fragment")
+
+          stack = data.as(Pointer(Stack)).value
+          stack.push(Nodes::InlineFragment.new)
+
           return 1
         }
 
         @callbacks.end_visit_inline_fragment = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
           log_visit("end_visit_inline_fragment")
+
+          stack = data.as(Pointer(Stack)).value
+          inline_fragment = stack.pop.as(Nodes::InlineFragment)
+
+          stack.peek.as(Nodes::SelectionSet).selections << inline_fragment
         }
 
         @callbacks.visit_fragment_definition = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
@@ -427,6 +438,8 @@ module Graphql
           case stack.peek
           when Nodes::FragmentDefinition
             stack.peek.as(Nodes::FragmentDefinition).type_condition = named_type
+          when Nodes::InlineFragment
+            stack.peek.as(Nodes::InlineFragment).type_condition = named_type
           when Nodes::VariableDefinition
             stack.peek.as(Nodes::VariableDefinition).type = named_type
           when Nodes::NonNullType

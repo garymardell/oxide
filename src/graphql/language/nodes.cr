@@ -48,6 +48,14 @@ module Graphql
         end
       end
 
+      class InlineFragment < Node
+        property type_condition : NamedType?
+        property selection_set : SelectionSet?
+
+        def initialize(@type_condition = nil, @selection_set = nil)
+        end
+      end
+
       class Field < Node
         property name : String
         property arguments : Array(Argument)
