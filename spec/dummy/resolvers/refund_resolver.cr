@@ -5,6 +5,8 @@ class RefundResolver < Graphql::Schema::Resolver
       object.id
     when "status"
       object.status
+    when "reference"
+      object.reference
     when "partial"
       object.partial
     end

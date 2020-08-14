@@ -8,11 +8,11 @@ module Graphql
     getter query : Graphql::Type::Object
     getter mutation : Graphql::Type::Object | Nil
 
-
+    getter orphan_types : Array(Graphql::Type)
 
     #getter introspection : Graphql::IntrospectionSystem
 
-    def initialize(@query, @mutation = nil)
+    def initialize(@query, @mutation = nil, @orphan_types = [] of Graphql::Type)
       #@introspection = Graphql::IntrospectionSystem.new
     end
 

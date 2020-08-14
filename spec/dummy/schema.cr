@@ -136,6 +136,12 @@ DummySchema = Graphql::Schema.new(
         )
       ),
       Graphql::Schema::Field.new(
+        name: "transactions",
+        type: Graphql::Type::NonNull.new(
+          of_type: Graphql::Type::List.new(of_type: TransactionInterface)
+        )
+      ),
+      Graphql::Schema::Field.new(
         name: "paymentMethods",
         type: Graphql::Type::NonNull.new(
           of_type: Graphql::Type::List.new(of_type: PaymentMethodType)
@@ -143,5 +149,8 @@ DummySchema = Graphql::Schema.new(
       )
     ]
   ),
-  mutation: nil
+  mutation: nil,
+  orphan_types: [
+    RefundType.as(Graphql::Type)
+  ]
 )

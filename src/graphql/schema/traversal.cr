@@ -11,7 +11,7 @@ module Graphql
       end
 
       def traverse
-        roots = [schema.query]
+        roots = [schema.query, schema.orphan_types].flatten
         roots.each do |type|
           type.accept(self)
         end
