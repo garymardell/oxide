@@ -118,7 +118,7 @@ module Graphql
         execute_selection_set(sub_selection_set, object_type, result, variable_values)
       end
 
-      private def complete_value(field_type : Graphql::Type::Scalar, fields, result : ReturnType, variable_values)
+      private def complete_value(field_type : Graphql::Type::Scalar, fields, result, variable_values)
         field_type.coerce(result).as(ReturnType)
       end
 
@@ -138,7 +138,7 @@ module Graphql
         end
       end
 
-      private def complete_value(field_type : Graphql::Type::Enum, fields, result : ReturnType, variable_values)
+      private def complete_value(field_type : Graphql::Type::Enum, fields, result, variable_values)
         if enum_value = field_type.values.find(&.value.==(result))
           enum_value.name
         else
@@ -268,7 +268,8 @@ module Graphql
             end
 
             if !has_value && argument_definition.has_default_value?
-              coerced_values[argument_name] = argument_definition.default_value.as(ReturnType)
+              # TODO: Something wrong with this conversion?
+              # coerced_values[argument_name] = argument_definition.default_value.as(ReturnType)
             elsif argument_type.is_a?(Graphql::Type::NonNull) && (!has_value || value.nil?)
               raise "non nullable argument has null value"
             elsif has_value
