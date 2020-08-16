@@ -6,6 +6,6 @@ describe Graphql::Schema::Traversal do
     traversal.traverse
 
     type_map = traversal.type_map
-    type_map.keys.should eq(["Query", "Charge", "ID"])
+    type_map.keys.should eq(["Query", "Charge", "ID", "CreditCard", "String", "BankAccount", "Refund", "Boolean"])
   end
 end

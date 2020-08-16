@@ -67,7 +67,7 @@ module Graphql
 
       class Argument < Node
         property name : String
-        property value : ValueType?
+        property value : Value?
 
         def initialize(@name, @value = nil)
         end

@@ -197,7 +197,12 @@ module Graphql
           stack = data.as(Pointer(Stack)).value
 
           # TODO: Value could be anything
-          value = stack.pop.as(Nodes::ValueType)
+          # value = stack.pop.as(Nodes::Value?)
+          value = if stack.peek.is_a?(Nodes::Value)
+            stack.pop.as(Nodes::Value)
+          else
+            Nodes::Value.new(value: stack.pop.as(Nodes::ValueType))
+          end
 
           argument = stack.pop.as(Nodes::Argument)
           argument.value = value

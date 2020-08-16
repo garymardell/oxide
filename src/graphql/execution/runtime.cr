@@ -236,7 +236,7 @@ module Graphql
         coerced_values = {} of String => ReturnType
 
         argument_values = field.arguments.each_with_object({} of String => Graphql::Language::Nodes::ValueType) do |argument, memo|
-          memo[argument.name] = argument.value
+          memo[argument.name] = argument.value.not_nil!.value
         end
 
         field_name = field.name
