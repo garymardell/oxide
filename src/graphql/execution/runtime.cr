@@ -1,6 +1,7 @@
 require "json"
 require "promise"
 
+require "./error"
 require "../query"
 require "../schema"
 require "../introspection_system"
@@ -9,6 +10,12 @@ require "../introspection/*"
 module Graphql
   module Execution
     class Runtime
+      class FieldError < Exception
+      end
+
+      class NullError < FieldError
+      end
+
       alias ReturnType = String | Int32 | Int64 | Float64 | Bool | Nil | Array(ReturnType) | Hash(String, ReturnType)
 
       getter schema : Graphql::Schema
@@ -16,10 +23,10 @@ module Graphql
 
       delegate document, to: query
 
-      private property response
+      private property errors
 
       def initialize(@schema : Graphql::Schema, @query : Graphql::Query)
-        @response = {} of String => JSON::Any
+        @errors = Set(Error).new
       end
 
       def execute
@@ -33,11 +40,17 @@ module Graphql
 
         coerced_variable_values = coerce_variable_values(schema, operation, @query.variables)
 
-        case operation.operation_type
+        data = case operation.operation_type
         when "query"
           execute_query(operation, schema, coerced_variable_values)
         when "mutation"
           execute_mutation(operation, schema, coerced_variable_values)
+        end
+
+        if errors.any?
+          { "data" => data, "errors" => errors }.to_json
+        else
+          { "data" => data }.to_json
         end
       end
 
@@ -94,6 +107,8 @@ module Graphql
       end
 
       private def complete_value(field_type : Graphql::Type::Object, fields, result, variable_values)
+        return nil if result.nil?
+
         object_type = field_type
 
         sub_selection_set = merge_selection_sets(fields)
@@ -103,6 +118,8 @@ module Graphql
 
       # TODO: Merge into object above?
       private def complete_value(field_type : Graphql::Type::Union, fields, result, variable_values)
+        return nil if result.nil?
+
         object_type = resolve_abstract_type(field_type, result)
 
         sub_selection_set = merge_selection_sets(fields)
@@ -111,6 +128,8 @@ module Graphql
       end
 
       private def complete_value(field_type : Graphql::Type::Interface, fields, result, variable_values)
+        return nil if result.nil?
+
         object_type = resolve_abstract_type(field_type, result)
 
         sub_selection_set = merge_selection_sets(fields)
@@ -119,10 +138,18 @@ module Graphql
       end
 
       private def complete_value(field_type : Graphql::Type::Scalar, fields, result, variable_values)
+        return nil if result.nil?
+
         field_type.coerce(result).as(ReturnType)
       end
 
+
+      # If a List type wraps a Non-Null type, and one of the elements of that list resolves to null,
+      # then the entire list must resolve to null. If the List type is also wrapped in a Non-Null,
+      # the field error continues to propagate upwards.
       private def complete_value(field_type : Graphql::Type::List, fields, result, variable_values)
+        return nil if result.nil?
+
         if result.is_a?(Array)
           inner_type = field_type.of_type
 
@@ -134,11 +161,13 @@ module Graphql
 
           items
         else
-          raise "result is not a list"
+          raise FieldError.new("result is not a list")
         end
       end
 
       private def complete_value(field_type : Graphql::Type::Enum, fields, result, variable_values)
+        return nil if result.nil?
+
         if enum_value = field_type.values.find(&.value.==(result))
           enum_value.name
         else
@@ -147,11 +176,11 @@ module Graphql
       end
 
       private def complete_value(field_type : Graphql::Type::NonNull, fields, result, variable_values)
-        if result.nil?
-          raise "expected field \"#{fields.first.name}\" of type #{field_type.of_type} to not be nil"
-        else
-          complete_value(field_type.of_type, fields, result, variable_values)
-        end
+        completed_result = complete_value(field_type.of_type, fields, result, variable_values)
+
+        raise NullError.new if completed_result.nil?
+
+        completed_result
       end
 
       private def complete_value(field_type : Graphql::Type::LateBound, fields, result, variable_values)

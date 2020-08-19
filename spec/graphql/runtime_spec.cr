@@ -15,9 +15,9 @@ describe Graphql do
       Graphql::Query.new(query_string)
     )
 
-    result = runtime.execute
+    result = JSON.parse(runtime.execute)["data"]
 
-    result.should eq({ "charges" => [{ "id" => "1" }, { "id" => "2" }] })
+    result.should eq({ "charges" => [{ "id" => "1" }, { "id" => "2" }, { "id" => "3" }] })
   end
 
   it "supports interfaces", focus: false do
@@ -39,7 +39,7 @@ describe Graphql do
       Graphql::Query.new(query_string)
     )
 
-    result = runtime.execute
+    result = JSON.parse(runtime.execute)["data"]
 
     result.should eq({
       "transactions" => [
@@ -71,7 +71,7 @@ describe Graphql do
       Graphql::Query.new(query_string)
     )
 
-    result = runtime.execute
+    result = JSON.parse(runtime.execute)["data"]
 
     result.should eq({
       "paymentMethods" => [
@@ -99,7 +99,7 @@ describe Graphql do
       Graphql::Query.new(query_string)
     )
 
-    result = runtime.execute
+    result = JSON.parse(runtime.execute)["data"]
 
     result.should eq({ "charge" => { "id" => "1" } })
   end
@@ -125,7 +125,7 @@ describe Graphql do
       )
     )
 
-    result = runtime.execute
+    result = JSON.parse(runtime.execute)["data"]
 
     result.should eq({ "charge" => { "id" => "10" } })
   end
@@ -149,7 +149,7 @@ describe Graphql do
       )
     )
 
-    result = runtime.execute
+    result = JSON.parse(runtime.execute)["data"]
 
     result.should eq({ "charge" => { "id" => "1" } })
   end
@@ -185,7 +185,7 @@ describe Graphql do
       Graphql::Query.new(query_string)
     )
 
-    result = runtime.execute
+    result = JSON.parse(runtime.execute)["data"]
 
     result.should eq({ "foo" => "foo", "bar" => "bar" })
   end

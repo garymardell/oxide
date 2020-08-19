@@ -34,11 +34,13 @@ ChargeType = Graphql::Type::Object.new(
   fields: [
     Graphql::Schema::Field.new(
       name: "status",
-      type: Graphql::Type::Enum.new(
-        values: [
-          Graphql::Type::EnumValue.new(name: "PENDING", value: "pending"),
-          Graphql::Type::EnumValue.new(name: "PAID", value: "paid")
-        ]
+      type: Graphql::Type::NonNull.new(
+        of_type: Graphql::Type::Enum.new(
+          values: [
+            Graphql::Type::EnumValue.new(name: "PENDING", value: "pending"),
+            Graphql::Type::EnumValue.new(name: "PAID", value: "paid")
+          ]
+        )
       )
     )
   ]
@@ -145,6 +147,12 @@ DummySchema = Graphql::Schema.new(
         name: "paymentMethods",
         type: Graphql::Type::NonNull.new(
           of_type: Graphql::Type::List.new(of_type: PaymentMethodType)
+        )
+      ),
+      Graphql::Schema::Field.new(
+        name: "nullList",
+        type: Graphql::Type::List.new(
+          of_type: Graphql::Type::NonNull.new(of_type: ChargeType)
         )
       )
     ]

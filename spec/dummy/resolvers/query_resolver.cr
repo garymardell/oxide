@@ -7,7 +7,8 @@ class QueryResolver < Graphql::Schema::Resolver
     when "charges"
       [
         Charge.new(id: 1, status: "paid", reference: "ch_1234"),
-        Charge.new(id: 2, status: "pending", reference: "ch_5678")
+        Charge.new(id: 2, status: "pending", reference: "ch_5678"),
+        Charge.new(id: 3, status: nil, reference: "ch_5678")
       ]
     when "transactions"
       [
@@ -19,6 +20,8 @@ class QueryResolver < Graphql::Schema::Resolver
         CreditCard.new(id: 1, last4: "4242"),
         BankAccount.new(id: 32, account_number: "1234567")
       ]
+    when "nullList"
+      [nil]
     end
   end
 end
