@@ -3,7 +3,16 @@ module Graphql
     class EnumValueResolver
       include Graphql::Schema::Resolvable
 
-      def resolve(object, field_name, argument_values)
+      def resolve(object : Graphql::Type::EnumValue, field_name, argument_values)
+        case field_name
+        when "name"
+          object.name
+        when "description"
+          ""
+        when "isDeprecated"
+          false
+        when "deprecationReason"
+        end
       end
     end
   end

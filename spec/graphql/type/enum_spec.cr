@@ -15,6 +15,7 @@ describe Graphql::Type::Enum do
       values = [build_enum_value]
 
       e = Graphql::Type::Enum.new(
+        typename: "Test",
         values: values
       )
 

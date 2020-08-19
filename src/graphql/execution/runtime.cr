@@ -97,8 +97,17 @@ module Graphql
         argument_values = coerce_argument_values(object_type, field, variable_values)
 
         if field_name == "__typename"
-          object_type.typename
-        elsif resolver = object_type.resolver
+          return object_type.typename
+        end
+
+        resolver = case field_name
+        when "__schema"
+          Graphql::Introspection::QueryResolver.new
+        else
+          object_type.resolver
+        end
+
+        if resolver
           resolver.schema = schema
           resolved_value = resolver.resolve(object_value, field_name, argument_values)
 
@@ -184,18 +193,26 @@ module Graphql
       end
 
       private def complete_value(field_type : Graphql::Type::LateBound, fields, result, variable_values)
-        unwrapped_type = case field_type.typename
-        when "__Schema", "__Type", "__InputValue", "__Directive", "__EnumValue"
-          IntrospectionSystem.types[field_type.typename]
-        else
-          # schema.types[field_type.typename]
-        end
+        unwrapped_type = get_type(field_type.typename)
 
         complete_value(unwrapped_type, fields, result, variable_values)
       end
 
       private def complete_value(field_type, fields, result, variable_values)
         raise "should not be reached"
+      end
+
+      private def get_type(typename)
+        case typename
+        when "__Schema", "__Type", "__InputValue", "__Directive", "__EnumValue", "__Field"
+          IntrospectionSystem.types[typename]
+        else
+          schema.get_type(typename)
+        end
+      end
+
+      private def get_type_from_ast(ast)
+        schema.get_type_from_ast(ast)
       end
 
       private def collect_fields(object_type, selection_set, variable_values, visited_fragments) # TODO: variable_values, visited_fragments
@@ -222,7 +239,7 @@ module Graphql
 
             next unless fragment = fragments.find(&.name.===(fragment_spread_name))
 
-            fragment_type = schema.get_type_from_ast(fragment.type_condition)
+            fragment_type = get_type(fragment.type_condition.not_nil!.name)
 
             next unless does_fragment_type_apply(object_type, fragment_type)
 
@@ -233,7 +250,7 @@ module Graphql
               grouped_fields[response_key].concat(fields)
             end
           when Graphql::Language::Nodes::InlineFragment
-            fragment_type = schema.get_type_from_ast(selection.type_condition)
+            fragment_type = schema.get_type(selection.type_condition.not_nil!.name)
 
             next if !fragment_type.nil? && !does_fragment_type_apply(object_type, fragment_type)
 

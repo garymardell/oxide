@@ -20,7 +20,7 @@ describe Graphql do
     result.should eq({ "charges" => [{ "id" => "1" }, { "id" => "2" }, { "id" => "3" }] })
   end
 
-  it "supports interfaces", focus: false do
+  it "supports interfaces" do
     query_string = <<-QUERY
       query {
         transactions {
@@ -49,7 +49,7 @@ describe Graphql do
     })
   end
 
-  it "supports unions", focus: false do
+  it "supports unions" do
     query_string = <<-QUERY
       query {
         paymentMethods {

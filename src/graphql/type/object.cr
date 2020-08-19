@@ -11,6 +11,7 @@ module Graphql
       getter implements : Array(Graphql::Type::Interface)
 
       def initialize(@typename : ::String, @resolver : Schema::Resolvable, @fields = [] of Schema::Field, @implements = [] of Graphql::Type::Interface)
+        @name = @typename
       end
 
       def add_field(field : Schema::Field)
@@ -19,6 +20,10 @@ module Graphql
 
       def get_field(name)
         all_fields.find(&.name.===(name))
+      end
+
+      def kind
+        "OBJECT"
       end
 
       private def all_fields

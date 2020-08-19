@@ -5,6 +5,7 @@ require "./input_value_type"
 module Graphql
   module Introspection
     TypeKindType = Graphql::Type::Enum.new(
+      typename: "__TypeKind",
       values: [
         Graphql::Type::EnumValue.new(name: "SCALAR"),
         Graphql::Type::EnumValue.new(name: "OBJECT"),

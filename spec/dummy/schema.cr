@@ -36,6 +36,7 @@ ChargeType = Graphql::Type::Object.new(
       name: "status",
       type: Graphql::Type::NonNull.new(
         of_type: Graphql::Type::Enum.new(
+          typename: "ChargeStatus",
           values: [
             Graphql::Type::EnumValue.new(name: "PENDING", value: "pending"),
             Graphql::Type::EnumValue.new(name: "PAID", value: "paid")
@@ -54,6 +55,7 @@ RefundType = Graphql::Type::Object.new(
     Graphql::Schema::Field.new(
       name: "status",
       type: Graphql::Type::Enum.new(
+        typename: "RefundStatus",
         values: [
           Graphql::Type::EnumValue.new(name: "PENDING", value: "pending"),
           Graphql::Type::EnumValue.new(name: "REFUNDED", value: "refunded")

@@ -3,6 +3,7 @@ require "./input_value_type"
 module Graphql
   module Introspection
     DirectiveLocationType = Graphql::Type::Enum.new(
+      typename: "__DirectiveLocation",
       values: [
         Graphql::Type::EnumValue.new(name: "QUERY"),
         Graphql::Type::EnumValue.new(name: "MUTATION"),

@@ -3,9 +3,10 @@ require "../type"
 module Graphql
   class Type
     class Enum < Type
+      getter typename : ::String
       getter values : Array(EnumValue)
 
-      def initialize(@values : Array(EnumValue))
+      def initialize(@typename : ::String, @values : Array(EnumValue))
       end
 
       def coerce(value)
@@ -16,6 +17,10 @@ module Graphql
         else
           raise "Value could be coerced into enum"
         end
+      end
+
+      def kind
+        "ENUM"
       end
     end
 

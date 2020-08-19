@@ -1,9 +1,13 @@
-require "../type"
+  require "../type"
 
 module Graphql
   class Type
     abstract class Scalar < Type
       abstract def coerce(value)
+
+      def kind
+        "SCALAR"
+      end
     end
 
     class Id < Scalar

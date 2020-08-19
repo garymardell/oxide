@@ -10,6 +10,10 @@ module Graphql
 
       def initialize(@typename : ::String, @type_resolver : Schema::TypeResolver, @possible_types = [] of Graphql::Type)
       end
+
+      def kind
+        "UNION"
+      end
     end
   end
 end

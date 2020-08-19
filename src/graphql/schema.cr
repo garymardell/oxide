@@ -10,17 +10,21 @@ module Graphql
 
     getter orphan_types : Array(Graphql::Type)
 
-    #getter introspection : Graphql::IntrospectionSystem
-
     def initialize(@query, @mutation = nil, @orphan_types = [] of Graphql::Type)
-      #@introspection = Graphql::IntrospectionSystem.new
+    end
+
+    def type_map
+      traversal = TypeMap.new(self)
+      traversal.generate
+    end
+
+    def types
+      types = Types.new(self)
+      types.generate
     end
 
     def get_type(name)
-      traversal = Traversal.new(self)
-      traversal.traverse
-
-      traversal.type_map[name]
+      type_map[name]
     end
 
     def get_type_from_ast(ast_node)
@@ -36,7 +40,7 @@ module Graphql
 
         Graphql::Type::List.new(of_type: inner_type)
       else
-        raise "Couldn't get type"
+        raise "Couldn't get type #{ast_node}"
       end
     end
 

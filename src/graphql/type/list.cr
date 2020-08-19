@@ -7,6 +7,10 @@ module Graphql
 
       def initialize(@of_type : Graphql::Type)
       end
+
+      def kind
+        "LIST"
+      end
     end
   end
 end

@@ -10,6 +10,10 @@ module Graphql
 
       def initialize(@name : ::String, @type_resolver, @fields = [] of Schema::Field)
       end
+
+      def kind
+        "INTERFACE"
+      end
     end
   end
 end
