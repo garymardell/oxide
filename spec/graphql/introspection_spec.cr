@@ -53,7 +53,14 @@ describe Graphql do
           types {
             ...FullType
           }
-
+          directives {
+            name
+            description
+            locations
+            args {
+              ...InputValue
+            }
+          }
         }
       }
       fragment FullType on __Type {

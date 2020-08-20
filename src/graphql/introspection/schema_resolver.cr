@@ -11,6 +11,8 @@ module Graphql
           schema.not_nil!.mutation
         when "subscriptionType"
           nil # TODO: Support subscriptions
+        when "directives"
+          [] of Graphql::Type # TODO: support directives
         end
       end
     end
