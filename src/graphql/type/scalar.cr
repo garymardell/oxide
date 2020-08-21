@@ -56,8 +56,8 @@ module Graphql
 
         if value.responds_to?(:to_i32)
           value.to_i32
-        elsif value.responds_to?(:as_i32)
-          value.as_i32
+        elsif value.responds_to?(:as_i)
+          value.as_i
         else
           raise "Could not coerce value to Int"
         end
@@ -74,8 +74,8 @@ module Graphql
 
         if value.responds_to?(:to_f32)
           value.to_f32
-        elsif value.responds_to?(:as_f32)
-          value.as_f32
+        elsif value.responds_to?(:as_f)
+          value.as_f
         else
           raise "Could not coerce value to Float"
         end
