@@ -20,6 +20,8 @@ module Graphql
 
         if value.responds_to?(:to_s)
           value.to_s
+        elsif value.responds_to?(:as_s)
+          value.as_s
         else
           raise "Could not coerce value to Id"
         end
@@ -36,8 +38,10 @@ module Graphql
 
         if value.responds_to?(:to_s)
           value.to_s
+        elsif value.responds_to?(:as_s)
+          value.as_s
         else
-          raise "Could not coerce value to Id"
+          raise "Could not coerce value to String"
         end
       end
     end
@@ -52,8 +56,10 @@ module Graphql
 
         if value.responds_to?(:to_i32)
           value.to_i32
+        elsif value.responds_to?(:as_i32)
+          value.as_i32
         else
-          raise "Could not coerce value to Id"
+          raise "Could not coerce value to Int"
         end
       end
     end
@@ -68,8 +74,10 @@ module Graphql
 
         if value.responds_to?(:to_f32)
           value.to_f32
+        elsif value.responds_to?(:as_f32)
+          value.as_f32
         else
-          raise "Could not coerce value to Id"
+          raise "Could not coerce value to Float"
         end
       end
     end
@@ -82,7 +90,11 @@ module Graphql
       def coerce(value)
         return value if value.nil?
 
-        !!value
+        if value.responds_to?(:as_bool)
+          value.as_bool
+        else
+          !!value
+        end
       end
     end
   end
