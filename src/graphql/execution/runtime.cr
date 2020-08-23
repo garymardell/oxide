@@ -7,6 +7,12 @@ require "../schema"
 require "../introspection_system"
 require "../introspection/*"
 
+# Lazy support
+
+# - execute_selection_set does not complete value but instead results set of potentially lazy values
+# - need to sync all lazy values and continue to complete each sub field
+# -
+
 module Graphql
   module Execution
     class Runtime
@@ -56,28 +62,50 @@ module Graphql
 
       private def execute_query(query, schema, coerced_variable_values)
         if query_type = schema.query
-          execute_selection_set(query.selection_set.not_nil!.selections, query_type, nil, coerced_variable_values)
+          values = execute_selection_set(query.selection_set.not_nil!.selections, query_type, nil, coerced_variable_values)
+          complete_selection_set(values, coerced_variable_values)
         end
       end
 
       private def execute_mutation(mutation, schema, coerced_variable_values)
         if mutation_type = schema.mutation
-          execute_selection_set(mutation.selection_set.not_nil!.selections, mutation_type, nil, coerced_variable_values)
+          values = execute_selection_set(mutation.selection_set.not_nil!.selections, mutation_type, nil, coerced_variable_values)
+          complete_selection_set(values, coerced_variable_values)
         end
       end
 
       private def execute_selection_set(selection_set, object_type, object_value, variable_values)
         grouped_field_set = collect_fields(object_type, selection_set, variable_values, nil)
 
-        grouped_field_set.each_with_object({} of String => ReturnType) do |(response_key, fields), memo|
+        grouped_field_set.map do |response_key, fields|
           field_name = fields.first.name
 
           if field = get_field(object_type, field_name)
             field_type = field.type
 
-            memo[response_key] = execute_field(object_type, object_value, field.type, fields, variable_values)
+            {response_key, field, fields, execute_field(object_type, object_value, field.type, fields, variable_values)}
+          else
+            raise "No field found"
           end
         end
+      end
+
+      private def complete_selection_set(values, variable_values)
+        result = {} of String => ReturnType
+
+        values.each do |(response_key, field, fields, value)|
+          field_type = field.type
+
+          resolved_value = if value.is_a?(Lazy)
+            value.as(Lazy).wait
+          else
+            value
+          end
+
+          result[response_key] = complete_value(field_type, fields, resolved_value, variable_values)
+        end
+
+        result
       end
 
       private def get_field(object_type, field_name)
@@ -110,8 +138,6 @@ module Graphql
         if resolver
           resolver.schema = schema
           resolved_value = resolver.resolve(object_value, field_name, argument_values)
-
-          complete_value(field_type, fields, resolved_value, variable_values)
         end
       end
 
@@ -122,7 +148,8 @@ module Graphql
 
         sub_selection_set = merge_selection_sets(fields)
 
-        execute_selection_set(sub_selection_set, object_type, result, variable_values)
+        values = execute_selection_set(sub_selection_set, object_type, result, variable_values)
+        complete_selection_set(values, variable_values)
       end
 
       # TODO: Merge into object above?
@@ -133,7 +160,8 @@ module Graphql
 
         sub_selection_set = merge_selection_sets(fields)
 
-        execute_selection_set(sub_selection_set, object_type, result, variable_values)
+        values = execute_selection_set(sub_selection_set, object_type, result, variable_values)
+        complete_selection_set(values, variable_values)
       end
 
       private def complete_value(field_type : Graphql::Type::Interface, fields, result, variable_values)
@@ -143,7 +171,8 @@ module Graphql
 
         sub_selection_set = merge_selection_sets(fields)
 
-        execute_selection_set(sub_selection_set, object_type, result, variable_values)
+        values = execute_selection_set(sub_selection_set, object_type, result, variable_values)
+        complete_selection_set(values, variable_values)
       end
 
       private def complete_value(field_type : Graphql::Type::Scalar, fields, result, variable_values)

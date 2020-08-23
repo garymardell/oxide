@@ -2,6 +2,19 @@ require "../../src/graphql"
 require "./models/*"
 require "./resolvers/*"
 
+ReceiptType = Graphql::Type::Object.new(
+  typename: "Receipt",
+  resolver: ReceiptResolver.new,
+  fields: [
+    Graphql::Schema::Field.new(
+      name: "id",
+      type: Graphql::Type::NonNull.new(
+        of_type: Graphql::Type::Id.new
+      )
+    )
+  ]
+)
+
 class TransactionTypeResolver < Graphql::Schema::TypeResolver
   def resolve_type(object : Charge)
     ChargeType
@@ -43,6 +56,10 @@ ChargeType = Graphql::Type::Object.new(
           ]
         )
       )
+    ),
+    Graphql::Schema::Field.new(
+      name: "receipt",
+      type: ReceiptType
     )
   ]
 )
