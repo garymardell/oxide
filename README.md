@@ -2,14 +2,14 @@
 
 ## TODO
 
-- [ ] Support all value types
 - [x] Unions
-- [ ] Interfaces
+- [x] Interfaces
 - [x] Inline fragments
 - [ ] Directives (@skip, @include)
 - [x] Variables
-- [ ] Late bound types
+- [x] Late bound types
 - [ ] Dataloader (promise support)
-- [ ] Introspection
+- [x] Introspection
 - [ ] Error handling
 - [ ] Mutations
+- [ ] Static validation
