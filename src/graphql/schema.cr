@@ -2,6 +2,7 @@ require "./type/*"
 require "./schema/*"
 require "./language/*"
 require "./execution"
+require "./validation"
 
 module Graphql
   class Schema
@@ -11,6 +12,18 @@ module Graphql
     getter orphan_types : Array(Graphql::Type)
 
     def initialize(@query, @mutation = nil, @orphan_types = [] of Graphql::Type)
+    end
+
+    def execute(query : Graphql::Query)
+      validation_pipeline = Validation::Pipeline.new(self, query)
+      validation_pipeline.execute
+
+      if validation_pipeline.errors.any?
+        return validation_pipeline.errors.to_json
+      end
+
+      runtime = Execution::Runtime.new(self, query)
+      runtime.execute
     end
 
     def type_map
@@ -42,10 +55,6 @@ module Graphql
       else
         raise "Couldn't get type #{ast_node}"
       end
-    end
-
-    private def build_type_map
-
     end
   end
 end
