@@ -149,4 +149,6 @@ lib LibGraphqlParser
   fun GraphQLAstStringValue_get_value(node : GraphQLAstNode) : LibC::Char*
 
   fun GraphQLAstNamedType_get_name(node : GraphQLAstNode) : GraphQLAstName
+
+  fun GraphQLAstDirective_get_name(node : GraphQLAstNode) : GraphQLAstName
 end

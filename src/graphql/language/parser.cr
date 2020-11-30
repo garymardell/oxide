@@ -210,6 +210,8 @@ module Graphql
           case stack.peek
           when Nodes::Field
             stack.peek.as(Nodes::Field).arguments << argument
+          when Nodes::Directive
+            stack.peek.as(Nodes::Directive).arguments << argument
           else
             pp "Not a field"
           end
@@ -414,11 +416,36 @@ module Graphql
 
         @callbacks.visit_directive = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
           log_visit("visit_directive")
+
+          stack = data.as(Pointer(Stack)).value
+
+          directive_name = LibGraphqlParser.GraphQLAstDirective_get_name(node)
+          directive_name_value = LibGraphqlParser.GraphQLAstName_get_value(directive_name)
+
+          stack.push(Nodes::Directive.new(String.new(directive_name_value)))
+
           return 1
         }
 
         @callbacks.end_visit_directive = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
           log_visit("end_visit_directive")
+
+          stack = data.as(Pointer(Stack)).value
+
+          directive = stack.pop.as(Nodes::Directive)
+
+          case stack.peek
+          when Nodes::OperationDefinition
+            stack.peek.as(Nodes::OperationDefinition).directives << directive
+          when Nodes::FragmentDefinition
+            stack.peek.as(Nodes::FragmentDefinition).directives << directive
+          when Nodes::FragmentSpread
+            stack.peek.as(Nodes::FragmentSpread).directives << directive
+          when Nodes::InlineFragment
+            stack.peek.as(Nodes::InlineFragment).directives << directive
+          when Nodes::Field
+            stack.peek.as(Nodes::Field).directives << directive
+          end
         }
 
         @callbacks.visit_named_type = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {

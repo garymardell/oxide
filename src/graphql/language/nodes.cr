@@ -20,8 +20,9 @@ module Graphql
         property operation_type : String
         property selection_set : SelectionSet?
         property variable_definitions : Array(VariableDefinition)
+        property directives : Array(Directive)
 
-        def initialize(@operation_type, @selection_set = nil, @variable_definitions = [] of VariableDefinition)
+        def initialize(@operation_type, @selection_set = nil, @variable_definitions = [] of VariableDefinition, @directives = [] of Directive)
         end
       end
 
@@ -36,23 +37,26 @@ module Graphql
         property name : String
         property type_condition : NamedType?
         property selection_set : SelectionSet?
+        property directives : Array(Directive)
 
-        def initialize(@name, @type_condition = nil, @selection_set = nil)
+        def initialize(@name, @type_condition = nil, @selection_set = nil, @directives = [] of Directive)
         end
       end
 
       class FragmentSpread < Node
         property name : String
+        property directives : Array(Directive)
 
-        def initialize(@name)
+        def initialize(@name, @directives = [] of Directive)
         end
       end
 
       class InlineFragment < Node
         property type_condition : NamedType?
         property selection_set : SelectionSet?
+        property directives : Array(Directive)
 
-        def initialize(@type_condition = nil, @selection_set = nil)
+        def initialize(@type_condition = nil, @selection_set = nil, @directives = [] of Directive)
         end
       end
 
@@ -60,8 +64,9 @@ module Graphql
         property name : String
         property arguments : Array(Argument)
         property selection_set : SelectionSet?
+        property directives : Array(Directive)
 
-        def initialize(@name, @arguments = [] of Argument, @selection_set = nil)
+        def initialize(@name, @arguments = [] of Argument, @selection_set = nil, @directives = [] of Directive)
         end
       end
 
@@ -120,6 +125,14 @@ module Graphql
         property value : ValueType
 
         def initialize(@value)
+        end
+      end
+
+      class Directive < Node
+        property name : String
+        property arguments : Array(Argument)
+
+        def initialize(@name, @arguments = [] of Argument)
         end
       end
     end

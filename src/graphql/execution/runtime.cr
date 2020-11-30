@@ -220,8 +220,16 @@ module Graphql
         visited_fragments ||= [] of String
 
         selection_set.each do |selection|
-          # TODO: @skip directive, uses variable_values
-          # TODO: @include directive, uses variable_values
+          if selection.responds_to?(:directives) && selection.directives.any?
+            next if selection.directives.each do |directive|
+              if directive.name == "skip"
+                break Graphql::Schema::SkipDirective.skip?(directive, variable_values)
+              elsif directive.name == "include"
+                break Graphql::Schema::IncludeDirective.include?(directive, variable_values)
+              end
+            end
+          end
+
           case selection
           when Graphql::Language::Nodes::Field
             response_key = selection.name
