@@ -69,14 +69,62 @@ module Graphql
       private def execute_selection_set(selection_set, object_type, object_value, variable_values)
         grouped_field_set = collect_fields(object_type, selection_set, variable_values, nil)
 
-        grouped_field_set.each_with_object({} of String => ReturnType) do |(response_key, fields), memo|
+        # grouped_field_set = { "charges" => [Field(ChargeType)] }
+
+        lazy_results = grouped_field_set.compact_map do |response_key, fields|
           field_name = fields.first.name
 
           if field = get_field(object_type, field_name)
             field_type = field.type
 
-            memo[response_key] = execute_field(object_type, object_value, field.type, fields, variable_values)
+            { response_key, field, execute_field(object_type, object_value, field.type, fields, variable_values)}
           end
+        end
+
+        # pp lazy_results
+
+        # lazy_results = [{ "charges", field, [Charge, Charge, Charge] }]
+
+        results = lazy_results.map do |response_key, field, result|
+          resolved_value = if result.is_a?(Promise)
+            result.get
+          elsif result.is_a?(Lazy)
+            result.get
+          else
+            result
+          end
+
+          # pp field.type
+
+          { response_key, field, resolved_value }
+        end
+
+        # results = [{ "charges", field, [Charge, Charge, Charge] }]
+
+        response = {} of String => ReturnType
+
+        results.each do |response_key, field, result|
+          unwrapped_type = unwrap_type(field.type)
+
+          case unwrapped_type
+          when Graphql::Type::List
+
+          else
+            response[response_key] = complete_value(field.type, grouped_field_set[response_key], result, variable_values)
+          end
+        end
+
+
+
+        # response = {} of String => ReturnType
+        # grouped_field_set.each do |response_key, type|
+        #   results.each do |response_key, field, result|
+
+        #   end
+        # end
+
+        results.each_with_object({} of String => ReturnType) do  |(response_key, field, result), memo|
+          memo[response_key] = complete_value(field.type, grouped_field_set[response_key], result, variable_values)
         end
       end
 
@@ -111,7 +159,16 @@ module Graphql
           resolver.schema = schema
           resolved_value = resolver.resolve(object_value, field_name, argument_values)
 
-          complete_value(field_type, fields, resolved_value, variable_values)
+          # complete_value(field_type, fields, resolved_value, variable_values)
+        end
+      end
+
+      def unwrap_type(field_type)
+        case field_type
+        when Graphql::Type::NonNull
+          unwrap_type(field_type.of_type)
+        else
+          field_type
         end
       end
 
@@ -159,8 +216,9 @@ module Graphql
       private def complete_value(field_type : Graphql::Type::List, fields, result, variable_values)
         return nil if result.nil?
 
+        # results = [Charge, Charge, Charge]
         if result.is_a?(Array)
-          inner_type = field_type.of_type
+          inner_type = field_type.of_type # ChargeType
 
           items = [] of ReturnType
 

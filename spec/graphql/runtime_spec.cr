@@ -1,11 +1,14 @@
 require "../spec_helper"
 
 describe Graphql do
-  it "executes" do
+  it "executes", focus: false do
     query_string = <<-QUERY
       query {
         charges {
           id
+          refund {
+            id
+          }
         }
       }
     QUERY
@@ -17,7 +20,11 @@ describe Graphql do
 
     result = JSON.parse(runtime.execute)["data"]
 
-    result.should eq({ "charges" => [{ "id" => "1" }, { "id" => "2" }, { "id" => "3" }] })
+    result.should eq({ "charges" => [
+      { "id" => "1", "refund" => { "id" => "1234" } },
+      { "id" => "2", "refund" => { "id" => "4567" } },
+      { "id" => "3", "refund" => { "id" => "8910" } }]
+    })
   end
 
   it "supports interfaces" do

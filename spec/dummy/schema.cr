@@ -27,25 +27,48 @@ TransactionInterface = Graphql::Type::Interface.new(
   ]
 )
 
-ChargeType = Graphql::Type::Object.new(
-  typename: "Charge",
-  resolver: ChargeResolver.new,
-  implements: [TransactionInterface],
-  fields: [
-    Graphql::Schema::Field.new(
-      name: "status",
-      type: Graphql::Type::NonNull.new(
-        of_type: Graphql::Type::Enum.new(
-          typename: "ChargeStatus",
-          values: [
-            Graphql::Type::EnumValue.new(name: "PENDING", value: "pending"),
-            Graphql::Type::EnumValue.new(name: "PAID", value: "paid")
-          ]
+class ChargeGenerator < Graphql::Schema::Resolver
+  def resolve(object : Charge, field_name, argument_values)
+    case field_name
+    when "id"
+      object.id
+    when "status"
+      object.status
+    when "reference"
+      object.reference
+    when "refund"
+      RefundLoader.new(Refund).load(object.refund_id)
+    end
+  end
+
+  def to_graphql
+    Graphql::Type::Object.new(
+      typename: "Charge",
+      resolver: self,
+      implements: [TransactionInterface],
+      fields: [
+        Graphql::Schema::Field.new(
+          name: "refund",
+          type: RefundType
+        ),
+        Graphql::Schema::Field.new(
+          name: "status",
+          type: Graphql::Type::NonNull.new(
+            of_type: Graphql::Type::Enum.new(
+              typename: "ChargeStatus",
+              values: [
+                Graphql::Type::EnumValue.new(name: "PENDING", value: "pending"),
+                Graphql::Type::EnumValue.new(name: "PAID", value: "paid")
+              ]
+            )
+          )
         )
-      )
+      ]
     )
-  ]
-)
+  end
+end
+
+ChargeType = ChargeGenerator.new.to_graphql
 
 RefundType = Graphql::Type::Object.new(
   typename: "Refund",
