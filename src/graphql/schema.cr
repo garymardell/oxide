@@ -3,6 +3,7 @@ require "./schema/*"
 require "./language/*"
 require "./execution"
 require "./validation"
+require "./lazy"
 
 module Graphql
   class Schema
@@ -15,12 +16,12 @@ module Graphql
     end
 
     def execute(query : Graphql::Query)
-      validation_pipeline = Validation::Pipeline.new(self, query)
-      validation_pipeline.execute
+      # validation_pipeline = Validation::Pipeline.new(self, query)
+      # validation_pipeline.execute
 
-      if validation_pipeline.errors.any?
-        return validation_pipeline.errors.to_json
-      end
+      # if validation_pipeline.errors.any?
+      #   return validation_pipeline.errors.to_json
+      # end
 
       runtime = Execution::Runtime.new(self, query)
       runtime.execute

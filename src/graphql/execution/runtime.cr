@@ -18,12 +18,14 @@ module Graphql
 
       alias ReturnType = String | Int32 | Int64 | Float64 | Bool | Nil | Array(ReturnType) | Hash(String, ReturnType)
 
+      alias IntermediateType = ReturnType | Proc(IntermediateType) | Array(IntermediateType) | Hash(String, IntermediateType)
+
       getter schema : Graphql::Schema
       getter query : Graphql::Query
 
       delegate document, to: query
 
-      private property errors
+      private property errors : Set(Error)
 
       def initialize(@schema : Graphql::Schema, @query : Graphql::Query)
         @errors = Set(Error).new
@@ -54,28 +56,53 @@ module Graphql
         end
       end
 
-      private def execute_query(query, schema, coerced_variable_values)
+      private def execute_query(query, schema, coerced_variable_values) : ReturnType
         if query_type = schema.query
-          execute_selection_set(query.selection_set.not_nil!.selections, query_type, nil, coerced_variable_values)
+
+          result = execute_selection_set(query.selection_set.not_nil!.selections, query_type, nil, coerced_variable_values)
+
+          serialize(result)
+        end
+      end
+
+      def serialize(result : IntermediateType) : ReturnType
+        case result
+        when Proc
+          serialize(result.call)
+        when Hash
+          result.transform_values do |value|
+            serialize(value).as(ReturnType)
+          end
+        when Array
+          result.map do |value|
+            serialize(value).as(ReturnType)
+          end
+        else
+          result
         end
       end
 
       private def execute_mutation(mutation, schema, coerced_variable_values)
         if mutation_type = schema.mutation
-          execute_selection_set(mutation.selection_set.not_nil!.selections, mutation_type, nil, coerced_variable_values)
+          partial_result = execute_selection_set(mutation.selection_set.not_nil!.selections, mutation_type, nil, coerced_variable_values)
+
+          # sync_lazies(partial_result)
+          nil
         end
       end
 
-      private def execute_selection_set(selection_set, object_type, object_value, variable_values)
+      private def execute_selection_set(selection_set, object_type, object_value, variable_values) : Hash(String, IntermediateType)
         grouped_field_set = collect_fields(object_type, selection_set, variable_values, nil)
 
-        grouped_field_set.each_with_object({} of String => ReturnType) do |(response_key, fields), memo|
+        partial_results = grouped_field_set.each_with_object({} of String => IntermediateType) do |(key, fields), memo|
           field_name = fields.first.name
 
           if field = get_field(object_type, field_name)
             field_type = field.type
 
-            memo[response_key] = execute_field(object_type, object_value, field.type, fields, variable_values)
+            memo[key] = execute_field(object_type, object_value, field.type, fields, variable_values).as(IntermediateType)
+          else
+            raise "error"
           end
         end
       end
@@ -90,7 +117,7 @@ module Graphql
         end
       end
 
-      private def execute_field(object_type, object_value, field_type, fields, variable_values)
+      private def execute_field(object_type, object_value, field_type, fields, variable_values) : IntermediateType
         field = fields.first
         field_name = field.name
 
@@ -109,20 +136,32 @@ module Graphql
 
         if resolver
           resolver.schema = schema
-          resolved_value = resolver.resolve(object_value, field_name, argument_values)
 
-          complete_value(field_type, fields, resolved_value, variable_values)
+          value = resolver.resolve(object_value, field_name, argument_values)
+
+          if value.is_a?(Lazy)
+            Proc(IntermediateType).new {
+              value.resolve
+
+              complete_value(field_type, fields, value.value, variable_values).as(IntermediateType)
+            }
+          else
+            complete_value(field_type, fields, value, variable_values).as(IntermediateType)
+          end
+        else
+          raise "no resolver found"
         end
       end
 
-      private def complete_value(field_type : Graphql::Type::Object, fields, result, variable_values)
+
+      private def complete_value(field_type : Graphql::Type::Object, fields, result, variable_values) : IntermediateType
         return nil if result.nil?
 
         object_type = field_type
 
         sub_selection_set = merge_selection_sets(fields)
 
-        execute_selection_set(sub_selection_set, object_type, result, variable_values)
+        execute_selection_set(sub_selection_set, object_type, result, variable_values).as(IntermediateType)
       end
 
       # TODO: Merge into object above?
@@ -146,59 +185,73 @@ module Graphql
         execute_selection_set(sub_selection_set, object_type, result, variable_values)
       end
 
-      private def complete_value(field_type : Graphql::Type::Scalar, fields, result, variable_values)
+      private def complete_value(field_type : Graphql::Type::Scalar, fields, result, variable_values) : IntermediateType
         return nil if result.nil?
 
-        field_type.coerce(result).as(ReturnType)
+        field_type.coerce(result).as(IntermediateType)
       end
 
 
       # If a List type wraps a Non-Null type, and one of the elements of that list resolves to null,
       # then the entire list must resolve to null. If the List type is also wrapped in a Non-Null,
       # the field error continues to propagate upwards.
-      private def complete_value(field_type : Graphql::Type::List, fields, result, variable_values)
+      private def complete_value(field_type : Graphql::Type::List, fields, result, variable_values) : IntermediateType
         return nil if result.nil?
 
         if result.is_a?(Array)
           inner_type = field_type.of_type
 
-          items = [] of ReturnType
-
-          result.each do |result_item|
-            items << complete_value(inner_type, fields, result_item, variable_values)
+          partial_results = result.map do |result_item|
+            if result_item.is_a?(Proc(IntermediateType))
+              complete_value(inner_type, fields, result_item.call, variable_values).as(IntermediateType)
+            else
+              complete_value(inner_type, fields, result_item, variable_values).as(IntermediateType)
+            end
           end
 
-          items
+          partial_results.map do |value|
+            if value.is_a?(Hash(String, IntermediateType))
+              value.transform_values do |inner_value|
+                if inner_value.is_a?(Proc(IntermediateType))
+                  inner_value.call.as(IntermediateType)
+                else
+                  inner_value.as(IntermediateType)
+                end
+              end.as(IntermediateType)
+            else
+              value.as(IntermediateType)
+            end
+          end
         else
           raise FieldError.new("result is not a list")
         end
       end
 
-      private def complete_value(field_type : Graphql::Type::Enum, fields, result, variable_values)
+      private def complete_value(field_type : Graphql::Type::Enum, fields, result, variable_values) : IntermediateType
         return nil if result.nil?
 
         if enum_value = field_type.values.find(&.value.==(result))
-          enum_value.name
+          enum_value.name.as(IntermediateType)
         else
-          nil.as(ReturnType)
+          nil.as(IntermediateType)
         end
       end
 
-      private def complete_value(field_type : Graphql::Type::NonNull, fields, result, variable_values)
+      private def complete_value(field_type : Graphql::Type::NonNull, fields, result, variable_values) : IntermediateType
         completed_result = complete_value(field_type.of_type, fields, result, variable_values)
 
         raise NullError.new if completed_result.nil?
 
-        completed_result
+        completed_result.as(IntermediateType)
       end
 
-      private def complete_value(field_type : Graphql::Type::LateBound, fields, result, variable_values)
+      private def complete_value(field_type : Graphql::Type::LateBound, fields, result, variable_values) : IntermediateType
         unwrapped_type = get_type(field_type.typename)
 
         complete_value(unwrapped_type, fields, result, variable_values)
       end
 
-      private def complete_value(field_type, fields, result, variable_values)
+      private def complete_value(field_type, fields, result, variable_values) : IntermediateType
         raise "should not be reached"
       end
 

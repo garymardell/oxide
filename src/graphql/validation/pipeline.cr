@@ -1,31 +1,32 @@
-require "./validator"
-require "./**"
+require "./rule"
+require "./rules/**"
+require "../language/visitor"
 
 module Graphql
   module Validation
-    class Pipeline
+    class Pipeline < Graphql::Language::Visitor
       property errors : Array(Error)
 
-      private getter validators : Array(Validator.class)
+      private getter rules : Array(Rule)
       private getter schema : Graphql::Schema
       private getter query : Graphql::Query
 
-      def self.default_validators
-        [
-          DocumentValidator
+      def initialize(@schema, @query)
+        @errors = [] of Error
+        @rules = [
+          NoDefinitionIsPresent.new.as(Rule)
         ]
       end
 
-      def initialize(@schema, @query, @validators = default_validators)
-        @errors = [] of Error
+      def visit(node)
+        rules.each do |rule|
+          @errors += rule.validate(node)
+        end
       end
 
       def execute
-        validators.each do |validator|
-          errors.concat validator.validate(schema, query)
-        end
-
-        errors.any?
+        @query.accept(self)
+        @errors.any?
       end
     end
   end

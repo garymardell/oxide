@@ -2,6 +2,8 @@ require "http"
 
 module Graphql
   class Query
+    include Language::Visitable
+
     alias Variable = Nil | Bool | Int64 | Float64 | String | Array(Variable) | Hash(String, Variable)
     # alias Variables = String | Int32 | Int64 | Float64 | Bool | Nil | Array(Variables) | Hash(String, Variables)
 
@@ -16,6 +18,10 @@ module Graphql
         parser = Graphql::Language::Parser.new
         parser.parse(query_string)
       end.as(Graphql::Language::Nodes::Document)
+    end
+
+    def accept(visitor : Language::Visitor)
+      document.accept(visitor)
     end
   end
 end

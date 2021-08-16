@@ -46,6 +46,17 @@ module Graphql
         String.new(LibGraphqlParser.{{method.id}}(node)).{{operator.id}}
       end
 
+      macro copy_location_from_ast(ast_node, node)
+        location = LibGraphqlParser::GraphQLAstLocation.new
+
+        LibGraphqlParser.node_get_location(pointerof({{ast_node}}), pointerof(location))
+
+        {{node}}.beginLine = location.beginLine
+        {{node}}.endLine = location.endLine
+        {{node}}.beginColumn = location.beginColumn
+        {{node}}.endColumn = location.endColumn
+      end
+
       def initialize
         @stack = Stack.new
         @callbacks = LibGraphqlParser::GraphQLAstVisitorCallbacks.new
@@ -76,7 +87,12 @@ module Graphql
           end
 
           stack = data.as(Pointer(Stack)).value
-          stack.push(Nodes::OperationDefinition.new(operation_type))
+
+          operation_definition = Nodes::OperationDefinition.new(operation_type)
+
+          copy_location_from_ast(node, operation_definition)
+
+          stack.push(operation_definition)
 
           return 1
         }
@@ -95,7 +111,12 @@ module Graphql
           log_visit("visit_variable_definition")
 
           stack = data.as(Pointer(Stack)).value
-          stack.push(Nodes::VariableDefinition.new)
+
+          variable_definition = Nodes::VariableDefinition.new
+
+          copy_location_from_ast(node, variable_definition)
+
+          stack.push(variable_definition)
 
           return 1
         }
@@ -122,7 +143,12 @@ module Graphql
           log_visit("visit_selection_set")
 
           stack = data.as(Pointer(Stack)).value
-          stack.push(Nodes::SelectionSet.new)
+
+          selection_set = Nodes::SelectionSet.new
+
+          copy_location_from_ast(node, selection_set)
+
+          stack.push(selection_set)
 
           return 1
         }
@@ -154,25 +180,27 @@ module Graphql
           end
         }
 
-        @callbacks.visit_field = ->(node : LibGraphqlParser::GraphQLAstField, data : Pointer(Void)) {
+        @callbacks.visit_field = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
           log_visit("visit_field")
 
           field_name = LibGraphqlParser.GraphQLAstField_get_name(node)
           field_name_value = String.new(LibGraphqlParser.GraphQLAstName_get_value(field_name))
 
           stack = data.as(Pointer(Stack)).value
-          stack.push(Nodes::Field.new(field_name_value))
+
+          field = Nodes::Field.new(field_name_value)
+
+          copy_location_from_ast(node, field)
+
+          stack.push(field)
 
           return 1
         }
 
-        @callbacks.end_visit_field = ->(node : LibGraphqlParser::GraphQLAstField, data : Pointer(Void)) {
+        @callbacks.end_visit_field = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
           log_visit("end_visit_field")
 
           stack = data.as(Pointer(Stack)).value
-
-          field_name = LibGraphqlParser.GraphQLAstField_get_name(node)
-          field_name_value = String.new(LibGraphqlParser.GraphQLAstName_get_value(field_name))
 
           field = stack.pop.as(Nodes::Field)
 
@@ -186,7 +214,12 @@ module Graphql
           argument_name_value = String.new(LibGraphqlParser.GraphQLAstName_get_value(argument_name))
 
           stack = data.as(Pointer(Stack)).value
-          stack.push(Nodes::Argument.new(argument_name_value))
+
+          argument = Nodes::Argument.new(argument_name_value)
+
+          copy_location_from_ast(node, argument)
+
+          stack.push(argument)
 
           return 1
         }
@@ -229,6 +262,8 @@ module Graphql
 
           fragment_spread = Nodes::FragmentSpread.new(fragment_spread_name_value)
 
+          copy_location_from_ast(node, fragment_spread)
+
           stack.push(fragment_spread)
 
           return 1
@@ -248,7 +283,12 @@ module Graphql
           log_visit("visit_inline_fragment")
 
           stack = data.as(Pointer(Stack)).value
-          stack.push(Nodes::InlineFragment.new)
+
+          inline_fragment = Nodes::InlineFragment.new
+
+          copy_location_from_ast(node, inline_fragment)
+
+          stack.push(inline_fragment)
 
           return 1
         }
@@ -270,7 +310,11 @@ module Graphql
           fragment_name = LibGraphqlParser.GraphQLAstFragmentDefinition_get_name(node)
           fragment_name_value = String.new(LibGraphqlParser.GraphQLAstName_get_value(fragment_name))
 
-          stack.push(Nodes::FragmentDefinition.new(fragment_name_value))
+          fragment_definition = Nodes::FragmentDefinition.new(fragment_name_value)
+
+          copy_location_from_ast(node, fragment_definition)
+
+          stack.push(fragment_definition)
 
           return 1
         }
@@ -293,7 +337,11 @@ module Graphql
           variable_name = LibGraphqlParser.GraphQLAstVariable_get_name(node)
           variable_name_value = String.new(LibGraphqlParser.GraphQLAstName_get_value(variable_name))
 
-          stack.push(Nodes::Variable.new(variable_name_value))
+          variable = Nodes::Variable.new(variable_name_value)
+
+          copy_location_from_ast(node, variable)
+
+          stack.push(variable)
 
           return 1
         }
@@ -422,7 +470,11 @@ module Graphql
           directive_name = LibGraphqlParser.GraphQLAstDirective_get_name(node)
           directive_name_value = LibGraphqlParser.GraphQLAstName_get_value(directive_name)
 
-          stack.push(Nodes::Directive.new(String.new(directive_name_value)))
+          directive = Nodes::Directive.new(String.new(directive_name_value))
+
+          copy_location_from_ast(node, directive)
+
+          stack.push(directive)
 
           return 1
         }
@@ -456,7 +508,11 @@ module Graphql
           named_type_name = LibGraphqlParser.GraphQLAstNamedType_get_name(node)
           named_type_name_value = LibGraphqlParser.GraphQLAstName_get_value(named_type_name)
 
-          stack.push(Nodes::NamedType.new(String.new(named_type_name_value)))
+          named_type = Nodes::NamedType.new(String.new(named_type_name_value))
+
+          copy_location_from_ast(node, named_type)
+
+          stack.push(named_type)
 
           return 1
         }
@@ -492,7 +548,12 @@ module Graphql
           log_visit("visit_non_null_type")
 
           stack = data.as(Pointer(Stack)).value
-          stack.push(Nodes::NonNullType.new)
+
+          non_null_type = Nodes::NonNullType.new
+
+          copy_location_from_ast(node, non_null_type)
+
+          stack.push(non_null_type)
 
           return 1
         }
