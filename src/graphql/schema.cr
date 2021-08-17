@@ -4,6 +4,7 @@ require "./language/*"
 require "./execution"
 require "./validation"
 require "./lazy"
+require "./loader"
 
 module Graphql
   class Schema
