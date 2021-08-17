@@ -11,6 +11,10 @@ module Graphql
       @wrapper = blk
     end
 
+    def fulfill(value : T)
+      @value = value
+    end
+
     def unwrap
       if callback = @wrapper
         callback.call
@@ -18,7 +22,7 @@ module Graphql
     end
 
     def resolve
-      @value = @promise.call
+      @promise.call
     end
 
     def on_resolve(&blk : ->)
