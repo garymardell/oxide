@@ -1,7 +1,7 @@
 module Graphql
   class Lazy(T)
     property value : T | Nil
-    property promise : Proc(T)
+    property promise : Proc(Nil)
 
     def initialize(&blk : ->)
       @promise = blk
