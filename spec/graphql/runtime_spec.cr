@@ -20,6 +20,42 @@ describe Graphql do
     result.should eq({ "charges" => [{ "id" => "1" }, { "id" => "2" }, { "id" => "3" }] })
   end
 
+  it "executes with loader" do
+    query_string = <<-QUERY
+      query {
+        charges {
+          id
+          refund {
+            status
+
+            payment_method {
+              ... on BankAccount {
+                accountNumber
+              }
+            }
+          }
+        }
+      }
+    QUERY
+
+    runtime = Graphql::Execution::Runtime.new(
+      DummySchema,
+      Graphql::Query.new(query_string)
+    )
+
+    result = JSON.parse(runtime.execute)["data"]
+
+    expected_response = {
+      "charges" => [
+        { "id" => "1", "refund" => { "status" => "PENDING", "payment_method" => { "accountNumber" => "1234578" } } },
+        { "id" => "2", "refund" => { "status" => "PENDING", "payment_method" => { "accountNumber" => "1234578" } } },
+        { "id" => "3", "refund" => { "status" => "PENDING", "payment_method" => { "accountNumber" => "1234578" } } }
+      ]
+    }
+
+    result.should eq(expected_response)
+  end
+
   it "supports interfaces" do
     query_string = <<-QUERY
       query {

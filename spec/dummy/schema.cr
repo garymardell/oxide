@@ -43,6 +43,10 @@ ChargeType = Graphql::Type::Object.new(
           ]
         )
       )
+    ),
+    Graphql::Schema::Field.new(
+      name: "refund",
+      type: RefundType
     )
   ]
 )
@@ -65,6 +69,10 @@ RefundType = Graphql::Type::Object.new(
     Graphql::Schema::Field.new(
       name: "partial",
       type: Graphql::Type::Boolean.new
+    ),
+    Graphql::Schema::Field.new(
+      name: "payment_method",
+      type: PaymentMethodType
     )
   ]
 )
