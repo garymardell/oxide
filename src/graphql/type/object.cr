@@ -10,6 +10,8 @@ module Graphql
       getter typename : ::String
       getter implements : Array(Graphql::Type::Interface)
 
+      property resolver : Schema::Resolvable
+
       def initialize(@typename : ::String, @resolver : Schema::Resolvable, @fields = [] of Schema::Field, @implements = [] of Graphql::Type::Interface)
         @name = @typename
       end

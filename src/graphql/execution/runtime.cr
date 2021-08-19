@@ -134,22 +134,18 @@ module Graphql
           object_type.resolver
         end
 
-        if resolver
-          resolver.schema = schema
+        resolver.schema = schema
 
-          value = resolver.resolve(object_value, field_name, argument_values)
+        value = resolver.resolve(object_value, field_name, argument_values)
 
-          if value.is_a?(Lazy)
-            Proc(IntermediateType).new {
-              value.resolve
+        if value.is_a?(Lazy)
+          Proc(IntermediateType).new {
+            value.resolve
 
-              complete_value(field_type, fields, value.value, variable_values).as(IntermediateType)
-            }
-          else
-            complete_value(field_type, fields, value, variable_values).as(IntermediateType)
-          end
+            complete_value(field_type, fields, value.value, variable_values).as(IntermediateType)
+          }
         else
-          raise "no resolver found"
+          complete_value(field_type, fields, value, variable_values).as(IntermediateType)
         end
       end
 
