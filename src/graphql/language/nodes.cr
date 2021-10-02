@@ -108,6 +108,11 @@ module Graphql
 
         def initialize(@name, @arguments = [] of Argument, @selection_set = nil, @directives = [] of Directive)
         end
+
+        # TODO: Re-serailize errors properly
+        def to_json_object_key
+          name
+        end
       end
 
       class Argument < Node

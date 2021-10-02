@@ -6,7 +6,7 @@ class QueryResolver < Graphql::Schema::Resolver
       Charge.new(id: argument_values["id"].to_s.to_i32, status: "pending", reference: "ch_1234")
     when "charges"
       [
-        Charge.new(id: 1, status: "paid", reference: "ch_1234"),
+        Charge.new(id: 1, status: nil, reference: "ch_1234"),
         Charge.new(id: 2, status: "pending", reference: "ch_5678"),
         Charge.new(id: 3, status: nil, reference: "ch_5678")
       ]

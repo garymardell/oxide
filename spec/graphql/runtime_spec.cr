@@ -20,6 +20,43 @@ describe Graphql do
     result.should eq({ "charges" => [{ "id" => "1" }, { "id" => "2" }, { "id" => "3" }] })
   end
 
+  it "executes with errors" do
+    query_string = <<-QUERY
+      query {
+        charges {
+          id
+          status
+        }
+      }
+    QUERY
+
+    runtime = Graphql::Execution::Runtime.new(
+      DummySchema,
+      Graphql::Query.new(query_string)
+    )
+
+    result = JSON.parse(runtime.execute)
+
+    expected_errors = [
+      {
+        "message" => "Cannot return null for non-nullable field Charge.status"
+      }
+    ]
+
+    # expected_data = nil
+
+    expected_data = {
+      "charges" => [
+        nil,
+        { "id" => "2", "status" => "PENDING" },
+        nil
+      ]
+    }
+
+    result["data"].should eq(expected_data)
+    result["errors"].should eq(expected_errors)
+  end
+
   it "executes with loader" do
     query_string = <<-QUERY
       query {

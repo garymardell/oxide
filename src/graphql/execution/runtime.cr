@@ -25,10 +25,16 @@ module Graphql
 
       delegate document, to: query
 
-      private property errors : Set(Error)
+      private property current_path : Array(String)
+      private property current_object : Graphql::Type::Object?
+      private property current_field : Graphql::Language::Nodes::Field?
+
+
+      private property errors : Set(String)
 
       def initialize(@schema : Graphql::Schema, @query : Graphql::Query)
-        @errors = Set(Error).new
+        @current_path = [] of String
+        @errors = Set(String).new
       end
 
       def execute
@@ -50,7 +56,7 @@ module Graphql
         end
 
         if errors.any?
-          { "data" => data, "errors" => errors }.to_json
+          { "data" => data, "errors" => serialize_errors(errors) }.to_json
         else
           { "data" => data }.to_json
         end
@@ -59,9 +65,13 @@ module Graphql
       private def execute_query(query, schema, coerced_variable_values) : ReturnType
         if query_type = schema.query
 
-          result = execute_selection_set(query.selection_set.not_nil!.selections, query_type, nil, coerced_variable_values)
+          begin
+            result = execute_selection_set(query.selection_set.not_nil!.selections, query_type, nil, coerced_variable_values)
 
-          serialize(result)
+            serialize(result)
+          rescue FieldError
+            nil
+          end
         end
       end
 
@@ -79,6 +89,12 @@ module Graphql
           end
         else
           result
+        end
+      end
+
+      def serialize_errors(errors : Set(String))
+        errors.map do |error|
+          { "message" => error }
         end
       end
 
@@ -102,7 +118,7 @@ module Graphql
 
             memo[key] = execute_field(object_type, object_value, field.type, fields, variable_values).as(IntermediateType)
           else
-            raise "error"
+            raise "error getting field #{field_name}"
           end
         end
       end
@@ -142,26 +158,36 @@ module Graphql
           Proc(IntermediateType).new {
             value.resolve
 
-            complete_value(field_type, fields, value.value, variable_values).as(IntermediateType)
+            @current_object = object_type
+            @current_field = field
+
+            complete_value(@current_path, field_type, fields, value.value, variable_values).as(IntermediateType)
           }
         else
-          complete_value(field_type, fields, value, variable_values).as(IntermediateType)
+          @current_object = object_type
+          @current_field = field
+
+          complete_value(@current_path, field_type, fields, value, variable_values).as(IntermediateType)
         end
       end
 
 
-      private def complete_value(field_type : Graphql::Type::Object, fields, result, variable_values) : IntermediateType
+      private def complete_value(path : Array(String), field_type : Graphql::Type::Object, fields, result, variable_values) : IntermediateType
         return nil if result.nil?
 
         object_type = field_type
 
         sub_selection_set = merge_selection_sets(fields)
 
-        execute_selection_set(sub_selection_set, object_type, result, variable_values).as(IntermediateType)
+        begin
+          execute_selection_set(sub_selection_set, object_type, result, variable_values).as(IntermediateType)
+        rescue FieldError
+          nil
+        end
       end
 
       # TODO: Merge into object above?
-      private def complete_value(field_type : Graphql::Type::Union, fields, result, variable_values)
+      private def complete_value(path : Array(String), field_type : Graphql::Type::Union, fields, result, variable_values)
         return nil if result.nil?
 
         object_type = resolve_abstract_type(field_type, result)
@@ -171,7 +197,7 @@ module Graphql
         execute_selection_set(sub_selection_set, object_type, result, variable_values)
       end
 
-      private def complete_value(field_type : Graphql::Type::Interface, fields, result, variable_values)
+      private def complete_value(path : Array(String), field_type : Graphql::Type::Interface, fields, result, variable_values)
         return nil if result.nil?
 
         object_type = resolve_abstract_type(field_type, result)
@@ -181,7 +207,7 @@ module Graphql
         execute_selection_set(sub_selection_set, object_type, result, variable_values)
       end
 
-      private def complete_value(field_type : Graphql::Type::Scalar, fields, result, variable_values) : IntermediateType
+      private def complete_value(path : Array(String), field_type : Graphql::Type::Scalar, fields, result, variable_values) : IntermediateType
         return nil if result.nil?
 
         field_type.coerce(result).as(IntermediateType)
@@ -191,7 +217,7 @@ module Graphql
       # If a List type wraps a Non-Null type, and one of the elements of that list resolves to null,
       # then the entire list must resolve to null. If the List type is also wrapped in a Non-Null,
       # the field error continues to propagate upwards.
-      private def complete_value(field_type : Graphql::Type::List, fields, result, variable_values) : IntermediateType
+      private def complete_value(path : Array(String), field_type : Graphql::Type::List, fields, result, variable_values) : IntermediateType
         return nil if result.nil?
 
         if result.is_a?(Array)
@@ -199,9 +225,9 @@ module Graphql
 
           partial_results = result.map do |result_item|
             if result_item.is_a?(Proc(IntermediateType))
-              complete_value(inner_type, fields, result_item.call, variable_values).as(IntermediateType)
+              complete_value(path, inner_type, fields, result_item.call, variable_values).as(IntermediateType)
             else
-              complete_value(inner_type, fields, result_item, variable_values).as(IntermediateType)
+              complete_value(path, inner_type, fields, result_item, variable_values).as(IntermediateType)
             end
           end
 
@@ -223,31 +249,37 @@ module Graphql
         end
       end
 
-      private def complete_value(field_type : Graphql::Type::Enum, fields, result, variable_values) : IntermediateType
+      private def complete_value(path : Array(String), field_type : Graphql::Type::Enum, fields, result, variable_values) : IntermediateType
         return nil if result.nil?
 
         if enum_value = field_type.values.find(&.value.==(result))
           enum_value.name.as(IntermediateType)
         else
-          nil.as(IntermediateType)
+          raise FieldError.new("`#{current_object.try(&.typename)}.#{current_field.try(&.name)}` returned \"#{result}\" at ``, but this isn't a valid value for `#{field_type.typename}`. Update the field or resolver to return one of the `#{field_type.typename}`'s values instead.")
         end
       end
 
-      private def complete_value(field_type : Graphql::Type::NonNull, fields, result, variable_values) : IntermediateType
-        completed_result = complete_value(field_type.of_type, fields, result, variable_values)
+      private def complete_value(path : Array(String), field_type : Graphql::Type::NonNull, fields, result, variable_values) : IntermediateType
+        completed_result = complete_value(path, field_type.of_type, fields, result, variable_values)
 
-        raise NullError.new if completed_result.nil?
+        if completed_result.nil?
+          field = fields.first
 
-        completed_result.as(IntermediateType)
+          errors << "Cannot return null for non-nullable field #{current_object.try(&.typename)}.#{current_field.try(&.name)}"
+
+          raise FieldError.new
+        else
+          completed_result.as(IntermediateType)
+        end
       end
 
-      private def complete_value(field_type : Graphql::Type::LateBound, fields, result, variable_values) : IntermediateType
+      private def complete_value(path : Array(String), field_type : Graphql::Type::LateBound, fields, result, variable_values) : IntermediateType
         unwrapped_type = get_type(field_type.typename)
 
-        complete_value(unwrapped_type, fields, result, variable_values)
+        complete_value(path, unwrapped_type, fields, result, variable_values)
       end
 
-      private def complete_value(field_type, fields, result, variable_values) : IntermediateType
+      private def complete_value(path : Array(String), field_type, fields, result, variable_values) : IntermediateType
         raise "should not be reached"
       end
 
