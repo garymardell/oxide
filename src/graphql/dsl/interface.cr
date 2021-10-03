@@ -2,8 +2,7 @@ require "./fields"
 
 module Graphql
   module DSL
-    abstract class Object
-      include Graphql::Schema::Resolvable
+    class Interface
       include Graphql::DSL::Fields
 
       macro graphql_name(name)
@@ -16,37 +15,14 @@ module Graphql
         self.name
       end
 
-      macro implements(*interfaces)
-        def self.interfaces
-          interfaces = [] of Graphql::DSL::Interface.class
-
-          {% for interface in interfaces %}
-            interfaces << {{interface}}
-          {% end %}
-
-          interfaces
-        end
-
-        def self.implements
-          interfaces = [] of Graphql::Type::Interface
-
-          {% for interface in interfaces %}
-            interfaces << {{interface}}.compile()
-          {% end %}
-
-          interfaces
-        end
-      end
-
-      def self.interfaces
-        [] of Graphql::DSL::Interface.class
-      end
-
-      def self.implements
-        [] of Graphql::Type::Interface
+      def self.resolve_type(object)
       end
 
       def self.resolve(object, field_name, argument_values)
+      end
+
+      def self.resolves_field?(field_name)
+        false
       end
 
       macro inherited
@@ -77,13 +53,23 @@ module Graphql
               fields
             end
 
-            def self.compile : Graphql::Type::Object
-              Graphql::Type::Object.new(
-                typename: self.graphql_name,
-                resolver: Graphql::DSL::ObjectResolver.new(self),
-                implements: self.implements,
+            def self.compile
+              Graphql::Type::Interface.new(
+                name: self.graphql_name,
+                type_resolver: Graphql::DSL::InterfaceResolver.new(self),
                 fields: self.compile_fields
               )
+            end
+
+            def self.resolves_field?(field_name)
+              field_names = [] of String
+
+              {% methods = @type.class.methods.select { |m| m.annotation(Field) } %}
+              {% for method in methods %}
+                field_names << {{ method.annotation(Field)["name"] }}
+              {% end %}
+
+              field_names.includes?(field_name)
             end
 
             def self.resolve(object, field_name, argument_values)
@@ -96,12 +82,6 @@ module Graphql
               when {{ method.annotation(Field)["name"] }}
                 {{method.name}}(object, field_name, argument_values)
               {% end %}
-              else
-                interfaces.each do |interface|
-                  if interface.resolves_field?(field_name)
-                    return interface.resolve(object, field_name, argument_values)
-                  end
-                end
               end
             end
           {% end %}

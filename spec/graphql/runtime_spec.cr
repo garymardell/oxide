@@ -11,7 +11,7 @@ describe Graphql do
     QUERY
 
     runtime = Graphql::Execution::Runtime.new(
-      DummySchema,
+      DummySchema.compile,
       Graphql::Query.new(query_string)
     )
 
@@ -31,7 +31,7 @@ describe Graphql do
     QUERY
 
     runtime = Graphql::Execution::Runtime.new(
-      DummySchema,
+      DummySchema.compile,
       Graphql::Query.new(query_string)
     )
 
@@ -76,7 +76,7 @@ describe Graphql do
     QUERY
 
     runtime = Graphql::Execution::Runtime.new(
-      DummySchema,
+      DummySchema.compile,
       Graphql::Query.new(query_string)
     )
 
@@ -108,7 +108,7 @@ describe Graphql do
     QUERY
 
     runtime = Graphql::Execution::Runtime.new(
-      DummySchema,
+      DummySchema.compile,
       Graphql::Query.new(query_string)
     )
 
@@ -140,7 +140,7 @@ describe Graphql do
     QUERY
 
     runtime = Graphql::Execution::Runtime.new(
-      DummySchema,
+      DummySchema.compile,
       Graphql::Query.new(query_string)
     )
 
@@ -168,7 +168,7 @@ describe Graphql do
     QUERY
 
     runtime = Graphql::Execution::Runtime.new(
-      DummySchema,
+      DummySchema.compile,
       Graphql::Query.new(query_string)
     )
 
@@ -191,7 +191,7 @@ describe Graphql do
     }
 
     runtime = Graphql::Execution::Runtime.new(
-      DummySchema,
+      DummySchema.compile,
       Graphql::Query.new(
         query_string,
         variables
@@ -215,7 +215,7 @@ describe Graphql do
     variables = {} of String => JSON::Any::Type
 
     runtime = Graphql::Execution::Runtime.new(
-      DummySchema,
+      DummySchema.compile,
       Graphql::Query.new(
         query_string,
         variables

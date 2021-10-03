@@ -5,6 +5,5 @@ module Graphql
         Graphql::Type::Float.new
       end
     end
-
   end
 end

@@ -5,6 +5,5 @@ module Graphql
         Graphql::Type::String.new
       end
     end
-
   end
 end

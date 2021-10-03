@@ -5,6 +5,5 @@ module Graphql
         Graphql::Type::Boolean.new
       end
     end
-
   end
 end

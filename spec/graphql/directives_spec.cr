@@ -16,7 +16,7 @@ describe Graphql do
     }
 
     runtime = Graphql::Execution::Runtime.new(
-      DummySchema,
+      DummySchema.compile,
       Graphql::Query.new(query_string, variables)
     )
 
@@ -45,7 +45,7 @@ describe Graphql do
     }
 
     runtime = Graphql::Execution::Runtime.new(
-      DummySchema,
+      DummySchema.compile,
       Graphql::Query.new(query_string, variables)
     )
 
@@ -74,7 +74,7 @@ describe Graphql do
     }
 
     runtime = Graphql::Execution::Runtime.new(
-      DummySchema,
+      DummySchema.compile,
       Graphql::Query.new(query_string, variables)
     )
 
@@ -103,7 +103,7 @@ describe Graphql do
     }
 
     runtime = Graphql::Execution::Runtime.new(
-      DummySchema,
+      DummySchema.compile,
       Graphql::Query.new(query_string, variables)
     )
 

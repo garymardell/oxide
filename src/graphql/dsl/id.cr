@@ -5,6 +5,5 @@ module Graphql
         Graphql::Type::Id.new
       end
     end
-
   end
 end

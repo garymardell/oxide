@@ -12,7 +12,7 @@ describe Graphql::Validation::Pipeline do
 
     query = Graphql::Query.new(query_string)
 
-    pipeline = Graphql::Validation::Pipeline.new(DummySchema, query)
+    pipeline = Graphql::Validation::Pipeline.new(DummySchema.compile, query)
     pipeline.execute
   end
 end

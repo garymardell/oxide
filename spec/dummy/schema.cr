@@ -2,173 +2,161 @@ require "../../src/graphql"
 require "./models/*"
 require "./resolvers/*"
 
-class TransactionTypeResolver < Graphql::Schema::TypeResolver
-  def resolve_type(object : Charge)
-    ChargeType
-  end
+class BankAccountType < Graphql::DSL::Object
+  graphql_name "BankAccount"
 
-  def resolve_type(object : Refund)
-    RefundType
-  end
-end
+  field :id, Graphql::DSL::Id, null: true
+  field :accountNumber, Graphql::DSL::String, null: true
 
-TransactionInterface = Graphql::Type::Interface.new(
-  name: "Transaction",
-  type_resolver: TransactionTypeResolver.new,
-  fields: [
-    Graphql::Schema::Field.new(
-      name: "id",
-      type: Graphql::Type::Id.new
-    ),
-    Graphql::Schema::Field.new(
-      name: "reference",
-      type: Graphql::Type::String.new
-    )
-  ]
-)
-
-ChargeType = Graphql::Type::Object.new(
-  typename: "Charge",
-  resolver: ChargeResolver.new,
-  implements: [TransactionInterface],
-  fields: [
-    Graphql::Schema::Field.new(
-      name: "status",
-      type: Graphql::Type::NonNull.new(
-        of_type: Graphql::Type::Enum.new(
-          typename: "ChargeStatus",
-          values: [
-            Graphql::Type::EnumValue.new(name: "PENDING", value: "pending"),
-            Graphql::Type::EnumValue.new(name: "PAID", value: "paid")
-          ]
-        )
-      )
-    ),
-    Graphql::Schema::Field.new(
-      name: "refund",
-      type: RefundType
-    )
-  ]
-)
-
-RefundType = Graphql::Type::Object.new(
-  typename: "Refund",
-  resolver: RefundResolver.new,
-  implements: [TransactionInterface],
-  fields: [
-    Graphql::Schema::Field.new(
-      name: "status",
-      type: Graphql::Type::Enum.new(
-        typename: "RefundStatus",
-        values: [
-          Graphql::Type::EnumValue.new(name: "PENDING", value: "pending"),
-          Graphql::Type::EnumValue.new(name: "REFUNDED", value: "refunded")
-        ]
-      )
-    ),
-    Graphql::Schema::Field.new(
-      name: "partial",
-      type: Graphql::Type::Boolean.new
-    ),
-    Graphql::Schema::Field.new(
-      name: "payment_method",
-      type: PaymentMethodType
-    )
-  ]
-)
-
-CreditCardType = Graphql::Type::Object.new(
-  typename: "CreditCard",
-  resolver: CreditCardResolver.new,
-  fields: [
-    Graphql::Schema::Field.new(
-      name: "id",
-      type: Graphql::Type::Id.new
-    ),
-    Graphql::Schema::Field.new(
-      name: "last4",
-      type: Graphql::Type::String.new
-    )
-  ]
-)
-
-BankAccountType = Graphql::Type::Object.new(
-  typename: "BankAccount",
-  resolver: BankAccountResolver.new,
-  fields: [
-    Graphql::Schema::Field.new(
-      name: "id",
-      type: Graphql::Type::Id.new
-    ),
-    Graphql::Schema::Field.new(
-      name: "accountNumber",
-      type: Graphql::Type::String.new
-    )
-  ]
-)
-
-class PaymentMethodTypeResolver < Graphql::Schema::TypeResolver
-  def resolve_type(object : CreditCard)
-    CreditCardType
-  end
-
-  def resolve_type(object : BankAccount)
-    BankAccountType
+  def accountNumber(object : BankAccount, argument_values)
+    object.account_number
   end
 end
 
-PaymentMethodType = Graphql::Type::Union.new(
-  typename: "PaymentMethod",
-  type_resolver: PaymentMethodTypeResolver.new,
-  possible_types: [
-    CreditCardType.as(Graphql::Type),
-    BankAccountType.as(Graphql::Type)
-  ]
-)
+class CreditCardType < Graphql::DSL::Object
+  graphql_name "CreditCard"
 
-DummySchema = Graphql::Schema.new(
-  query: Graphql::Type::Object.new(
-    typename: "Query",
-    resolver: QueryResolver.new,
-    fields: [
-      Graphql::Schema::Field.new(
-        name: "charge",
-        type: Graphql::Type::NonNull.new(of_type: ChargeType),
-        arguments: [
-          Graphql::Schema::Argument.new(
-            name: "id",
-            type: Graphql::Type::Id.new
-          )
-        ]
-      ),
-      Graphql::Schema::Field.new(
-        name: "charges",
-        type: Graphql::Type::NonNull.new(
-          of_type: Graphql::Type::List.new(of_type: ChargeType)
-        )
-      ),
-      Graphql::Schema::Field.new(
-        name: "transactions",
-        type: Graphql::Type::NonNull.new(
-          of_type: Graphql::Type::List.new(of_type: TransactionInterface)
-        )
-      ),
-      Graphql::Schema::Field.new(
-        name: "paymentMethods",
-        type: Graphql::Type::NonNull.new(
-          of_type: Graphql::Type::List.new(of_type: PaymentMethodType)
-        )
-      ),
-      Graphql::Schema::Field.new(
-        name: "nullList",
-        type: Graphql::Type::List.new(
-          of_type: Graphql::Type::NonNull.new(of_type: ChargeType)
-        )
-      )
+  field :id, Graphql::DSL::Id, null: true
+  field :last4, Graphql::DSL::String, null: true
+end
+
+class PaymentMethodType < Graphql::DSL::Union
+  graphql_name "PaymentMethod"
+
+  possible_types CreditCardType, BankAccountType
+
+  def self.resolve_type(object)
+    case object
+    when CreditCard
+      CreditCardType
+    when BankAccount
+      BankAccountType
+    end
+  end
+end
+
+class TransactionInterface < Graphql::DSL::Interface
+  field :id, Graphql::DSL::Id, null: false
+  field :reference, Graphql::DSL::String, null: false
+
+  def self.resolve_type(object)
+    case object
+    when Charge
+      ChargeType
+    when Refund
+      RefundType
+    end
+  end
+end
+
+class ChargeStatus < Graphql::DSL::Enum
+  value "PENDING", value: "pending"
+  value "PAID", value: "paid"
+end
+
+class RefundLoader < Graphql::Loader(Int32, Refund?)
+  def perform(load_keys)
+    load_keys.each do |key|
+      fulfill(key, Refund.new(key, "pending", "r_12345", false))
+    end
+  end
+end
+
+class ChargeType < Graphql::DSL::Object
+  graphql_name "Charge"
+
+  implements TransactionInterface
+
+  field :status, ChargeStatus, null: false
+
+  field :refund, RefundType, null: true
+
+  def initialize
+    @loader = RefundLoader.new
+  end
+
+  def refund(object : Charge, argument_values)
+    @loader.load(object.id)
+  end
+end
+
+class RefundStatus < Graphql::DSL::Enum
+  value "PENDING", value: "pending"
+  value "REFUNDED", value: "refunded"
+end
+
+class PaymentMethodLoader < Graphql::Loader(Int32, BankAccount | CreditCard | Nil)
+  def perform(load_keys)
+    load_keys.each do |key|
+      fulfill(key, BankAccount.new(1, "1234578"))
+    end
+  end
+end
+
+class RefundType < Graphql::DSL::Object
+  graphql_name "Refund"
+
+  implements TransactionInterface
+
+  field :status, RefundStatus, null: true
+
+  field :partial, Graphql::DSL::Boolean, null: true
+
+  field :payment_method, PaymentMethodType, null: true
+
+  property loader : PaymentMethodLoader
+
+  def initialize
+    @loader = PaymentMethodLoader.new
+  end
+
+  def payment_method(object : Refund, argument_values)
+    @loader.load(object.id)
+  end
+end
+
+
+class QueryType < Graphql::DSL::Object
+  graphql_name "Query"
+
+  field :charge, ChargeType, null: true do
+    argument :id, Graphql::DSL::Id, required: true
+  end
+
+  def charge(object, argument_values)
+    Charge.new(id: argument_values["id"].to_s.to_i32, status: "pending", reference: "ch_1234")
+  end
+
+
+  field :charges, [ChargeType], null: false
+
+  def charges(object, argument_values)
+    [
+      Charge.new(id: 1, status: nil, reference: "ch_1234"),
+      Charge.new(id: 2, status: "pending", reference: "ch_5678"),
+      Charge.new(id: 3, status: nil, reference: "ch_5678")
     ]
-  ),
-  mutation: nil,
-  orphan_types: [
-    RefundType.as(Graphql::Type)
-  ]
-)
+  end
+
+  field :transactions, [TransactionInterface], null: false
+
+  def transactions(object, argument_values)
+    [
+      Charge.new(id: 1, status: "paid", reference: "ch_1234"),
+      Refund.new(id: 32, status: "refunded", reference: "r_5678", partial: true)
+    ]
+  end
+
+  field :paymentMethods, [PaymentMethodType], null: false
+
+  def paymentMethods(object, argument_values)
+    [
+      CreditCard.new(id: 1, last4: "4242"),
+      BankAccount.new(id: 32, account_number: "1234567")
+    ]
+  end
+end
+
+class DummySchema < Graphql::DSL::Schema
+  query QueryType
+end

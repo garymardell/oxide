@@ -5,6 +5,5 @@ module Graphql
         Graphql::Type::Int.new
       end
     end
-
   end
 end
