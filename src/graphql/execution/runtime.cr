@@ -16,6 +16,7 @@ module Graphql
       class NullError < FieldError
       end
 
+      alias VariableType = String | Int32 | Int64 | Float64 | Bool | Nil
       alias ReturnType = String | Int32 | Int64 | Float64 | Bool | Nil | Array(ReturnType) | Hash(String, ReturnType)
 
       alias IntermediateType = ReturnType | Proc(IntermediateType) | Array(IntermediateType) | Hash(String, IntermediateType)
@@ -439,7 +440,7 @@ module Graphql
       end
 
       private def coerce_variable_values(schema, operation, variable_values)
-        coerced_variables = {} of String => JSON::Any::Type # TODO: Type may change
+        coerced_variables = {} of String => VariableType # TODO: Type may change
 
         variable_definitions = operation.variable_definitions
         variable_definitions.each do |variable_definition|
@@ -454,12 +455,12 @@ module Graphql
           value = variable_values.fetch(variable_name, nil)
 
           if !has_value && !variable_definition.default_value.nil?
-            coerced_variables[variable_name] = variable_definition.default_value.not_nil!.value.as(JSON::Any::Type)
+            coerced_variables[variable_name] = variable_definition.default_value.not_nil!.value.as(VariableType)
           elsif variable_type.is_a?(Graphql::Language::Nodes::NonNullType) && (!has_value || value.nil?)
             raise "Variable is marked as non null but received a null value"
           elsif has_value
             if value.nil?
-              coerced_variables[variable_name] = nil.as(JSON::Any::Type)
+              coerced_variables[variable_name] = nil
             else
               # TODO: Support coercion for all types
               coerced_value = if variable_type.responds_to?(:coerce)
@@ -468,7 +469,12 @@ module Graphql
                 value
               end
 
-              coerced_variables[variable_name] = coerced_value.as(JSON::Any::Type)
+              case coerced_value
+              when JSON::Any
+                coerced_variables[variable_name] = coerced_value.raw.as(VariableType)
+              else
+                coerced_variables[variable_name] = coerced_value.as(VariableType)
+              end
             end
           end
         end

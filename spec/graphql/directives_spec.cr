@@ -11,13 +11,15 @@ describe Graphql do
       }
     QUERY
 
-    variables = {
-      "toSkip" => true.as(JSON::Any::Type)
-    }
+    variables = JSON.parse <<-STRING
+      {
+        "toSkip": true
+      }
+    STRING
 
     runtime = Graphql::Execution::Runtime.new(
       DummySchema.compile,
-      Graphql::Query.new(query_string, variables)
+      Graphql::Query.new(query_string, variables.as_h)
     )
 
     result = JSON.parse(runtime.execute)["data"]
@@ -40,13 +42,15 @@ describe Graphql do
       }
     QUERY
 
-    variables = {
-      "toSkip" => false.as(JSON::Any::Type)
-    }
+    variables = JSON.parse <<-STRING
+      {
+        "toSkip": false
+      }
+    STRING
 
     runtime = Graphql::Execution::Runtime.new(
       DummySchema.compile,
-      Graphql::Query.new(query_string, variables)
+      Graphql::Query.new(query_string, variables.as_h)
     )
 
     result = JSON.parse(runtime.execute)["data"]
@@ -69,13 +73,15 @@ describe Graphql do
       }
     QUERY
 
-    variables = {
-      "toInclude" => false.as(JSON::Any::Type)
-    }
+    variables = JSON.parse <<-STRING
+      {
+        "toInclude": false
+      }
+    STRING
 
     runtime = Graphql::Execution::Runtime.new(
       DummySchema.compile,
-      Graphql::Query.new(query_string, variables)
+      Graphql::Query.new(query_string, variables.as_h)
     )
 
     result = JSON.parse(runtime.execute)["data"]
@@ -98,13 +104,15 @@ describe Graphql do
       }
     QUERY
 
-    variables = {
-      "toInclude" => true.as(JSON::Any::Type)
-    }
+    variables = JSON.parse <<-STRING
+      {
+        "toInclude": true
+      }
+    STRING
 
     runtime = Graphql::Execution::Runtime.new(
       DummySchema.compile,
-      Graphql::Query.new(query_string, variables)
+      Graphql::Query.new(query_string, variables.as_h)
     )
 
     result = JSON.parse(runtime.execute)["data"]

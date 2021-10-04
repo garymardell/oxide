@@ -186,15 +186,17 @@ describe Graphql do
       }
     QUERY
 
-    variables = {
-      "id" => "10".as(JSON::Any::Type)
-    }
+    variables = JSON.parse <<-STRING
+      {
+        "id": "10"
+      }
+    STRING
 
     runtime = Graphql::Execution::Runtime.new(
       DummySchema.compile,
       Graphql::Query.new(
         query_string,
-        variables
+        variables.as_h
       )
     )
 
@@ -212,7 +214,7 @@ describe Graphql do
       }
     QUERY
 
-    variables = {} of String => JSON::Any::Type
+    variables = {} of String => JSON::Any
 
     runtime = Graphql::Execution::Runtime.new(
       DummySchema.compile,

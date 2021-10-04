@@ -8,10 +8,10 @@ module Graphql
     # alias Variables = String | Int32 | Int64 | Float64 | Bool | Nil | Array(Variables) | Hash(String, Variables)
 
     property query_string : String
-    property variables : Hash(String, JSON::Any::Type)
+    property variables : Hash(String, JSON::Any)
     property operation_name : String?
 
-    def initialize(@query_string, @variables = {} of String => JSON::Any::Type, @operation_name : String? = nil)
+    def initialize(@query_string, @variables = {} of String => JSON::Any, @operation_name : String? = nil)
     end
 
     def document
