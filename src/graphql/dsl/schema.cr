@@ -14,10 +14,10 @@ module Graphql
           )
         end
 
-        def self.execute(query_string)
+        def self.execute(query_string, variables = {} of String => JSON::Any::Type, operation_name : String? = nil)
           runtime = Graphql::Execution::Runtime.new(
             compile,
-            Graphql::Query.new(query_string)
+            Graphql::Query.new(query_string, variables, operation_name)
           )
 
           runtime.execute

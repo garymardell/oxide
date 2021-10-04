@@ -9,8 +9,9 @@ module Graphql
 
     property query_string : String
     property variables : Hash(String, JSON::Any::Type)
+    property operation_name : String?
 
-    def initialize(@query_string, @variables = {} of String => JSON::Any::Type)
+    def initialize(@query_string, @variables = {} of String => JSON::Any::Type, @operation_name : String? = nil)
     end
 
     def document

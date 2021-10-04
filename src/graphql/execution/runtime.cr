@@ -40,11 +40,7 @@ module Graphql
       def execute
         definitions = document.definitions.select(type: Graphql::Language::Nodes::OperationDefinition)
 
-        operation = if definitions.size > 1
-          definitions.first # Find appropriate operation
-        else
-          definitions.first
-        end
+        operation = get_operation(definitions, query.operation_name)
 
         coerced_variable_values = coerce_variable_values(schema, operation, @query.variables)
 
@@ -59,6 +55,24 @@ module Graphql
           { "data" => data, "errors" => serialize_errors(errors) }.to_json
         else
           { "data" => data }.to_json
+        end
+      end
+
+      private def get_operation(definitions, operation_name : Nil)
+        if definitions.one?
+          definitions.first
+        else
+          raise "operation definition not found"
+        end
+      end
+
+      private def get_operation(definitions, operation_name : String)
+        definition = definitions.find { |definition| definition.operation_type == operation_name }
+
+        if definition
+          definition
+        else
+          raise "operation definition not found"
         end
       end
 
