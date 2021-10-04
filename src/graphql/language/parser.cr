@@ -80,6 +80,11 @@ module Graphql
 
           operation = LibGraphqlParser.GraphQLAstOperationDefinition_get_operation(node)
 
+          operation_name = LibGraphqlParser.GraphQLAstOperationDefinition_get_name(node)
+          operation_name_value = if operation_name
+            String.new(LibGraphqlParser.GraphQLAstName_get_value(operation_name))
+          end
+
           operation_type = if (operation)
             String.new(operation)
           else
@@ -88,7 +93,7 @@ module Graphql
 
           stack = data.as(Pointer(Stack)).value
 
-          operation_definition = Nodes::OperationDefinition.new(operation_type)
+          operation_definition = Nodes::OperationDefinition.new(operation_type, name: operation_name_value)
 
           copy_location_from_ast(node, operation_definition)
 

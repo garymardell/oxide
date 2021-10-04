@@ -264,4 +264,29 @@ describe Graphql do
 
     result.should eq({ "foo" => "foo", "bar" => "bar" })
   end
+
+  it "executes correct operation definition" do
+    query_string = <<-QUERY
+      query allPaymentMethods {
+        paymentMethods {
+          id
+        }
+      }
+
+      query allCharges {
+        charges {
+          id
+        }
+      }
+    QUERY
+
+    runtime = Graphql::Execution::Runtime.new(
+      DummySchema.compile,
+      Graphql::Query.new(query_string, operation_name: "allCharges")
+    )
+
+    result = JSON.parse(runtime.execute)["data"]
+
+    result.should eq({ "charges" => [{ "id" => "1" }, { "id" => "2" }, { "id" => "3" }] })
+  end
 end

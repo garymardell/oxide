@@ -68,7 +68,7 @@ module Graphql
       end
 
       private def get_operation(definitions, operation_name : String)
-        definition = definitions.find { |definition| definition.operation_type == operation_name }
+        definition = definitions.find { |definition| definition.name == operation_name }
 
         if definition
           definition

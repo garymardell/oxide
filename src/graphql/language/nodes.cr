@@ -33,12 +33,13 @@ module Graphql
       end
 
       class OperationDefinition < Node
+        property name : String?
         property operation_type : String
         property selection_set : SelectionSet?
         property variable_definitions : Array(VariableDefinition)
         property directives : Array(Directive)
 
-        def initialize(@operation_type, @selection_set = nil, @variable_definitions = [] of VariableDefinition, @directives = [] of Directive)
+        def initialize(@operation_type, @name = nil, @selection_set = nil, @variable_definitions = [] of VariableDefinition, @directives = [] of Directive)
         end
 
         def accept(visitor : Visitor)
