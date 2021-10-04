@@ -4,13 +4,11 @@ module Graphql
   class Query
     include Language::Visitable
 
-    alias Variable = Nil | Bool | Int64 | Float64 | String | Array(Variable) | Hash(String, Variable)
-
     property query_string : String
     property variables : Hash(String, JSON::Any)
     property operation_name : String | Nil
 
-    def initialize(@query_string, @variables : Hash(String, JSON::Any) = {} of String => JSON::Any, @operation_name : String | Nil = nil)
+    def initialize(@query_string, @variables = {} of String => JSON::Any, @operation_name = nil)
     end
 
     def document
