@@ -2,14 +2,29 @@
 
 ## TODO
 
-- [x] Unions
-- [x] Interfaces
-- [x] Inline fragments
+- [ ] Context
 - [ ] Directives (@skip, @include)
-- [x] Variables
-- [x] Late bound types
-- [ ] Dataloader (promise support)
-- [x] Introspection
 - [ ] Error handling
 - [ ] Mutations
 - [ ] Static validation
+- [ ] Custom directives
+
+
+## Missing features
+
+- Query Analyser
+- Complexity and depth
+- Timeout
+- Multiplexing
+- Lookahead
+- Tracing hooks
+- Visibility
+- Validations
+- Pagination
+- Subscriptions
+
+### Pro features
+
+- Streaming @defer
+- Persisted queries
+- Cursor pagination
