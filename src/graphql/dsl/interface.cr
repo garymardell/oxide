@@ -15,10 +15,10 @@ module Graphql
         self.name
       end
 
-      def self.resolve_type(object)
+      def self.resolve_type(object, context)
       end
 
-      def self.resolve(object, field_name, argument_values)
+      def self.resolve(object, context, field_name, argument_values)
       end
 
       def self.resolves_field?(field_name)
@@ -28,7 +28,7 @@ module Graphql
       macro inherited
         macro finished
           {% verbatim do %}
-            def self.compile_fields : Array(Graphql::Schema::Field)
+            def self.compile_fields(context) : Array(Graphql::Schema::Field)
               fields = [] of Graphql::Schema::Field
 
               {% methods = @type.class.methods.select { |m| m.annotation(Field) } %}
@@ -39,13 +39,13 @@ module Graphql
                 {% for argument in method.annotations(Argument) %}
                   arguments << Graphql::Schema::Argument.new(
                     name: {{argument["name"]}},
-                    type: {{argument["type"]}}.compile()
+                    type: {{argument["type"]}}.compile(context)
                   )
                 {% end %}
 
                 fields << Graphql::Schema::Field.new(
                   name: {{ method.annotation(Field)["name"] }},
-                  type: {{method.annotation(Field)["name"].id}}_type(),
+                  type: {{method.annotation(Field)["name"].id}}_type(context),
                   arguments: arguments
                 )
               {% end %}
@@ -53,11 +53,11 @@ module Graphql
               fields
             end
 
-            def self.compile
+            def self.compile(context)
               Graphql::Type::Interface.new(
                 name: self.graphql_name,
                 type_resolver: Graphql::DSL::InterfaceResolver.new(self),
-                fields: self.compile_fields
+                fields: self.compile_fields(context)
               )
             end
 
@@ -72,7 +72,7 @@ module Graphql
               field_names.includes?(field_name)
             end
 
-            def self.resolve(object, field_name, argument_values)
+            def self.resolve(object, context, field_name, argument_values)
               {% methods = @type.class.methods.select { |m| m.annotation(Field) } %}
 
               klass = new

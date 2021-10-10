@@ -19,7 +19,7 @@ describe Graphql do
 
     runtime = Graphql::Execution::Runtime.new(
       DummySchema.compile,
-      Graphql::Query.new(query_string, variables.as_h)
+      Graphql::Query.new(query_string, variables: variables.as_h)
     )
 
     result = JSON.parse(runtime.execute)["data"]
@@ -50,7 +50,7 @@ describe Graphql do
 
     runtime = Graphql::Execution::Runtime.new(
       DummySchema.compile,
-      Graphql::Query.new(query_string, variables.as_h)
+      Graphql::Query.new(query_string, variables: variables.as_h)
     )
 
     result = JSON.parse(runtime.execute)["data"]
@@ -81,7 +81,7 @@ describe Graphql do
 
     runtime = Graphql::Execution::Runtime.new(
       DummySchema.compile,
-      Graphql::Query.new(query_string, variables.as_h)
+      Graphql::Query.new(query_string, variables: variables.as_h)
     )
 
     result = JSON.parse(runtime.execute)["data"]
@@ -112,7 +112,7 @@ describe Graphql do
 
     runtime = Graphql::Execution::Runtime.new(
       DummySchema.compile,
-      Graphql::Query.new(query_string, variables.as_h)
+      Graphql::Query.new(query_string, variables: variables.as_h)
     )
 
     result = JSON.parse(runtime.execute)["data"]

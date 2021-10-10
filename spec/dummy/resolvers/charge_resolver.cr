@@ -13,7 +13,7 @@ class ChargeResolver < Graphql::Schema::Resolver
     @loader = RefundLoader.new
   end
 
-  def resolve(object : Charge, field_name, argument_values)
+  def resolve(object : Charge, context, field_name, argument_values)
     case field_name
     when "id"
       object.id

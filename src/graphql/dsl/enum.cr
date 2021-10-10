@@ -21,7 +21,7 @@ module Graphql
       macro inherited
         macro finished
           {% verbatim do %}
-            def self.compile
+            def self.compile(context)
               values = [] of Graphql::Type::EnumValue
 
               {% methods = @type.class.methods.select { |m| m.annotation(EnumValue) } %}

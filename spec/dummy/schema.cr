@@ -25,7 +25,7 @@ class PaymentMethodType < Graphql::DSL::Union
 
   possible_types CreditCardType, BankAccountType
 
-  def self.resolve_type(object)
+  def self.resolve_type(object, context)
     case object
     when CreditCard
       CreditCardType
@@ -39,7 +39,7 @@ class TransactionInterface < Graphql::DSL::Interface
   field :id, Graphql::DSL::Id, null: false
   field :reference, Graphql::DSL::String, null: false
 
-  def self.resolve_type(object)
+  def self.resolve_type(object, context)
     case object
     when Charge
       ChargeType

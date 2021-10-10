@@ -14,7 +14,7 @@ class RefundResolver < Graphql::Schema::Resolver
     @loader = PaymentMethodLoader.new
   end
 
-  def resolve(object : Refund, field_name, argument_values)
+  def resolve(object : Refund, context, field_name, argument_values)
     case field_name
     when "id"
       object.id

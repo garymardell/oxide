@@ -5,6 +5,7 @@ require "./execution"
 require "./validation"
 require "./lazy"
 require "./loader"
+require "./context"
 
 module Graphql
   class Schema

@@ -5,10 +5,11 @@ module Graphql
     include Language::Visitable
 
     property query_string : String
+    property context : Graphql::Context
     property variables : Hash(String, JSON::Any)
     property operation_name : String | Nil
 
-    def initialize(@query_string, @variables = {} of String => JSON::Any, @operation_name = nil)
+    def initialize(@query_string, @context : Graphql::Context = Graphql::NullContext.new, @variables = {} of String => JSON::Any, @operation_name = nil)
     end
 
     def document

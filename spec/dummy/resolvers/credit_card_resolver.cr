@@ -1,5 +1,5 @@
 class CreditCardResolver < Graphql::Schema::Resolver
-  def resolve(object : CreditCard, field_name, argument_values)
+  def resolve(object : CreditCard, context, field_name, argument_values)
     case field_name
     when "id"
       object.id

@@ -19,11 +19,11 @@ module Graphql
           end
         end
 
-        def self.{{name.id}}_type
+        def self.{{name.id}}_type(context)
           {% if type.is_a?(ArrayLiteral) %}
-            field_type = Graphql::Type::List.new(of_type: {{type}}.first.compile())
+            field_type = Graphql::Type::List.new(of_type: {{type}}.first.compile(context))
           {% else %}
-            field_type = {{type}}.compile
+            field_type = {{type}}.compile(context)
           {% end %}
 
           unless {{null}}

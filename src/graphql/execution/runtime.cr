@@ -25,6 +25,7 @@ module Graphql
       getter query : Graphql::Query
 
       delegate document, to: query
+      delegate context, to: query
 
       private property current_path : Array(String)
       private property current_object : Graphql::Type::Object?
@@ -167,7 +168,7 @@ module Graphql
 
         resolver.schema = schema
 
-        value = resolver.resolve(object_value, field_name, argument_values)
+        value = resolver.resolve(object_value, context, field_name, argument_values)
 
         if value.is_a?(Lazy)
           Proc(IntermediateType).new {
@@ -311,7 +312,7 @@ module Graphql
         schema.get_type_from_ast(ast)
       end
 
-      private def collect_fields(object_type, selection_set, variable_values, visited_fragments) # TODO: variable_values, visited_fragments
+      private def collect_fields(object_type, selection_set, variable_values, visited_fragments)
         grouped_fields = {} of String => Array(Graphql::Language::Nodes::Field)
         visited_fragments ||= [] of String
 
@@ -495,7 +496,7 @@ module Graphql
       end
 
       private def resolve_abstract_type(field_type, result)
-        field_type.type_resolver.resolve_type(result)
+        field_type.type_resolver.resolve_type(result, context)
       end
     end
   end

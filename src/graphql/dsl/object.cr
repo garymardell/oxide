@@ -27,11 +27,12 @@ module Graphql
           interfaces
         end
 
-        def self.implements
+
+        def self.implements(context)
           interfaces = [] of Graphql::Type::Interface
 
           {% for interface in interfaces %}
-            interfaces << {{interface}}.compile()
+            interfaces << {{interface}}.compile(context)
           {% end %}
 
           interfaces
@@ -42,17 +43,17 @@ module Graphql
         [] of Graphql::DSL::Interface.class
       end
 
-      def self.implements
+      def self.implements(context)
         [] of Graphql::Type::Interface
       end
 
-      def self.resolve(object, field_name, argument_values)
+      def self.resolve(object, context, field_name, argument_values)
       end
 
       macro inherited
         macro finished
           {% verbatim do %}
-            def self.compile_fields : Array(Graphql::Schema::Field)
+            def self.compile_fields(context) : Array(Graphql::Schema::Field)
               fields = [] of Graphql::Schema::Field
 
               {% methods = @type.class.methods.select { |m| m.annotation(Field) } %}
@@ -63,13 +64,13 @@ module Graphql
                 {% for argument in method.annotations(Argument) %}
                   arguments << Graphql::Schema::Argument.new(
                     name: {{argument["name"]}},
-                    type: {{argument["type"]}}.compile()
+                    type: {{argument["type"]}}.compile(context)
                   )
                 {% end %}
 
                 fields << Graphql::Schema::Field.new(
                   name: {{ method.annotation(Field)["name"] }},
-                  type: {{method.annotation(Field)["name"].id}}_type(),
+                  type: {{method.annotation(Field)["name"].id}}_type(context),
                   arguments: arguments
                 )
               {% end %}
@@ -77,16 +78,16 @@ module Graphql
               fields
             end
 
-            def self.compile : Graphql::Type::Object
+            def self.compile(context) : Graphql::Type::Object
               Graphql::Type::Object.new(
                 typename: self.graphql_name,
                 resolver: Graphql::DSL::ObjectResolver.new(self),
-                implements: self.implements,
-                fields: self.compile_fields
+                implements: self.implements(context),
+                fields: self.compile_fields(context)
               )
             end
 
-            def self.resolve(object, field_name, argument_values)
+            def self.resolve(object, context, field_name, argument_values)
               {% methods = @type.class.methods.select { |m| m.annotation(Field) } %}
 
               klass = new
@@ -99,7 +100,7 @@ module Graphql
               else
                 interfaces.each do |interface|
                   if interface.resolves_field?(field_name)
-                    return interface.resolve(object, field_name, argument_values)
+                    return interface.resolve(object, context, field_name, argument_values)
                   end
                 end
               end

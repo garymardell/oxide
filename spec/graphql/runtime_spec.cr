@@ -196,7 +196,7 @@ describe Graphql do
       DummySchema.compile,
       Graphql::Query.new(
         query_string,
-        variables.as_h
+        variables: variables.as_h
       )
     )
 
@@ -220,7 +220,7 @@ describe Graphql do
       DummySchema.compile,
       Graphql::Query.new(
         query_string,
-        variables
+        variables: variables
       )
     )
 
