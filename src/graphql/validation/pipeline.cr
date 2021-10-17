@@ -14,19 +14,33 @@ module Graphql
       def initialize(@schema, @query)
         @errors = [] of Error
         @rules = [
-          NoDefinitionIsPresent.new.as(Rule)
+          # Operations
+          OperationNameUniqueness.new(schema).as(Rule),
+          LoneAnonymousOperation.new(schema).as(Rule),
+          # Fields
+          # Arguments
+          # Fragments
+          FragmentNameUniqueness.new(schema).as(Rule),
+          FragmentsMustBeUsed.new(schema).as(Rule),
+          # Values
+          # Directives
+          # Variables
+          VariableUniqueness.new(schema).as(Rule)
         ]
       end
 
-      def visit(node)
+      def enter(node)
         rules.each do |rule|
-          @errors += rule.validate(node)
+          rule.enter(node)
         end
       end
 
       def execute
-        @query.accept(self)
-        @errors.any?
+        query.accept(self)
+      end
+
+      def errors?
+        errors.any?
       end
     end
   end

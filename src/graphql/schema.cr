@@ -17,18 +17,6 @@ module Graphql
     def initialize(@query, @mutation = nil, @orphan_types = [] of Graphql::Type)
     end
 
-    def execute(query : Graphql::Query)
-      # validation_pipeline = Validation::Pipeline.new(self, query)
-      # validation_pipeline.execute
-
-      # if validation_pipeline.errors.any?
-      #   return validation_pipeline.errors.to_json
-      # end
-
-      runtime = Execution::Runtime.new(self, query)
-      runtime.execute
-    end
-
     def type_map
       traversal = TypeMap.new(self)
       traversal.generate

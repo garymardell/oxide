@@ -1,9 +1,7 @@
 module Graphql
   module Language
     module Visitable
-      def accept(visitor : Visitor)
-        visitor.visit(self)
-      end
+      abstract def accept(visitor : Visitor)
     end
   end
 end

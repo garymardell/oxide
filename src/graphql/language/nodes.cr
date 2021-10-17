@@ -24,11 +24,13 @@ module Graphql
         end
 
         def accept(visitor : Visitor)
-          visitor.visit(self)
+          visitor.enter(self)
 
           definitions.each do |definition|
             definition.accept(visitor)
           end
+
+          visitor.exit(self)
         end
       end
 
@@ -43,7 +45,7 @@ module Graphql
         end
 
         def accept(visitor : Visitor)
-          visitor.visit(self)
+          visitor.enter(self)
 
           unless selection_set.nil?
             selection_set.not_nil!.accept(visitor)
@@ -56,6 +58,8 @@ module Graphql
           directives.each do |directive|
             directive.accept(visitor)
           end
+
+          visitor.exit(self)
         end
       end
 
@@ -66,11 +70,13 @@ module Graphql
         end
 
         def accept(visitor : Visitor)
-          visitor.visit(self)
+          visitor.enter(self)
 
           selections.each do |selection|
             selection.accept(visitor)
           end
+
+          visitor.exit(self)
         end
       end
 
@@ -82,6 +88,16 @@ module Graphql
 
         def initialize(@name, @type_condition = nil, @selection_set = nil, @directives = [] of Directive)
         end
+
+        def accept(visitor : Visitor)
+          visitor.enter(self)
+
+          unless selection_set.nil?
+            selection_set.not_nil!.accept(visitor)
+          end
+
+          visitor.exit(self)
+        end
       end
 
       class FragmentSpread < Node
@@ -89,6 +105,16 @@ module Graphql
         property directives : Array(Directive)
 
         def initialize(@name, @directives = [] of Directive)
+        end
+
+        def accept(visitor : Visitor)
+          visitor.enter(self)
+
+          directives.each do |directive|
+            directive.accept(visitor)
+          end
+
+          visitor.exit(self)
         end
       end
 
@@ -98,6 +124,9 @@ module Graphql
         property directives : Array(Directive)
 
         def initialize(@type_condition = nil, @selection_set = nil, @directives = [] of Directive)
+        end
+
+        def accept(visitor : Visitor)
         end
       end
 
@@ -114,6 +143,16 @@ module Graphql
         def to_json_object_key
           name
         end
+
+        def accept(visitor : Visitor)
+          visitor.enter(self)
+
+          unless selection_set.nil?
+            selection_set.not_nil!.accept(visitor)
+          end
+
+          visitor.exit(self)
+        end
       end
 
       class Argument < Node
@@ -121,6 +160,9 @@ module Graphql
         property value : Value?
 
         def initialize(@name, @value = nil)
+        end
+
+        def accept(visitor : Visitor)
         end
       end
 
@@ -133,6 +175,12 @@ module Graphql
 
         def initialize(@variable = nil, @type = nil, @default_value = nil)
         end
+
+        def accept(visitor : Visitor)
+          visitor.enter(self)
+
+          visitor.exit(self)
+        end
       end
 
       class Variable < Node
@@ -140,10 +188,15 @@ module Graphql
 
         def initialize(@name)
         end
+
+        def accept(visitor : Visitor)
+        end
       end
 
 
       class Type < Node
+        def accept(visitor : Visitor)
+        end
       end
 
       class NamedType < Type
@@ -151,12 +204,16 @@ module Graphql
 
         def initialize(@name)
         end
+
       end
 
       class ListType < Type
         property of_type : NamedType | ListType
 
         def initialize(@of_type)
+        end
+
+        def accept(visitor : Visitor)
         end
       end
 
@@ -165,12 +222,18 @@ module Graphql
 
         def initialize(@of_type = nil)
         end
+
+        def accept(visitor : Visitor)
+        end
       end
 
       class Value < Node
         property value : ValueType
 
         def initialize(@value)
+        end
+
+        def accept(visitor : Visitor)
         end
       end
 
@@ -179,6 +242,9 @@ module Graphql
         property arguments : Array(Argument)
 
         def initialize(@name, @arguments = [] of Argument)
+        end
+
+        def accept(visitor : Visitor)
         end
       end
     end
