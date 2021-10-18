@@ -51,12 +51,67 @@ module Graphql
           execute_query(operation, schema, coerced_variable_values)
         when "mutation"
           execute_mutation(operation, schema, coerced_variable_values)
+        when "subscription"
+          subscribe(operation, schema, coerced_variable_values)
         end
 
         if errors.any?
           { "data" => data, "errors" => serialize_errors(errors) }.to_json
         else
           { "data" => data }.to_json
+        end
+      end
+
+      private def subscribe(subscription, schema, variable_values) # TODO: initial value
+        source_stream = create_source_event_stream(subscription, schema, variable_values)
+
+        map_source_to_response_event(source_stream, subscription, schema, variable_values)
+
+        execute_subscription_event(subscription, schema, variable_values, nil)
+      end
+
+      private def create_source_event_stream(subscription, schema, variable_values)
+        if subscription_type = schema.subscription
+          grouped_field_set = collect_fields(subscription_type, subscription.selection_set.not_nil!.selections, variable_values, nil)
+
+          unless grouped_field_set.one?
+            raise "more than one subscription field selected during a single operation"
+          end
+
+          name, fields = grouped_field_set.first
+          field = fields.first
+          field_name = field.name
+
+          argument_values = coerce_argument_values(subscription_type, field, variable_values)
+
+          subscriber = subscription_type.subscriber
+          subscriber.schema = schema
+
+          field_stream = subscriber.subscribe(nil, context, field_name, argument_values)
+          field_stream
+        else
+          raise "no subscription provided"
+        end
+      end
+
+      private def map_source_to_response_event(source_stream : Graphql::Stream, subscription, schema, variable_values)
+        source_stream.on do |payload|
+          execute_subscription_event(subscription, schema, variable_values, payload)
+        end
+      end
+
+      private def map_source_to_response_event(source_stream, subscription, schema, variable_values)
+      end
+
+      private def execute_subscription_event(subscription, schema, variable_values, initial_value)
+        if subscription_type = schema.subscription
+          begin
+            result = execute_selection_set(subscription.selection_set.not_nil!.selections, subscription_type, initial_value, variable_values)
+
+            serialize(result).to_json
+          rescue FieldError
+            nil
+          end
         end
       end
 

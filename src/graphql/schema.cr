@@ -6,15 +6,17 @@ require "./validation"
 require "./lazy"
 require "./loader"
 require "./context"
+require "./stream"
 
 module Graphql
   class Schema
     getter query : Graphql::Type::Object
     getter mutation : Graphql::Type::Object | Nil
+    getter subscription : Graphql::Type::Subscription | Nil
 
     getter orphan_types : Array(Graphql::Type)
 
-    def initialize(@query, @mutation = nil, @orphan_types = [] of Graphql::Type)
+    def initialize(@query, @mutation = nil, @subscription = nil, @orphan_types = [] of Graphql::Type)
     end
 
     def type_map
