@@ -1,4 +1,4 @@
-class PaymentMethodLoader < Graphql::Loader(Int32, BankAccount | CreditCard | Nil)
+class PaymentMethodLoader < Graphene::Loader(Int32, BankAccount | CreditCard | Nil)
   def perform(load_keys)
     load_keys.each do |key|
       fulfill(key, BankAccount.new(1, "1234578"))
@@ -7,7 +7,7 @@ class PaymentMethodLoader < Graphql::Loader(Int32, BankAccount | CreditCard | Ni
 end
 
 
-class RefundResolver < Graphql::Schema::Resolver
+class RefundResolver < Graphene::Schema::Resolver
   property loader : PaymentMethodLoader
 
   def initialize

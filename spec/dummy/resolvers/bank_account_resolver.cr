@@ -1,4 +1,4 @@
-class BankAccountResolver < Graphql::Schema::Resolver
+class BankAccountResolver < Graphene::Schema::Resolver
   def resolve(object : BankAccount, context, field_name, argument_values)
     case field_name
     when "id"

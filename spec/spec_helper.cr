@@ -1,8 +1,8 @@
 require "spec"
-require "../src/graphql"
+require "../src/graphene-runtime"
 require "./dummy/schema"
 
-class NullResolver < Graphql::Schema::Resolver
+class NullResolver < Graphene::Schema::Resolver
   def resolve(object, context, field_name, argument_values)
     nil
   end
@@ -53,59 +53,59 @@ end
 # union DogOrHuman = Dog | Human
 # union HumanOrAlien = Human | Alien
 
-DogCommandEnum = Graphql::Type::Enum.new(
+DogCommandEnum = Graphene::Type::Enum.new(
   typename: "DogCommand",
   values: [
-    Graphql::Type::EnumValue.new(name: "SIT"),
-    Graphql::Type::EnumValue.new(name: "DOWN"),
-    Graphql::Type::EnumValue.new(name: "HEEL")
+    Graphene::Type::EnumValue.new(name: "SIT"),
+    Graphene::Type::EnumValue.new(name: "DOWN"),
+    Graphene::Type::EnumValue.new(name: "HEEL")
   ]
 )
 
-class PetTypeResolver < Graphql::Schema::TypeResolver
+class PetTypeResolver < Graphene::Schema::TypeResolver
   def resolve_type(object, context)
     DogObject
   end
 end
 
-SentientInterface = Graphql::Type::Interface.new(
+SentientInterface = Graphene::Type::Interface.new(
   name: "Sentient",
   type_resolver: PetTypeResolver.new,
   fields: [
-    Graphql::Schema::Field.new(
+    Graphene::Schema::Field.new(
       name: "name",
-      type: Graphql::Type::NonNull.new(
-        of_type: Graphql::Type::String.new
+      type: Graphene::Type::NonNull.new(
+        of_type: Graphene::Type::String.new
       )
     )
   ]
 )
 
-PetInterface = Graphql::Type::Interface.new(
+PetInterface = Graphene::Type::Interface.new(
   name: "Pet",
   type_resolver: PetTypeResolver.new,
   fields: [
-    Graphql::Schema::Field.new(
+    Graphene::Schema::Field.new(
       name: "name",
-      type: Graphql::Type::NonNull.new(
-        of_type: Graphql::Type::String.new
+      type: Graphene::Type::NonNull.new(
+        of_type: Graphene::Type::String.new
       )
     )
   ]
 )
 
-DogObject = Graphql::Type::Object.new(
+DogObject = Graphene::Type::Object.new(
   typename: "Dog",
   implements: [PetInterface],
   resolver: NullResolver.new,
 )
 
-ValidationsSchema = Graphql::Schema.new(
-  query: Graphql::Type::Object.new(
+ValidationsSchema = Graphene::Schema.new(
+  query: Graphene::Type::Object.new(
     typename: "Query",
     resolver: NullResolver.new,
     fields: [
-      Graphql::Schema::Field.new(
+      Graphene::Schema::Field.new(
         name: "dog",
         type: DogObject
       )

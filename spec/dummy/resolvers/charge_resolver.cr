@@ -1,4 +1,4 @@
-class RefundLoader < Graphql::Loader(Int32, Refund?)
+class RefundLoader < Graphene::Loader(Int32, Refund?)
   def perform(load_keys)
     load_keys.each do |key|
       fulfill(key, Refund.new(key, "pending", "r_12345", false))
@@ -6,7 +6,7 @@ class RefundLoader < Graphql::Loader(Int32, Refund?)
   end
 end
 
-class ChargeResolver < Graphql::Schema::Resolver
+class ChargeResolver < Graphene::Schema::Resolver
   property loader : RefundLoader
 
   def initialize
