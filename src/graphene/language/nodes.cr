@@ -5,7 +5,8 @@ module Graphene
     module Nodes
       alias ValueType = String | Int32 | Int64 | Float64 | Bool | Nil | Array(ValueType) | Hash(String, ValueType) | Variable
 
-      alias Definition = OperationDefinition | FragmentDefinition
+      alias TypeDefinition = ScalarTypeDefinition | ObjectTypeDefinition | InterfaceTypeDefinition | UnionTypeDefinition | EnumTypeDefinition | InputObjectTypeDefinition
+      alias Definition = OperationDefinition | FragmentDefinition | SchemaDefinition | TypeDefinition
       alias Selection = Field | FragmentSpread
 
       abstract class Node
@@ -96,6 +97,31 @@ module Graphene
             selection_set.not_nil!.accept(visitor)
           end
 
+          visitor.exit(self)
+        end
+      end
+
+      class SchemaDefinition < Node
+        property operation_type_definitions : Array(OperationTypeDefinition)
+
+        def initialize(@operation_type_definitions = [] of OperationTypeDefinition)
+        end
+
+        def accept(visitor : Visitor)
+          visitor.enter(self)
+          visitor.exit(self)
+        end
+      end
+
+      class OperationTypeDefinition < Node
+        property operation_type : String
+        property named_type : NamedType?
+
+        def initialize(@operation_type, @named_type = nil)
+        end
+
+        def accept(visitor : Visitor)
+          visitor.enter(self)
           visitor.exit(self)
         end
       end
@@ -208,9 +234,9 @@ module Graphene
       end
 
       class ListType < Type
-        property of_type : NamedType | ListType
+        property of_type : NamedType | ListType | Nil
 
-        def initialize(@of_type)
+        def initialize(@of_type = nil)
         end
 
         def accept(visitor : Visitor)
@@ -245,6 +271,117 @@ module Graphene
         end
 
         def accept(visitor : Visitor)
+        end
+      end
+
+      class ScalarTypeDefinition < Node
+        property name : String
+
+        def initialize(@name)
+        end
+
+        def accept(visitor : Visitor)
+          visitor.enter(self)
+          visitor.exit(self)
+        end
+      end
+
+      class ObjectTypeDefinition < Node
+        property name : String
+        property implements : Array(NamedType)
+        property field_definitions : Array(FieldDefinition)
+
+        def initialize(@name, @implements = [] of NamedType, @field_definitions = [] of FieldDefinition)
+        end
+
+        def accept(visitor : Visitor)
+          visitor.enter(self)
+          visitor.exit(self)
+        end
+      end
+
+      class FieldDefinition < Node
+        property name : String
+        property argument_definitions : Array(InputValueDefinition)
+        property type : NamedType | ListType | NonNullType | Nil
+
+        def initialize(@name, @argument_definitions = [] of InputValueDefinition, @type = nil)
+        end
+
+        def accept(visitor : Visitor)
+          visitor.enter(self)
+          visitor.exit(self)
+        end
+      end
+
+      class InputValueDefinition < Node
+        property name : String
+        property type : NamedType | ListType | NonNullType | Nil
+
+        def initialize(@name, @type = nil)
+        end
+
+        def accept(visitor : Visitor)
+          visitor.enter(self)
+          visitor.exit(self)
+        end
+      end
+
+      class InterfaceTypeDefinition < Node
+        property name : String
+        property field_definitions : Array(FieldDefinition)
+
+        def initialize(@name, @field_definitions = [] of FieldDefinition)
+        end
+
+        def accept(visitor : Visitor)
+          visitor.enter(self)
+          visitor.exit(self)
+        end
+      end
+
+      class UnionTypeDefinition < Node
+        property name : String
+        property member_types : Array(NamedType)
+
+        def initialize(@name, @member_types = [] of NamedType)
+        end
+
+        def accept(visitor : Visitor)
+          visitor.enter(self)
+          visitor.exit(self)
+        end
+      end
+
+      class EnumTypeDefinition < Node
+        property name : String
+        property value_definitions : Array(EnumValueDefinition)
+
+        def initialize(@name, @value_definitions = [] of EnumValueDefinition)
+        end
+
+        def accept(visitor : Visitor)
+          visitor.enter(self)
+          visitor.exit(self)
+        end
+      end
+
+      class EnumValueDefinition < Node
+        property name : String
+
+        def initialize(@name)
+        end
+
+        def accept(visitor : Visitor)
+          visitor.enter(self)
+          visitor.exit(self)
+        end
+      end
+
+      class InputObjectTypeDefinition < Node
+        def accept(visitor : Visitor)
+          visitor.enter(self)
+          visitor.exit(self)
         end
       end
     end

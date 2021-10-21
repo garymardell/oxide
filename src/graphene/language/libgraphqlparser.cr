@@ -126,6 +126,8 @@ lib LibGraphqlParser
   end
 
   fun parse_string = graphql_parse_string(context : LibC::Char*, error : LibC::Char**) : GraphQLAstNode
+  fun parse_string_with_schema = graphql_parse_string_with_experimental_schema_support(context : LibC::Char*, error : LibC::Char**) : GraphQLAstNode
+
   fun error_free = graphql_error_free(error : LibC::Char*)
 
   fun node_visit = graphql_node_visit(node : GraphQLAstNode, callbacks : GraphQLAstVisitorCallbacks*, userData : Void*)
@@ -151,4 +153,13 @@ lib LibGraphqlParser
   fun GraphQLAstNamedType_get_name(node : GraphQLAstNode) : GraphQLAstName
 
   fun GraphQLAstDirective_get_name(node : GraphQLAstNode) : GraphQLAstName
+
+  fun GraphQLAstOperationTypeDefinition_get_operation(node : GraphQLAstNode) : LibC::Char*
+
+  fun GraphQLAstObjectTypeDefinition_get_name(node : GraphQLAstNode) : GraphQLAstName
+  fun GraphQLAstFieldDefinition_get_name(node : GraphQLAstNode) : GraphQLAstName
+  fun GraphQLAstInputValueDefinition_get_name(node : GraphQLAstNode) : GraphQLAstName
+  fun GraphQLAstInterfaceTypeDefinition_get_name(node : GraphQLAstNode) : GraphQLAstName
+  fun GraphQLAstScalarTypeDefinition_get_name(node : GraphQLAstNode) : GraphQLAstName
+  fun GraphQLAstEnumValueDefinition_get_name(node : GraphQLAstNode) : GraphQLAstName
 end
