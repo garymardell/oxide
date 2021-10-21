@@ -10,3 +10,5 @@
 
 .DS_Store
 .editorconfig
+.metals
+.vscode
