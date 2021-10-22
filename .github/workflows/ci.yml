@@ -25,3 +25,5 @@ jobs:
           cd libgraphqlparser-0.7.0/ && sudo cmake . && sudo make && sudo make install
       - name: Run tests
         run: crystal spec --order=random --error-on-warnings
+        env:
+          LD_LIBRARY_PATH: /usr/local/lib
