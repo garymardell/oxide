@@ -16,7 +16,7 @@
   - [ ] Schema Builder
 - [x] Complete language visitor
 - [ ] Refactor parser
-  - [ ] LibGraphqlParser to use specific types
+  - [x] LibGraphqlParser to use specific types
   - [ ] Reduce duplication with macros
   - [ ] Merge Parser and SchemaParser
 

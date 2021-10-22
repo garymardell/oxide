@@ -49,7 +49,7 @@ module Graphene
       macro copy_location_from_ast(ast_node, node)
         location = LibGraphqlParser::GraphQLAstLocation.new
 
-        LibGraphqlParser.node_get_location(pointerof({{ast_node}}), pointerof(location))
+        LibGraphqlParser.node_get_location({{ast_node}}.as(LibGraphqlParser::GraphQLAstNode), pointerof(location))
 
         {{node}}.beginLine = location.beginLine
         {{node}}.endLine = location.endLine
@@ -61,7 +61,7 @@ module Graphene
         @stack = Stack.new
         @callbacks = LibGraphqlParser::GraphQLAstVisitorCallbacks.new
 
-        @callbacks.visit_document = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.visit_document = ->(node : LibGraphqlParser::GraphQLAstDocument, data : Pointer(Void)) {
           log_visit("visit_document")
 
           stack = data.as(Pointer(Stack)).value
@@ -69,13 +69,13 @@ module Graphene
           return 1
         }
 
-        @callbacks.end_visit_document = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.end_visit_document = ->(node : LibGraphqlParser::GraphQLAstDocument, data : Pointer(Void)) {
           log_visit("end_visit_document")
 
           stack = data.as(Pointer(Stack)).value
         }
 
-        @callbacks.visit_operation_definition = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.visit_operation_definition = ->(node : LibGraphqlParser::GraphQLAstOperationDefinition, data : Pointer(Void)) {
           log_visit("visit_operation_definition")
 
           operation = LibGraphqlParser.GraphQLAstOperationDefinition_get_operation(node)
@@ -102,7 +102,7 @@ module Graphene
           return 1
         }
 
-        @callbacks.end_visit_operation_definition = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.end_visit_operation_definition = ->(node : LibGraphqlParser::GraphQLAstOperationDefinition, data : Pointer(Void)) {
           log_visit("end_visit_operation_definition")
 
           stack = data.as(Pointer(Stack)).value
@@ -112,7 +112,7 @@ module Graphene
           stack.peek.as(Nodes::Document).definitions << operation_definition
         }
 
-        @callbacks.visit_variable_definition = -> (node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.visit_variable_definition = -> (node : LibGraphqlParser::GraphQLAstVariableDefinition, data : Pointer(Void)) {
           log_visit("visit_variable_definition")
 
           stack = data.as(Pointer(Stack)).value
@@ -126,7 +126,7 @@ module Graphene
           return 1
         }
 
-        @callbacks.end_visit_variable_definition = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.end_visit_variable_definition = ->(node : LibGraphqlParser::GraphQLAstVariableDefinition, data : Pointer(Void)) {
           log_visit("end_visit_variable_definition")
 
           stack = data.as(Pointer(Stack)).value
@@ -144,7 +144,7 @@ module Graphene
 
         }
 
-        @callbacks.visit_selection_set = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.visit_selection_set = ->(node : LibGraphqlParser::GraphQLAstSelectionSet, data : Pointer(Void)) {
           log_visit("visit_selection_set")
 
           stack = data.as(Pointer(Stack)).value
@@ -158,7 +158,7 @@ module Graphene
           return 1
         }
 
-        @callbacks.end_visit_selection_set = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.end_visit_selection_set = ->(node : LibGraphqlParser::GraphQLAstSelectionSet, data : Pointer(Void)) {
           log_visit("end_visit_selection_set")
 
           stack = data.as(Pointer(Stack)).value
@@ -185,7 +185,7 @@ module Graphene
           end
         }
 
-        @callbacks.visit_field = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.visit_field = ->(node : LibGraphqlParser::GraphQLAstField, data : Pointer(Void)) {
           log_visit("visit_field")
 
           field_name = LibGraphqlParser.GraphQLAstField_get_name(node)
@@ -202,7 +202,7 @@ module Graphene
           return 1
         }
 
-        @callbacks.end_visit_field = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.end_visit_field = ->(node : LibGraphqlParser::GraphQLAstField, data : Pointer(Void)) {
           log_visit("end_visit_field")
 
           stack = data.as(Pointer(Stack)).value
@@ -212,7 +212,7 @@ module Graphene
           stack.peek.as(Nodes::SelectionSet).selections << field
         }
 
-        @callbacks.visit_argument = -> (node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.visit_argument = -> (node : LibGraphqlParser::GraphQLAstArgument, data : Pointer(Void)) {
           log_visit("visit_argument")
 
           argument_name = LibGraphqlParser.GraphQLAstArgument_get_name(node)
@@ -229,7 +229,7 @@ module Graphene
           return 1
         }
 
-        @callbacks.end_visit_argument = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.end_visit_argument = ->(node : LibGraphqlParser::GraphQLAstArgument, data : Pointer(Void)) {
           log_visit("end_visit_argument")
 
           stack = data.as(Pointer(Stack)).value
@@ -255,7 +255,7 @@ module Graphene
           end
         }
 
-        @callbacks.visit_fragment_spread = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.visit_fragment_spread = ->(node : LibGraphqlParser::GraphQLAstFragmentSpread, data : Pointer(Void)) {
           log_visit("visit_fragment_spread")
 
           stack = data.as(Pointer(Stack)).value
@@ -274,7 +274,7 @@ module Graphene
           return 1
         }
 
-        @callbacks.end_visit_fragment_spread = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.end_visit_fragment_spread = ->(node : LibGraphqlParser::GraphQLAstFragmentSpread, data : Pointer(Void)) {
           log_visit("end_visit_fragment_spread")
 
           stack = data.as(Pointer(Stack)).value
@@ -284,7 +284,7 @@ module Graphene
           stack.peek.as(Nodes::SelectionSet).selections << fragment_spread
         }
 
-        @callbacks.visit_inline_fragment = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.visit_inline_fragment = ->(node : LibGraphqlParser::GraphQLAstInlineFragment, data : Pointer(Void)) {
           log_visit("visit_inline_fragment")
 
           stack = data.as(Pointer(Stack)).value
@@ -298,7 +298,7 @@ module Graphene
           return 1
         }
 
-        @callbacks.end_visit_inline_fragment = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.end_visit_inline_fragment = ->(node : LibGraphqlParser::GraphQLAstInlineFragment, data : Pointer(Void)) {
           log_visit("end_visit_inline_fragment")
 
           stack = data.as(Pointer(Stack)).value
@@ -307,7 +307,7 @@ module Graphene
           stack.peek.as(Nodes::SelectionSet).selections << inline_fragment
         }
 
-        @callbacks.visit_fragment_definition = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.visit_fragment_definition = ->(node : LibGraphqlParser::GraphQLAstFragmentDefinition, data : Pointer(Void)) {
           log_visit("visit_fragment_definition")
 
           stack = data.as(Pointer(Stack)).value
@@ -324,7 +324,7 @@ module Graphene
           return 1
         }
 
-        @callbacks.end_visit_fragment_definition = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.end_visit_fragment_definition = ->(node : LibGraphqlParser::GraphQLAstFragmentDefinition, data : Pointer(Void)) {
           log_visit("end_visit_fragment_definition")
 
           stack = data.as(Pointer(Stack)).value
@@ -334,7 +334,7 @@ module Graphene
           stack.peek.as(Nodes::Document).definitions << fragment_definition
         }
 
-        @callbacks.visit_variable = -> (node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.visit_variable = -> (node : LibGraphqlParser::GraphQLAstVariable, data : Pointer(Void)) {
           log_visit("visit_variable")
 
           stack = data.as(Pointer(Stack)).value
@@ -351,7 +351,7 @@ module Graphene
           return 1
         }
 
-        @callbacks.end_visit_variable = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.end_visit_variable = ->(node : LibGraphqlParser::GraphQLAstVariable, data : Pointer(Void)) {
           log_visit("end_visit_variable")
 
           stack = data.as(Pointer(Stack)).value
@@ -367,7 +367,7 @@ module Graphene
           end
         }
 
-        @callbacks.visit_int_value = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.visit_int_value = ->(node : LibGraphqlParser::GraphQLAstIntValue, data : Pointer(Void)) {
           log_visit("visit_int_value")
 
           stack = data.as(Pointer(Stack)).value
@@ -375,11 +375,11 @@ module Graphene
           return 1
         }
 
-        @callbacks.end_visit_int_value = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.end_visit_int_value = ->(node : LibGraphqlParser::GraphQLAstIntValue, data : Pointer(Void)) {
           log_visit("end_visit_int_value")
         }
 
-        @callbacks.visit_float_value = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.visit_float_value = ->(node : LibGraphqlParser::GraphQLAstFloatValue, data : Pointer(Void)) {
           log_visit("visit_float_value")
 
           stack = data.as(Pointer(Stack)).value
@@ -388,11 +388,11 @@ module Graphene
           return 1
         }
 
-        @callbacks.end_visit_float_value = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.end_visit_float_value = ->(node : LibGraphqlParser::GraphQLAstFloatValue, data : Pointer(Void)) {
           log_visit("end_visit_float_value")
         }
 
-        @callbacks.visit_string_value = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.visit_string_value = ->(node : LibGraphqlParser::GraphQLAstStringValue, data : Pointer(Void)) {
           log_visit("visit_string_value")
 
           stack = data.as(Pointer(Stack)).value
@@ -401,11 +401,11 @@ module Graphene
           return 1
         }
 
-        @callbacks.end_visit_string_value = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.end_visit_string_value = ->(node : LibGraphqlParser::GraphQLAstStringValue, data : Pointer(Void)) {
           log_visit("end_visit_string_value")
         }
 
-        @callbacks.visit_boolean_value = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.visit_boolean_value = ->(node : LibGraphqlParser::GraphQLAstBooleanValue, data : Pointer(Void)) {
           log_visit("visit_boolean_value")
 
           stack = data.as(Pointer(Stack)).value
@@ -414,11 +414,11 @@ module Graphene
           return 1
         }
 
-        @callbacks.end_visit_boolean_value = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.end_visit_boolean_value = ->(node : LibGraphqlParser::GraphQLAstBooleanValue, data : Pointer(Void)) {
           log_visit("end_visit_boolean_value")
         }
 
-        @callbacks.visit_null_value = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.visit_null_value = ->(node : LibGraphqlParser::GraphQLAstNullValue, data : Pointer(Void)) {
           log_visit("visit_null_value")
 
           stack = data.as(Pointer(Stack)).value
@@ -427,47 +427,47 @@ module Graphene
           return 1
         }
 
-        @callbacks.end_visit_null_value = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.end_visit_null_value = ->(node : LibGraphqlParser::GraphQLAstNullValue, data : Pointer(Void)) {
           log_visit("end_visit_null_value")
         }
 
-        @callbacks.visit_enum_value = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.visit_enum_value = ->(node : LibGraphqlParser::GraphQLAstEnumValue, data : Pointer(Void)) {
           log_visit("visit_enum_value")
           return 1
         }
 
-        @callbacks.end_visit_enum_value = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.end_visit_enum_value = ->(node : LibGraphqlParser::GraphQLAstEnumValue, data : Pointer(Void)) {
           log_visit("end_visit_enum_value")
         }
 
-        @callbacks.visit_list_value = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.visit_list_value = ->(node : LibGraphqlParser::GraphQLAstListValue, data : Pointer(Void)) {
           log_visit("visit_list_value")
           return 1
         }
 
-        @callbacks.end_visit_list_value = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.end_visit_list_value = ->(node : LibGraphqlParser::GraphQLAstListValue, data : Pointer(Void)) {
           log_visit("end_visit_list_value")
         }
 
-        @callbacks.visit_object_value = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.visit_object_value = ->(node : LibGraphqlParser::GraphQLAstObjectValue, data : Pointer(Void)) {
           log_visit("visit_object_value")
           return 1
         }
 
-        @callbacks.end_visit_object_value = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.end_visit_object_value = ->(node : LibGraphqlParser::GraphQLAstObjectValue, data : Pointer(Void)) {
           log_visit("end_visit_object_value")
         }
 
-        @callbacks.visit_object_field = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.visit_object_field = ->(node : LibGraphqlParser::GraphQLAstObjectField, data : Pointer(Void)) {
           log_visit("visit_object_field")
           return 1
         }
 
-        @callbacks.end_visit_object_field = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.end_visit_object_field = ->(node : LibGraphqlParser::GraphQLAstObjectField, data : Pointer(Void)) {
           log_visit("end_visit_object_field")
         }
 
-        @callbacks.visit_directive = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.visit_directive = ->(node : LibGraphqlParser::GraphQLAstDirective, data : Pointer(Void)) {
           log_visit("visit_directive")
 
           stack = data.as(Pointer(Stack)).value
@@ -484,7 +484,7 @@ module Graphene
           return 1
         }
 
-        @callbacks.end_visit_directive = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.end_visit_directive = ->(node : LibGraphqlParser::GraphQLAstDirective, data : Pointer(Void)) {
           log_visit("end_visit_directive")
 
           stack = data.as(Pointer(Stack)).value
@@ -505,7 +505,7 @@ module Graphene
           end
         }
 
-        @callbacks.visit_named_type = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.visit_named_type = ->(node : LibGraphqlParser::GraphQLAstNamedType, data : Pointer(Void)) {
           log_visit("visit_named_type")
 
           stack = data.as(Pointer(Stack)).value
@@ -522,7 +522,7 @@ module Graphene
           return 1
         }
 
-        @callbacks.end_visit_named_type = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.end_visit_named_type = ->(node : LibGraphqlParser::GraphQLAstNamedType, data : Pointer(Void)) {
           log_visit("end_visit_named_type")
 
           stack = data.as(Pointer(Stack)).value
@@ -540,16 +540,16 @@ module Graphene
           end
         }
 
-        @callbacks.visit_list_type = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.visit_list_type = ->(node : LibGraphqlParser::GraphQLAstListType, data : Pointer(Void)) {
           log_visit("visit_list_type")
           return 1
         }
 
-        @callbacks.end_visit_list_type = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.end_visit_list_type = ->(node : LibGraphqlParser::GraphQLAstListType, data : Pointer(Void)) {
           log_visit("end_visit_list_type")
         }
 
-        @callbacks.visit_non_null_type = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.visit_non_null_type = ->(node : LibGraphqlParser::GraphQLAstNonNullType, data : Pointer(Void)) {
           log_visit("visit_non_null_type")
 
           stack = data.as(Pointer(Stack)).value
@@ -563,7 +563,7 @@ module Graphene
           return 1
         }
 
-        @callbacks.end_visit_non_null_type = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.end_visit_non_null_type = ->(node : LibGraphqlParser::GraphQLAstNonNullType, data : Pointer(Void)) {
           log_visit("end_visit_non_null_type")
 
           # Pick up either the list type or named type
@@ -579,12 +579,12 @@ module Graphene
           # stack.push(Nodes::NonNullType.new(type))
         }
 
-        @callbacks.visit_name = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.visit_name = ->(node : LibGraphqlParser::GraphQLAstName, data : Pointer(Void)) {
           log_visit("visit_name")
           return 1
         }
 
-        @callbacks.end_visit_name = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.end_visit_name = ->(node : LibGraphqlParser::GraphQLAstName, data : Pointer(Void)) {
           log_visit("end_visit_name")
         }
       end

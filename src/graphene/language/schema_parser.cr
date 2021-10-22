@@ -6,7 +6,7 @@ module Graphene
       def initialize
         super
 
-        @callbacks.visit_list_type = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.visit_list_type = ->(node : LibGraphqlParser::GraphQLAstListType, data : Pointer(Void)) {
           log_visit("visit_list_type")
 
           stack = data.as(Pointer(Stack)).value
@@ -18,7 +18,7 @@ module Graphene
           return 1
         }
 
-        @callbacks.end_visit_list_type = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.end_visit_list_type = ->(node : LibGraphqlParser::GraphQLAstListType, data : Pointer(Void)) {
           log_visit("end_visit_list_type")
 
           stack = data.as(Pointer(Stack)).value
@@ -35,7 +35,7 @@ module Graphene
           end
         }
 
-        @callbacks.end_visit_non_null_type = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.end_visit_non_null_type = ->(node : LibGraphqlParser::GraphQLAstNonNullType, data : Pointer(Void)) {
           log_visit("end_visit_non_null_type")
 
           stack = data.as(Pointer(Stack)).value
@@ -50,7 +50,7 @@ module Graphene
           end
         }
 
-        @callbacks.end_visit_named_type = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.end_visit_named_type = ->(node : LibGraphqlParser::GraphQLAstNamedType, data : Pointer(Void)) {
           log_visit("end_visit_named_type")
 
           stack = data.as(Pointer(Stack)).value
@@ -72,7 +72,7 @@ module Graphene
           end
         }
 
-        @callbacks.visit_schema_definition = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.visit_schema_definition = ->(node : LibGraphqlParser::GraphQLAstSchemaDefinition, data : Pointer(Void)) {
           log_visit("visit_schema_definition")
 
           stack = data.as(Pointer(Stack)).value
@@ -86,7 +86,7 @@ module Graphene
           return 1
         }
 
-        @callbacks.end_visit_schema_definition = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.end_visit_schema_definition = ->(node : LibGraphqlParser::GraphQLAstSchemaDefinition, data : Pointer(Void)) {
           log_visit("end_visit_schema_definition")
 
           stack = data.as(Pointer(Stack)).value
@@ -96,7 +96,7 @@ module Graphene
           stack.peek.as(Nodes::Document).definitions << schema_definition
         }
 
-        @callbacks.visit_operation_type_definition = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.visit_operation_type_definition = ->(node : LibGraphqlParser::GraphQLAstOperationTypeDefinition, data : Pointer(Void)) {
           log_visit("visit_operation_type_definition")
 
           stack = data.as(Pointer(Stack)).value
@@ -112,7 +112,7 @@ module Graphene
           return 1
         }
 
-        @callbacks.end_visit_operation_type_definition = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.end_visit_operation_type_definition = ->(node : LibGraphqlParser::GraphQLAstOperationTypeDefinition, data : Pointer(Void)) {
           log_visit("end_visit_operation_type_definition")
 
           stack = data.as(Pointer(Stack)).value
@@ -122,7 +122,7 @@ module Graphene
           stack.peek.as(Nodes::SchemaDefinition).operation_type_definitions << operation_type_definition
         }
 
-        @callbacks.visit_scalar_type_definition = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.visit_scalar_type_definition = ->(node : LibGraphqlParser::GraphQLAstScalarTypeDefinition, data : Pointer(Void)) {
           log_visit("visit_scalar_type_definition")
 
           stack = data.as(Pointer(Stack)).value
@@ -139,7 +139,7 @@ module Graphene
           return 1
         }
 
-        @callbacks.end_visit_scalar_type_definition = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.end_visit_scalar_type_definition = ->(node : LibGraphqlParser::GraphQLAstScalarTypeDefinition, data : Pointer(Void)) {
           log_visit("end_visit_scalar_type_definition")
 
           stack = data.as(Pointer(Stack)).value
@@ -152,7 +152,7 @@ module Graphene
           end
         }
 
-        @callbacks.visit_object_type_definition = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.visit_object_type_definition = ->(node : LibGraphqlParser::GraphQLAstObjectTypeDefinition, data : Pointer(Void)) {
           log_visit("visit_object_type_definition")
 
           stack = data.as(Pointer(Stack)).value
@@ -169,7 +169,7 @@ module Graphene
           return 1
         }
 
-        @callbacks.end_visit_object_type_definition = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.end_visit_object_type_definition = ->(node : LibGraphqlParser::GraphQLAstObjectTypeDefinition, data : Pointer(Void)) {
           log_visit("end_visit_object_type_definition")
 
           stack = data.as(Pointer(Stack)).value
@@ -179,7 +179,7 @@ module Graphene
           stack.peek.as(Nodes::Document).definitions << object_type_definition
         }
 
-        @callbacks.visit_field_definition = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.visit_field_definition = ->(node : LibGraphqlParser::GraphQLAstFieldDefinition, data : Pointer(Void)) {
           log_visit("visit_field_definition")
 
           stack = data.as(Pointer(Stack)).value
@@ -196,7 +196,7 @@ module Graphene
           return 1
         }
 
-        @callbacks.end_visit_field_definition = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.end_visit_field_definition = ->(node : LibGraphqlParser::GraphQLAstFieldDefinition, data : Pointer(Void)) {
           log_visit("end_visit_field_definition")
 
           stack = data.as(Pointer(Stack)).value
@@ -211,7 +211,7 @@ module Graphene
           end
         }
 
-        @callbacks.visit_input_value_definition = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.visit_input_value_definition = ->(node : LibGraphqlParser::GraphQLAstInputValueDefinition, data : Pointer(Void)) {
           log_visit("visit_input_value_definition")
 
           stack = data.as(Pointer(Stack)).value
@@ -228,7 +228,7 @@ module Graphene
           return 1
         }
 
-        @callbacks.end_visit_input_value_definition = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.end_visit_input_value_definition = ->(node : LibGraphqlParser::GraphQLAstInputValueDefinition, data : Pointer(Void)) {
           log_visit("end_visit_input_value_definition")
 
           stack = data.as(Pointer(Stack)).value
@@ -241,7 +241,7 @@ module Graphene
           end
         }
 
-        @callbacks.visit_interface_type_definition = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.visit_interface_type_definition = ->(node : LibGraphqlParser::GraphQLAstInterfaceTypeDefinition, data : Pointer(Void)) {
           log_visit("visit_interface_type_definition")
 
           stack = data.as(Pointer(Stack)).value
@@ -258,7 +258,7 @@ module Graphene
           return 1
         }
 
-        @callbacks.end_visit_interface_type_definition = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.end_visit_interface_type_definition = ->(node : LibGraphqlParser::GraphQLAstInterfaceTypeDefinition, data : Pointer(Void)) {
           log_visit("end_visit_interface_type_definition")
 
           stack = data.as(Pointer(Stack)).value
@@ -271,12 +271,12 @@ module Graphene
           end
         }
 
-        @callbacks.visit_union_type_definition = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.visit_union_type_definition = ->(node : LibGraphqlParser::GraphQLAstUnionTypeDefinition, data : Pointer(Void)) {
           log_visit("visit_union_type_definition")
 
           stack = data.as(Pointer(Stack)).value
 
-          union_type_definition_name = LibGraphqlParser.GraphQLAstInterfaceTypeDefinition_get_name(node)
+          union_type_definition_name = LibGraphqlParser.GraphQLAstUnionTypeDefinition_get_name(node)
           union_type_definition_value = LibGraphqlParser.GraphQLAstName_get_value(union_type_definition_name)
 
           union_type_definition = Nodes::UnionTypeDefinition.new(String.new(union_type_definition_value))
@@ -288,7 +288,7 @@ module Graphene
           return 1
         }
 
-        @callbacks.end_visit_union_type_definition = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.end_visit_union_type_definition = ->(node : LibGraphqlParser::GraphQLAstUnionTypeDefinition, data : Pointer(Void)) {
           log_visit("end_visit_union_type_definition")
 
           stack = data.as(Pointer(Stack)).value
@@ -301,12 +301,12 @@ module Graphene
           end
         }
 
-        @callbacks.visit_enum_type_definition = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.visit_enum_type_definition = ->(node : LibGraphqlParser::GraphQLAstEnumTypeDefinition, data : Pointer(Void)) {
           log_visit("visit_enum_type_definition")
 
           stack = data.as(Pointer(Stack)).value
 
-          enum_type_definition_name = LibGraphqlParser.GraphQLAstInterfaceTypeDefinition_get_name(node)
+          enum_type_definition_name = LibGraphqlParser.GraphQLAstEnumTypeDefinition_get_name(node)
           enum_type_definition_value = LibGraphqlParser.GraphQLAstName_get_value(enum_type_definition_name)
 
           enum_type_definition = Nodes::EnumTypeDefinition.new(String.new(enum_type_definition_value))
@@ -318,7 +318,7 @@ module Graphene
           return 1
         }
 
-        @callbacks.end_visit_enum_type_definition = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.end_visit_enum_type_definition = ->(node : LibGraphqlParser::GraphQLAstEnumTypeDefinition, data : Pointer(Void)) {
           log_visit("end_visit_enum_type_definition")
 
           stack = data.as(Pointer(Stack)).value
@@ -331,7 +331,7 @@ module Graphene
           end
         }
 
-        @callbacks.visit_enum_value_definition = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.visit_enum_value_definition = ->(node : LibGraphqlParser::GraphQLAstEnumValueDefinition, data : Pointer(Void)) {
           log_visit("visit_enum_value_definition")
 
           stack = data.as(Pointer(Stack)).value
@@ -346,7 +346,7 @@ module Graphene
           return 1
         }
 
-        @callbacks.end_visit_enum_value_definition = ->(node : LibGraphqlParser::GraphQLAstNode, data : Pointer(Void)) {
+        @callbacks.end_visit_enum_value_definition = ->(node : LibGraphqlParser::GraphQLAstEnumValueDefinition, data : Pointer(Void)) {
           log_visit("end_visit_enum_value_definition")
 
           stack = data.as(Pointer(Stack)).value
