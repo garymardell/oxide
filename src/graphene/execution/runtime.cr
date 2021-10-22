@@ -496,7 +496,11 @@ module Graphene
       end
 
       private def resolve_abstract_type(field_type, result)
-        field_type.type_resolver.resolve_type(result, context)
+        if resolved_type = field_type.type_resolver.resolve_type(result, context)
+          resolved_type
+        else
+          raise "abstract type could not be resolved"
+        end
       end
     end
   end
