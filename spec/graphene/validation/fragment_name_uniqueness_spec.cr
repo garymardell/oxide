@@ -22,8 +22,7 @@ describe Graphene::Validation::FragmentNameUniqueness do
 
     schema = Graphene::Schema.new(
       query: Graphene::Type::Object.new(
-        typename: "Query",
-        resolver: NullResolver.new
+        name: "Query"
       )
     )
 
@@ -58,8 +57,7 @@ describe Graphene::Validation::FragmentNameUniqueness do
 
     schema = Graphene::Schema.new(
       query: Graphene::Type::Object.new(
-        typename: "Query",
-        resolver: NullResolver.new
+        name: "Query"
       )
     )
 

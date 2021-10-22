@@ -4,8 +4,7 @@ require "./directive_type"
 module Graphene
   module Introspection
     SchemaType = Graphene::Type::Object.new(
-      typename: "__Type",
-      resolver: SchemaResolver.new,
+      name: "__Schema",
       fields: [
         Graphene::Schema::Field.new(
           name: "types",

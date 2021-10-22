@@ -1,8 +1,7 @@
 module Graphene
   module Introspection
     EnumValueType = Graphene::Type::Object.new(
-      typename: "__EnumValue",
-      resolver: EnumValueResolver.new,
+      name: "__EnumValue",
       fields: [
         Graphene::Schema::Field.new(
           name: "name",

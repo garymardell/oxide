@@ -4,8 +4,7 @@ require "./input_value_type"
 module Graphene
   module Introspection
     FieldType = Graphene::Type::Object.new(
-      typename: "__Field",
-      resolver: FieldResolver.new,
+      name: "__Field",
       fields: [
         Graphene::Schema::Field.new(
           name: "name",

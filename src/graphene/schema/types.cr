@@ -20,7 +20,7 @@ module Graphene
       end
 
       def visit(type : Graphene::Type::Object)
-        types[type.typename] = type
+        types[type.name] = type
 
         # TODO: Interfaces
         type.implements.each do |interface|
@@ -49,7 +49,7 @@ module Graphene
       end
 
       def visit(type : Graphene::Type::Union)
-        types[type.typename] = type
+        types[type.name] = type
 
         type.possible_types.each do |possible_type|
           possible_type.accept(self)
@@ -58,7 +58,7 @@ module Graphene
 
       def visit(type : Graphene::Type::Enum)
         # types << type
-        types[type.typename] = type
+        types[type.name] = type
       end
 
       def visit(type : Graphene::Type::NonNull)

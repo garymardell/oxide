@@ -19,7 +19,9 @@ describe Graphene do
 
     runtime = Graphene::Execution::Runtime.new(
       DummySchema,
-      Graphene::Query.new(query_string, variables: variables.as_h)
+      Graphene::Query.new(query_string, variables: variables.as_h),
+      resolvers: DummySchemaResolvers,
+      type_resolvers: DummySchemaTypeResolvers
     )
 
     result = JSON.parse(runtime.execute)["data"]
@@ -50,7 +52,9 @@ describe Graphene do
 
     runtime = Graphene::Execution::Runtime.new(
       DummySchema,
-      Graphene::Query.new(query_string, variables: variables.as_h)
+      Graphene::Query.new(query_string, variables: variables.as_h),
+      resolvers: DummySchemaResolvers,
+      type_resolvers: DummySchemaTypeResolvers
     )
 
     result = JSON.parse(runtime.execute)["data"]
@@ -81,7 +85,9 @@ describe Graphene do
 
     runtime = Graphene::Execution::Runtime.new(
       DummySchema,
-      Graphene::Query.new(query_string, variables: variables.as_h)
+      Graphene::Query.new(query_string, variables: variables.as_h),
+      resolvers: DummySchemaResolvers,
+      type_resolvers: DummySchemaTypeResolvers
     )
 
     result = JSON.parse(runtime.execute)["data"]
@@ -112,7 +118,9 @@ describe Graphene do
 
     runtime = Graphene::Execution::Runtime.new(
       DummySchema,
-      Graphene::Query.new(query_string, variables: variables.as_h)
+      Graphene::Query.new(query_string, variables: variables.as_h),
+      resolvers: DummySchemaResolvers,
+      type_resolvers: DummySchemaTypeResolvers
     )
 
     result = JSON.parse(runtime.execute)["data"]

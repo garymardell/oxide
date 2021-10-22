@@ -1,9 +1,7 @@
 module Graphene
   module Introspection
-    class TypeResolver
-      include Graphene::Schema::Resolvable
-
-      def resolve(object : Graphene::Type::NonNull, field_name, argument_values)
+    class TypeResolver < Graphene::Schema::Resolver
+      def resolve(object : Graphene::Type::NonNull, context, field_name, argument_values)
         case field_name
         when "name"
           nil
@@ -14,7 +12,7 @@ module Graphene
         end
       end
 
-      def resolve(object : Graphene::Type::List, field_name, argument_values)
+      def resolve(object : Graphene::Type::List, context, field_name, argument_values)
         case field_name
         when "name"
           nil
@@ -25,10 +23,10 @@ module Graphene
         end
       end
 
-      def resolve(object : Graphene::Type::Object, field_name, argument_values)
+      def resolve(object : Graphene::Type::Object, context, field_name, argument_values)
         case field_name
         when "name"
-          object.typename
+          object.name
         when "kind"
           object.kind
         when "fields"
@@ -38,7 +36,7 @@ module Graphene
         end
       end
 
-      def resolve(object : Graphene::Type::Scalar, field_name, argument_values)
+      def resolve(object : Graphene::Type::Scalar, context, field_name, argument_values)
         case field_name
         when "name"
           object.name
@@ -47,10 +45,10 @@ module Graphene
         end
       end
 
-      def resolve(object : Graphene::Type::Enum, field_name, argument_values)
+      def resolve(object : Graphene::Type::Enum, context, field_name, argument_values)
         case field_name
         when "name"
-          object.typename
+          object.name
         when "kind"
           object.kind
         when "enumValues"
@@ -58,10 +56,10 @@ module Graphene
         end
       end
 
-      def resolve(object : Graphene::Type::Union, field_name, argument_values)
+      def resolve(object : Graphene::Type::Union, context, field_name, argument_values)
         case field_name
         when "name"
-          object.typename
+          object.name
         when "kind"
           object.kind
         when "possibleTypes"
@@ -69,7 +67,7 @@ module Graphene
         end
       end
 
-      def resolve(object : Graphene::Type::Interface, field_name, argument_values)
+      def resolve(object : Graphene::Type::Interface, context, field_name, argument_values)
         case field_name
         when "name"
           object.name

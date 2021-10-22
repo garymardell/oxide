@@ -13,7 +13,9 @@ describe Graphene do
 
     runtime = Graphene::Execution::Runtime.new(
       DummySchema,
-      Graphene::Query.new(query_string)
+      Graphene::Query.new(query_string),
+      resolvers: DummySchemaResolvers,
+      type_resolvers: DummySchemaTypeResolvers
     )
 
     result = JSON.parse(runtime.execute)["data"]
@@ -35,7 +37,9 @@ describe Graphene do
 
     runtime = Graphene::Execution::Runtime.new(
       DummySchema,
-      Graphene::Query.new(query_string)
+      Graphene::Query.new(query_string),
+      resolvers: DummySchemaResolvers,
+      type_resolvers: DummySchemaTypeResolvers
     )
 
     result = JSON.parse(runtime.execute)["data"]
@@ -43,7 +47,7 @@ describe Graphene do
     # pp result
   end
 
-  it "supports full introspection" do
+  it "supports full introspection", focus: true do
     query_string = <<-QUERY
       query IntrospectionQuery {
         __schema {
@@ -137,11 +141,13 @@ describe Graphene do
 
     runtime = Graphene::Execution::Runtime.new(
       DummySchema,
-      Graphene::Query.new(query_string)
+      Graphene::Query.new(query_string),
+      resolvers: DummySchemaResolvers,
+      type_resolvers: DummySchemaTypeResolvers
     )
 
     result = JSON.parse(runtime.execute)["data"]
 
-    # pp result
+    pp result
   end
 end

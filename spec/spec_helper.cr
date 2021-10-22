@@ -54,7 +54,7 @@ end
 # union HumanOrAlien = Human | Alien
 
 DogCommandEnum = Graphene::Type::Enum.new(
-  typename: "DogCommand",
+  name: "DogCommand",
   values: [
     Graphene::Type::EnumValue.new(name: "SIT"),
     Graphene::Type::EnumValue.new(name: "DOWN"),
@@ -70,7 +70,6 @@ end
 
 SentientInterface = Graphene::Type::Interface.new(
   name: "Sentient",
-  type_resolver: PetTypeResolver.new,
   fields: [
     Graphene::Schema::Field.new(
       name: "name",
@@ -83,7 +82,6 @@ SentientInterface = Graphene::Type::Interface.new(
 
 PetInterface = Graphene::Type::Interface.new(
   name: "Pet",
-  type_resolver: PetTypeResolver.new,
   fields: [
     Graphene::Schema::Field.new(
       name: "name",
@@ -95,15 +93,13 @@ PetInterface = Graphene::Type::Interface.new(
 )
 
 DogObject = Graphene::Type::Object.new(
-  typename: "Dog",
+  name: "Dog",
   implements: [PetInterface],
-  resolver: NullResolver.new,
 )
 
 ValidationsSchema = Graphene::Schema.new(
   query: Graphene::Type::Object.new(
-    typename: "Query",
-    resolver: NullResolver.new,
+    name: "Query",
     fields: [
       Graphene::Schema::Field.new(
         name: "dog",

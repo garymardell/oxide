@@ -3,10 +3,10 @@ require "../type"
 module Graphene
   class Type
     class Enum < Type
-      getter typename : ::String
+      getter name : ::String
       getter values : Array(EnumValue)
 
-      def initialize(@typename : ::String, @values : Array(EnumValue))
+      def initialize(@name : ::String, @values : Array(EnumValue))
       end
 
       def coerce(value)

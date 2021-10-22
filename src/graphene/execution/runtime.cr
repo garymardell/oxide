@@ -34,7 +34,15 @@ module Graphene
 
       private property errors : Set(String)
 
-      def initialize(@schema : Graphene::Schema, @query : Graphene::Query)
+      property resolvers : Hash(String, Graphene::Schema::Resolvable)
+      property type_resolvers : Hash(String, Graphene::Schema::TypeResolver)
+
+      def initialize(
+        @schema : Graphene::Schema,
+        @query : Graphene::Query,
+        @resolvers = {} of String => Graphene::Schema::Resolvable,
+        @type_resolvers = {} of String => Graphene::Schema::TypeResolver
+      )
         @current_path = [] of String
         @errors = Set(String).new
       end
@@ -156,14 +164,19 @@ module Graphene
         argument_values = coerce_argument_values(object_type, field, variable_values)
 
         if field_name == "__typename"
-          return object_type.typename
+          return object_type.name
         end
 
         resolver = case field_name
         when "__schema"
-          Graphene::Introspection::QueryResolver.new
+          Graphene::Introspection::RootResolver.new
         else
-          object_type.resolver
+          case object_type.name
+          when "__Schema", "__Type", "__InputValue", "__Directive", "__EnumValue", "__Field"
+            Graphene::IntrospectionSystem.resolvers[object_type.name]
+          else
+            resolvers[object_type.name]
+          end
         end
 
         resolver.schema = schema
@@ -271,7 +284,7 @@ module Graphene
         if enum_value = field_type.values.find(&.value.==(result))
           enum_value.name.as(IntermediateType)
         else
-          raise FieldError.new("`#{current_object.try(&.typename)}.#{current_field.try(&.name)}` returned \"#{result}\" at ``, but this isn't a valid value for `#{field_type.typename}`. Update the field or resolver to return one of the `#{field_type.typename}`'s values instead.")
+          raise FieldError.new("`#{current_object.try(&.name)}.#{current_field.try(&.name)}` returned \"#{result}\" at ``, but this isn't a valid value for `#{field_type.name}`. Update the field or resolver to return one of the `#{field_type.name}`'s values instead.")
         end
       end
 
@@ -281,7 +294,7 @@ module Graphene
         if completed_result.nil?
           field = fields.first
 
-          errors << "Cannot return null for non-nullable field #{current_object.try(&.typename)}.#{current_field.try(&.name)}"
+          errors << "Cannot return null for non-nullable field #{current_object.try(&.name)}.#{current_field.try(&.name)}"
 
           raise FieldError.new
         else
@@ -486,7 +499,7 @@ module Graphene
       private def does_fragment_type_apply(object_type, fragment_type) # TODO: Proper handling of fragment type
         case fragment_type
         when Graphene::Type::Object
-          object_type.typename == fragment_type.typename
+          object_type.name == fragment_type.name
         when Graphene::Type::Union
           fragment_type.possible_types.includes?(object_type)
         else
@@ -496,7 +509,7 @@ module Graphene
       end
 
       private def resolve_abstract_type(field_type, result)
-        if resolved_type = field_type.type_resolver.resolve_type(result, context)
+        if resolved_type = type_resolvers[field_type.name].resolve_type(result, context)
           resolved_type
         else
           raise "abstract type could not be resolved"

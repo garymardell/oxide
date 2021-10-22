@@ -15,7 +15,7 @@ describe Graphene::Type::Enum do
       values = [build_enum_value]
 
       e = Graphene::Type::Enum.new(
-        typename: "Test",
+        name: "Test",
         values: values
       )
 

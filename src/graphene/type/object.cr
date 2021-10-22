@@ -7,13 +7,10 @@ module Graphene
   class Type
     class Object < Type
       getter fields : Array(Schema::Field)
-      getter typename : ::String
+      getter name : ::String
       getter implements : Array(Graphene::Type::Interface)
 
-      property resolver : Schema::Resolvable
-
-      def initialize(@typename : ::String, @resolver : Schema::Resolvable, @fields = [] of Schema::Field, @implements = [] of Graphene::Type::Interface)
-        @name = @typename
+      def initialize(@name : ::String, @fields = [] of Schema::Field, @implements = [] of Graphene::Type::Interface)
       end
 
       def add_field(field : Schema::Field)

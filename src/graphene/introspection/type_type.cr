@@ -5,7 +5,7 @@ require "./input_value_type"
 module Graphene
   module Introspection
     TypeKindType = Graphene::Type::Enum.new(
-      typename: "__TypeKind",
+      name: "__TypeKind",
       values: [
         Graphene::Type::EnumValue.new(name: "SCALAR"),
         Graphene::Type::EnumValue.new(name: "OBJECT"),
@@ -19,8 +19,7 @@ module Graphene
     )
 
     TypeType = Graphene::Type::Object.new(
-      typename: "__Type",
-      resolver: TypeResolver.new,
+      name: "__Type",
       fields: [
         Graphene::Schema::Field.new(
           name: "kind",

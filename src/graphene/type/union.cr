@@ -4,11 +4,10 @@ require "../type"
 module Graphene
   class Type
     class Union < Type
-      getter typename : ::String
+      getter name : ::String
       getter possible_types : Array(Graphene::Type)
-      getter type_resolver : Schema::TypeResolver
 
-      def initialize(@typename : ::String, @type_resolver : Schema::TypeResolver, @possible_types = [] of Graphene::Type)
+      def initialize(@name : ::String, @possible_types = [] of Graphene::Type)
       end
 
       def kind

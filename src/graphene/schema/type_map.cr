@@ -20,10 +20,10 @@ module Graphene
       end
 
       def visit(type : Graphene::Type::Object)
-        previous_type = type_map.fetch(type.typename, nil)
+        previous_type = type_map.fetch(type.name, nil)
 
         if previous_type.nil?
-          type_map[type.typename] = type
+          type_map[type.name] = type
         end
 
         # TODO: Interfaces

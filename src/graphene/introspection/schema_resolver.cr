@@ -1,7 +1,7 @@
 module Graphene
   module Introspection
     class SchemaResolver < Graphene::Schema::Resolver
-      def resolve(object, field_name, argument_values)
+      def resolve(object, context, field_name, argument_values)
         case field_name
         when "types"
           schema.not_nil!.types

@@ -1,9 +1,7 @@
 module Graphene
   module Introspection
-    class FieldResolver
-      include Graphene::Schema::Resolvable
-
-      def resolve(object : Graphene::Schema::Field, field_name, argument_values)
+    class FieldResolver  < Graphene::Schema::Resolver
+      def resolve(object : Graphene::Schema::Field, context, field_name, argument_values)
         case field_name
         when "name"
           object.name

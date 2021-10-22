@@ -3,8 +3,7 @@ require "./type_type"
 module Graphene
   module Introspection
     InputValueType = Graphene::Type::Object.new(
-      typename: "__InputValue",
-      resolver: InputValueResolver.new,
+      name: "__InputValue",
       fields: [
         Graphene::Schema::Field.new(
           name: "name",

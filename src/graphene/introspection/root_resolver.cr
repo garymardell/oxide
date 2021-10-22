@@ -1,7 +1,8 @@
 module Graphene
   module Introspection
-    class DirectiveResolver < Graphene::Schema::Resolver
+    class RootResolver < Graphene::Schema::Resolver
       def resolve(object, context, field_name, argument_values)
+        schema
       end
     end
   end

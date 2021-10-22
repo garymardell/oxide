@@ -41,21 +41,21 @@ module Graphene
         objects = build_objects(object_definitions)
 
         objects.each do |object|
-          type_map[object.typename] = object
+          type_map[object.name] = object
         end
 
         # UnionTypeDefinition
         union_definitions = document.definitions.select(type: Graphene::Language::Nodes::UnionTypeDefinition)
         unions = build_unions(union_definitions)
         unions.each do |union_type|
-          type_map[union_type.typename] = union_type
+          type_map[union_type.name] = union_type
         end
 
         # EnumTypeDefinition
         enum_definitions = document.definitions.select(type: Graphene::Language::Nodes::EnumTypeDefinition)
         enums = build_enums(enum_definitions)
         enums.each do |enum_type|
-          type_map[enum_type.typename] = enum_type
+          type_map[enum_type.name] = enum_type
         end
 
         query = type_map[query_definition.named_type.not_nil!.name].as(Graphene::Type::Object)
@@ -79,8 +79,7 @@ module Graphene
           end
 
           Graphene::Type::Union.new(
-            typename: union_definition.name,
-            type_resolver: Graphene::Schema::NullTypeResolver.new,
+            name: union_definition.name,
             possible_types: possible_types
           )
         end
@@ -95,7 +94,7 @@ module Graphene
           end
 
           Graphene::Type::Enum.new(
-            typename: enum_definition.name,
+            name: enum_definition.name,
             values: enum_values
           )
         end
@@ -114,8 +113,7 @@ module Graphene
           end
 
           Graphene::Type::Object.new(
-            typename: object_definition.name,
-            resolver: Graphene::Schema::NullResolver.new,
+            name: object_definition.name,
             fields: build_fields(object_definition.field_definitions),
             implements: interfaces
           )
@@ -126,7 +124,6 @@ module Graphene
         interface_definitions.map do |interface_definition|
           interface = Graphene::Type::Interface.new(
             name: interface_definition.name,
-            type_resolver: Graphene::Schema::NullTypeResolver.new,
             fields: build_fields(interface_definition.field_definitions)
           )
         end

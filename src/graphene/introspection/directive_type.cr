@@ -3,7 +3,7 @@ require "./input_value_type"
 module Graphene
   module Introspection
     DirectiveLocationType = Graphene::Type::Enum.new(
-      typename: "__DirectiveLocation",
+      name: "__DirectiveLocation",
       values: [
         Graphene::Type::EnumValue.new(name: "QUERY"),
         Graphene::Type::EnumValue.new(name: "MUTATION"),
@@ -27,8 +27,7 @@ module Graphene
     )
 
     DirectiveType = Graphene::Type::Object.new(
-      typename: "__Directive",
-      resolver: DirectiveResolver.new,
+      name: "__Directive",
       fields: [
         Graphene::Schema::Field.new(
           name: "name",
