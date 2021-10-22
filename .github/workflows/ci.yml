@@ -24,5 +24,6 @@ jobs:
           tar -xzvf v0.7.0.tar.gz
           cd libgraphqlparser-0.7.0/ && sudo cmake . && sudo make && sudo make install
           export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/
+          echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/' >> ~/.bashrc
       - name: Run tests
         run: crystal spec --order=random --error-on-warnings
