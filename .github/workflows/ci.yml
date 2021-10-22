@@ -23,7 +23,9 @@ jobs:
           wget https://github.com/graphql/libgraphqlparser/archive/v0.7.0.tar.gz
           tar -xzvf v0.7.0.tar.gz
           cd libgraphqlparser-0.7.0/ && sudo cmake . && sudo make && sudo make install
-          export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/
-          echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/' >> ~/.bashrc
+          export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
+          echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib' >> ~/.bashrc
       - name: Run tests
         run: crystal spec --order=random --error-on-warnings
+        env:
+          LD_LIBRARY_PATH: /usr/local/lib:usr/local/include
