@@ -1,3 +1,4 @@
+dist: xenial
 language: crystal
 addons:
   apt:
@@ -9,3 +10,5 @@ before_install:
   - cd libgraphqlparser-0.6.0/ && sudo cmake . && sudo make && sudo make install
 script:
   - crystal spec
+crystal:
+  - 1.1.1.
