@@ -2,13 +2,23 @@
 
 ## TODO
 
-- [ ] Context
-- [ ] Directives (@skip, @include)
 - [ ] Error handling
-- [ ] Mutations
+  - [ ] Runtime / Response errors
+  - [ ] Validation errors
 - [ ] Static validation
+- [ ] Input objects
+  - [ ] Runtime support
+  - [ ] Validations
+  - [ ] Schema Builder
 - [ ] Custom directives
-
+  - [ ] Runtime support
+  - [ ] Validations
+  - [ ] Schema Builder
+- [ ] Complete language visitor
+- [ ] Refactor parser
+  - [ ] LibGraphqlParser to use specific types
+  - [ ] Reduce duplication with macros
+  - [ ] Merge Parser and SchemaParser
 
 ## Missing features
 
@@ -19,7 +29,6 @@
 - Lookahead
 - Tracing hooks
 - Visibility
-- Validations
 - Pagination
 - Subscriptions
 
