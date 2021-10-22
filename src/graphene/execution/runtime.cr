@@ -1,5 +1,4 @@
 require "json"
-require "promise"
 
 require "./error"
 require "../query"
