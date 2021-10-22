@@ -43,11 +43,9 @@ describe Graphene do
     )
 
     result = JSON.parse(runtime.execute)["data"]
-
-    # pp result
   end
 
-  it "supports full introspection", focus: true do
+  it "supports full introspection" do
     query_string = <<-QUERY
       query IntrospectionQuery {
         __schema {
@@ -147,7 +145,5 @@ describe Graphene do
     )
 
     result = JSON.parse(runtime.execute)["data"]
-
-    pp result
   end
 end

@@ -164,7 +164,7 @@ describe Graphene do
     })
   end
 
-  it "supports fragment spread and variables", focus: false do
+  it "supports fragment spread and variables" do
     query_string = <<-QUERY
       fragment ChargeInfo on Charge {
         id
@@ -189,7 +189,7 @@ describe Graphene do
     result.should eq({ "charge" => { "id" => "1" } })
   end
 
-  it "supports arguments", focus: false do
+  it "supports arguments" do
     query_string = <<-QUERY
       query($id: ID!) {
         charge(id: $id) {
@@ -219,7 +219,7 @@ describe Graphene do
     result.should eq({ "charge" => { "id" => "10" } })
   end
 
-  it "supports arguments with default values", focus: false do
+  it "supports arguments with default values" do
     query_string = <<-QUERY
       query($id: ID! = 1) {
         charge(id: $id) {
