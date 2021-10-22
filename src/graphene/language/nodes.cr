@@ -97,6 +97,10 @@ module Graphene
             selection_set.not_nil!.accept(visitor)
           end
 
+          directives.each do |directive|
+            directive.accept(visitor)
+          end
+
           visitor.exit(self)
         end
       end
@@ -109,6 +113,11 @@ module Graphene
 
         def accept(visitor : Visitor)
           visitor.enter(self)
+
+          operation_type_definitions.each do |operation_type_definition|
+            operation_type_definition.accept(visitor)
+          end
+
           visitor.exit(self)
         end
       end
@@ -153,6 +162,13 @@ module Graphene
         end
 
         def accept(visitor : Visitor)
+          visitor.enter(self)
+
+          directives.each do |directive|
+            directive.accept(visitor)
+          end
+
+          visitor.exit(self)
         end
       end
 
@@ -173,8 +189,16 @@ module Graphene
         def accept(visitor : Visitor)
           visitor.enter(self)
 
+          arguments.each do |argument|
+            argument.accept(visitor)
+          end
+
           unless selection_set.nil?
             selection_set.not_nil!.accept(visitor)
+          end
+
+          directives.each do |directive|
+            directive.accept(visitor)
           end
 
           visitor.exit(self)
@@ -189,6 +213,8 @@ module Graphene
         end
 
         def accept(visitor : Visitor)
+          visitor.enter(self)
+          visitor.exit(self)
         end
       end
 
@@ -205,6 +231,10 @@ module Graphene
         def accept(visitor : Visitor)
           visitor.enter(self)
 
+          unless variable.nil?
+            variable.not_nil!.accept(visitor)
+          end
+
           visitor.exit(self)
         end
       end
@@ -216,12 +246,16 @@ module Graphene
         end
 
         def accept(visitor : Visitor)
+          visitor.enter(self)
+          visitor.exit(self)
         end
       end
 
 
       class Type < Node
         def accept(visitor : Visitor)
+          visitor.enter(self)
+          visitor.exit(self)
         end
       end
 
@@ -230,7 +264,6 @@ module Graphene
 
         def initialize(@name)
         end
-
       end
 
       class ListType < Type
@@ -240,6 +273,13 @@ module Graphene
         end
 
         def accept(visitor : Visitor)
+          visitor.enter(self)
+
+          unless of_type.nil?
+            of_type.not_nil!.accept(visitor)
+          end
+
+          visitor.exit(self)
         end
       end
 
@@ -250,6 +290,13 @@ module Graphene
         end
 
         def accept(visitor : Visitor)
+          visitor.enter(self)
+
+          unless of_type.nil?
+            of_type.not_nil!.accept(visitor)
+          end
+
+          visitor.exit(self)
         end
       end
 
@@ -260,6 +307,9 @@ module Graphene
         end
 
         def accept(visitor : Visitor)
+          visitor.enter(self)
+
+          visitor.exit(self)
         end
       end
 
@@ -271,6 +321,13 @@ module Graphene
         end
 
         def accept(visitor : Visitor)
+          visitor.enter(self)
+
+          arguments.each do |argument|
+            argument.accept(visitor)
+          end
+
+          visitor.exit(self)
         end
       end
 
@@ -296,6 +353,15 @@ module Graphene
 
         def accept(visitor : Visitor)
           visitor.enter(self)
+
+          implements.each do |implement|
+            implement.accept(visitor)
+          end
+
+          field_definitions.each do |field_definition|
+            field_definition.accept(visitor)
+          end
+
           visitor.exit(self)
         end
       end
@@ -310,6 +376,15 @@ module Graphene
 
         def accept(visitor : Visitor)
           visitor.enter(self)
+
+          argument_definitions.each do |argument_definition|
+            argument_definition.accept(visitor)
+          end
+
+          unless type.nil?
+            type.not_nil!.accept(visitor)
+          end
+
           visitor.exit(self)
         end
       end
@@ -323,6 +398,11 @@ module Graphene
 
         def accept(visitor : Visitor)
           visitor.enter(self)
+
+          unless type.nil?
+            type.not_nil!.accept(visitor)
+          end
+
           visitor.exit(self)
         end
       end
@@ -336,6 +416,11 @@ module Graphene
 
         def accept(visitor : Visitor)
           visitor.enter(self)
+
+          field_definitions.each do |field_definition|
+            field_definition.accept(visitor)
+          end
+
           visitor.exit(self)
         end
       end
@@ -349,6 +434,11 @@ module Graphene
 
         def accept(visitor : Visitor)
           visitor.enter(self)
+
+          member_types.each do |member_type|
+            member_type.accept(visitor)
+          end
+
           visitor.exit(self)
         end
       end
@@ -362,6 +452,11 @@ module Graphene
 
         def accept(visitor : Visitor)
           visitor.enter(self)
+
+          value_definitions.each do |value_definition|
+            value_definition.accept(visitor)
+          end
+
           visitor.exit(self)
         end
       end

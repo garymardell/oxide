@@ -14,7 +14,7 @@
   - [ ] Runtime support
   - [ ] Validations
   - [ ] Schema Builder
-- [ ] Complete language visitor
+- [x] Complete language visitor
 - [ ] Refactor parser
   - [ ] LibGraphqlParser to use specific types
   - [ ] Reduce duplication with macros
