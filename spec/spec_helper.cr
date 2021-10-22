@@ -1,5 +1,5 @@
 require "spec"
-require "../src/graphene-runtime"
+require "../src/graphene"
 require "./dummy/schema"
 
 class NullResolver < Graphene::Schema::Resolver
