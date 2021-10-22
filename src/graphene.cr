@@ -3,3 +3,4 @@ module Graphene
 end
 
 require "./graphene/schema"
+require "./graphene/utils/**"

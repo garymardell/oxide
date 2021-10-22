@@ -97,5 +97,15 @@ module Graphene
         end
       end
     end
+
+    class CustomScalar < Scalar
+      getter name : ::String
+
+      def initialize(@name : ::String)
+      end
+
+      def coerce(value)
+      end
+    end
   end
 end

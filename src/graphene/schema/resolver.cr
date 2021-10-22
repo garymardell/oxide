@@ -5,5 +5,11 @@ module Graphene
     abstract class Resolver
       include Resolvable
     end
+
+    class NullResolver < Resolver
+      def resolve(object, context, field_name, argument_values)
+        nil
+      end
+    end
   end
 end
