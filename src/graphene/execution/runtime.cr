@@ -123,10 +123,13 @@ module Graphene
 
       private def execute_mutation(mutation, schema, coerced_variable_values)
         if mutation_type = schema.mutation
-          partial_result = execute_selection_set(mutation.selection_set.not_nil!.selections, mutation_type, nil, coerced_variable_values)
+          begin
+            result = execute_selection_set(mutation.selection_set.not_nil!.selections, mutation_type, nil, coerced_variable_values)
 
-          # sync_lazies(partial_result)
-          nil
+            serialize(result)
+          rescue FieldError
+            nil
+          end
         end
       end
 
