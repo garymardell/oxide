@@ -3,7 +3,7 @@ require "./visitable"
 module Graphene
   module Language
     module Nodes
-      alias ValueType = String | Int32 | Int64 | Float64 | Bool | Nil | Array(ValueType) | Hash(String, ValueType) | Variable
+      alias ValueType = String | Int32 | Int64 | Float64 | Bool | Nil | Array(ValueType) | Hash(String, ValueType) | Variable | ObjectValue
 
       alias TypeDefinition = ScalarTypeDefinition | ObjectTypeDefinition | InterfaceTypeDefinition | UnionTypeDefinition | EnumTypeDefinition | InputObjectTypeDefinition
       alias Definition = OperationDefinition | FragmentDefinition | SchemaDefinition | TypeDefinition
@@ -304,6 +304,37 @@ module Graphene
         property value : ValueType
 
         def initialize(@value)
+        end
+
+        def accept(visitor : Visitor)
+          visitor.enter(self)
+
+          visitor.exit(self)
+        end
+      end
+
+      class ObjectValue < Node
+        property fields : Array(ObjectField)
+
+        def initialize(@fields = [] of ObjectField)
+        end
+
+        def accept(visitor : Visitor)
+          visitor.enter(self)
+
+          fields.each do |field|
+            field.accept(visitor)
+          end
+
+          visitor.exit(self)
+        end
+      end
+
+      class ObjectField < Node
+        property name : String
+        property value : Value?
+
+        def initialize(@name, @value = nil)
         end
 
         def accept(visitor : Visitor)
