@@ -16,13 +16,18 @@ describe Graphene::Validation::VariableUniqueness do
       )
     )
 
-    rule = Graphene::Validation::VariableUniqueness.new(schema)
-
     query = Graphene::Query.new(query_string)
-    query.accept(rule)
 
-    rule.errors.size.should eq(1)
-    rule.errors.should contain(Graphene::Validation::Error.new("multiple variables defined with the name atOtherHomes"))
+    pipeline = Graphene::Validation::Pipeline.new(
+      schema,
+      query,
+      [Graphene::Validation::VariableUniqueness.new.as(Graphene::Validation::Rule)]
+    )
+
+    pipeline.execute
+
+    pipeline.errors.size.should eq(1)
+    pipeline.errors.should contain(Graphene::Validation::Error.new("multiple variables defined with the name atOtherHomes"))
   end
 
   it "does not give an error if variable name is used once" do
@@ -40,12 +45,17 @@ describe Graphene::Validation::VariableUniqueness do
       )
     )
 
-    rule = Graphene::Validation::VariableUniqueness.new(schema)
-
     query = Graphene::Query.new(query_string)
-    query.accept(rule)
 
-    rule.errors.should be_empty
+    pipeline = Graphene::Validation::Pipeline.new(
+      schema,
+      query,
+      [Graphene::Validation::VariableUniqueness.new.as(Graphene::Validation::Rule)]
+    )
+
+    pipeline.execute
+
+    pipeline.errors.should be_empty
   end
 
   it "does not give an error if multiple operations use the same name" do
@@ -71,11 +81,16 @@ describe Graphene::Validation::VariableUniqueness do
       )
     )
 
-    rule = Graphene::Validation::VariableUniqueness.new(schema)
-
     query = Graphene::Query.new(query_string)
-    query.accept(rule)
 
-    rule.errors.should be_empty
+    pipeline = Graphene::Validation::Pipeline.new(
+      schema,
+      query,
+      [Graphene::Validation::VariableUniqueness.new.as(Graphene::Validation::Rule)]
+    )
+
+    pipeline.execute
+
+    pipeline.errors.should be_empty
   end
 end

@@ -26,13 +26,18 @@ describe Graphene::Validation::FragmentNameUniqueness do
       )
     )
 
-    rule = Graphene::Validation::FragmentNameUniqueness.new(schema)
-
     query = Graphene::Query.new(query_string)
-    query.accept(rule)
 
-    rule.errors.size.should eq(1)
-    rule.errors.should contain(Graphene::Validation::Error.new("multiple fragments defined with the name fragmentOne"))
+    pipeline = Graphene::Validation::Pipeline.new(
+      schema,
+      query,
+      [Graphene::Validation::FragmentNameUniqueness.new.as(Graphene::Validation::Rule)]
+    )
+
+    pipeline.execute
+
+    pipeline.errors.size.should eq(1)
+    pipeline.errors.should contain(Graphene::Validation::Error.new("multiple fragments defined with the name fragmentOne"))
   end
 
   it "does not give an error if fragments are defined with unique names" do
@@ -61,11 +66,16 @@ describe Graphene::Validation::FragmentNameUniqueness do
       )
     )
 
-    rule = Graphene::Validation::FragmentNameUniqueness.new(schema)
-
     query = Graphene::Query.new(query_string)
-    query.accept(rule)
 
-    rule.errors.should be_empty
+    pipeline = Graphene::Validation::Pipeline.new(
+      schema,
+      query,
+      [Graphene::Validation::FragmentNameUniqueness.new.as(Graphene::Validation::Rule)]
+    )
+
+    pipeline.execute
+
+    pipeline.errors.should be_empty
   end
 end

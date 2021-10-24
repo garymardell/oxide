@@ -11,36 +11,56 @@ module Graphene
       private getter schema : Graphene::Schema
       private getter query : Graphene::Query
 
-      def initialize(@schema, @query)
+      private getter context : Context
+
+      def initialize(@schema, @query, rules = nil)
         @errors = [] of Error
-        @rules = [
-          # Operations
-          OperationNameUniqueness.new(schema).as(Rule),
-          LoneAnonymousOperation.new(schema).as(Rule),
-          # Fields
-          # Arguments
-          # Fragments
-          FragmentNameUniqueness.new(schema).as(Rule),
-          FragmentsMustBeUsed.new(schema).as(Rule),
-          # Values
-          # Directives
-          # Variables
-          VariableUniqueness.new(schema).as(Rule)
-        ]
+        @rules = rules || all_rules
+        @context = Context.new(
+          schema,
+          query
+        )
       end
 
       def enter(node)
         rules.each do |rule|
-          rule.enter(node)
+          rule.enter(node, context)
+        end
+      end
+
+      def exit(node)
+        rules.each do |rule|
+          rule.exit(node, context)
         end
       end
 
       def execute
         query.accept(self)
+
+        rules.each do |rule|
+          errors.concat rule.errors
+        end
       end
 
       def errors?
         errors.any?
+      end
+
+      private def all_rules
+        [
+          # Operations
+          OperationNameUniqueness.new.as(Rule),
+          LoneAnonymousOperation.new.as(Rule),
+          # Fields
+          # Arguments
+          # Fragments
+          FragmentNameUniqueness.new.as(Rule),
+          FragmentsMustBeUsed.new.as(Rule),
+          # Values
+          # Directives
+          # Variables
+          VariableUniqueness.new.as(Rule)
+        ]
       end
     end
   end

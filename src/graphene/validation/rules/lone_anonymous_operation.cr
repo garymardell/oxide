@@ -9,14 +9,14 @@ module Graphene
       property operations : Array(Graphene::Language::Nodes::OperationDefinition)
       property anonymous : Array(Graphene::Language::Nodes::OperationDefinition)
 
-      def initialize(schema)
+      def initialize
         @operations = [] of Graphene::Language::Nodes::OperationDefinition
         @anonymous = [] of Graphene::Language::Nodes::OperationDefinition
 
-        super(schema)
+        super
       end
 
-      def enter(node : Graphene::Language::Nodes::OperationDefinition)
+      def enter(node : Graphene::Language::Nodes::OperationDefinition, context)
         operations << node
 
         unless node.name

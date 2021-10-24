@@ -20,13 +20,18 @@ describe Graphene::Validation::FragmentsMustBeUsed do
       )
     )
 
-    rule = Graphene::Validation::FragmentsMustBeUsed.new(schema)
-
     query = Graphene::Query.new(query_string)
-    query.accept(rule)
 
-    rule.errors.size.should eq(1)
-    rule.errors.should contain(Graphene::Validation::Error.new("fragment unusedFragment is defined but not used"))
+    pipeline = Graphene::Validation::Pipeline.new(
+      schema,
+      query,
+      [Graphene::Validation::FragmentsMustBeUsed.new.as(Graphene::Validation::Rule)]
+    )
+
+    pipeline.execute
+
+    pipeline.errors.size.should eq(1)
+    pipeline.errors.should contain(Graphene::Validation::Error.new("fragment unusedFragment is defined but not used"))
   end
 
   it "does not give an error if fragment definition is used" do
@@ -48,11 +53,16 @@ describe Graphene::Validation::FragmentsMustBeUsed do
       )
     )
 
-    rule = Graphene::Validation::FragmentsMustBeUsed.new(schema)
-
     query = Graphene::Query.new(query_string)
-    query.accept(rule)
 
-    rule.errors.should be_empty
+    pipeline = Graphene::Validation::Pipeline.new(
+      schema,
+      query,
+      [Graphene::Validation::FragmentsMustBeUsed.new.as(Graphene::Validation::Rule)]
+    )
+
+    pipeline.execute
+
+    pipeline.errors.should be_empty
   end
 end

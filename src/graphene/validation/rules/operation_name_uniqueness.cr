@@ -9,13 +9,13 @@ module Graphene
     class OperationNameUniqueness < Rule
       private property operation_names : Set(String)
 
-      def initialize(schema)
+      def initialize
         @operation_names = Set(String).new
 
-        super(schema)
+        super
       end
 
-      def enter(node : Graphene::Language::Nodes::OperationDefinition)
+      def enter(node : Graphene::Language::Nodes::OperationDefinition, context)
         return if node.name.nil?
 
         operation_name = node.name.not_nil!

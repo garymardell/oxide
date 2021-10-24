@@ -8,17 +8,17 @@ module Graphene
     class VariableUniqueness < Rule
       property variable_names : Set(String)
 
-      def initialize(schema)
-        super(schema)
+      def initialize
+        super
 
         @variable_names = Set(String).new
       end
 
-      def exit(node : Graphene::Language::Nodes::OperationDefinition)
+      def exit(node : Graphene::Language::Nodes::OperationDefinition, context)
         variable_names.clear
       end
 
-      def enter(node : Graphene::Language::Nodes::VariableDefinition)
+      def enter(node : Graphene::Language::Nodes::VariableDefinition, context)
         return unless node.variable
 
         variable_name = node.variable.not_nil!.name

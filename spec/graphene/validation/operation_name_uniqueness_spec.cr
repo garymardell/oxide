@@ -24,12 +24,17 @@ describe Graphene::Validation::OperationNameUniqueness do
       )
     )
 
-    rule = Graphene::Validation::OperationNameUniqueness.new(schema)
-
     query = Graphene::Query.new(query_string)
-    query.accept(rule)
 
-    rule.errors.size.should eq(1)
-    rule.errors.should eq([Graphene::Validation::Error.new("multiple operations found with the name getName")])
+    pipeline = Graphene::Validation::Pipeline.new(
+      schema,
+      query,
+      [Graphene::Validation::OperationNameUniqueness.new.as(Graphene::Validation::Rule)]
+    )
+
+    pipeline.execute
+
+    pipeline.errors.size.should eq(1)
+    pipeline.errors.should eq([Graphene::Validation::Error.new("multiple operations found with the name getName")])
   end
 end

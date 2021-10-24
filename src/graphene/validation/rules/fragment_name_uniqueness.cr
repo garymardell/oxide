@@ -7,13 +7,13 @@ module Graphene
     class FragmentNameUniqueness < Rule
       property fragment_names : Set(String)
 
-      def initialize(schema)
-        super(schema)
+      def initialize
+        super
 
         @fragment_names = Set(String).new
       end
 
-      def enter(node : Graphene::Language::Nodes::FragmentDefinition)
+      def enter(node : Graphene::Language::Nodes::FragmentDefinition, context)
         fragment_name = node.name
 
         if fragment_names.includes?(fragment_name)
