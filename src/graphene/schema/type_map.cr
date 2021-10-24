@@ -41,6 +41,8 @@ module Graphene
       end
 
       def visit(type : Graphene::Type::Interface)
+        type_map[type.name] = type
+
         type.fields.each do |field|
           field.type.accept(self)
 
