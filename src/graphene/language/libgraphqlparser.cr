@@ -190,6 +190,7 @@ lib LibGraphqlParser
   fun GraphQLAstDirective_get_name(node : GraphQLAstDirective) : GraphQLAstName
 
   fun GraphQLAstOperationTypeDefinition_get_operation(node : GraphQLAstOperationTypeDefinition) : LibC::Char*
+  fun GraphQLAstEnumValue_get_value(node : GraphQLAstEnumValue) : LibC::Char*
 
   fun GraphQLAstObjectTypeDefinition_get_name(node : GraphQLAstObjectTypeDefinition) : GraphQLAstName
   fun GraphQLAstFieldDefinition_get_name(node : GraphQLAstFieldDefinition) : GraphQLAstName

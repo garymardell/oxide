@@ -433,6 +433,13 @@ module Graphene
 
         @callbacks.visit_enum_value = ->(node : LibGraphqlParser::GraphQLAstEnumValue, data : Pointer(Void)) {
           log_visit("visit_enum_value")
+
+          stack = data.as(Pointer(Stack)).value
+
+          enum_value = LibGraphqlParser.GraphQLAstEnumValue_get_value(node)
+
+          stack.push(Nodes::Value.new(String.new(enum_value)))
+
           return 1
         }
 
