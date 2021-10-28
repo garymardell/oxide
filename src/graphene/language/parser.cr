@@ -269,8 +269,6 @@ module Graphene
           fragment_spread_name = LibGraphqlParser.GraphQLAstFragmentSpread_get_name(node)
           fragment_spread_name_value = String.new(LibGraphqlParser.GraphQLAstName_get_value(fragment_spread_name))
 
-          # Directives?
-
           fragment_spread = Nodes::FragmentSpread.new(fragment_spread_name_value)
 
           copy_location_from_ast(node, fragment_spread)
@@ -513,6 +511,24 @@ module Graphene
             stack.peek.as(Nodes::FragmentSpread).directives << directive
           when Nodes::InlineFragment
             stack.peek.as(Nodes::InlineFragment).directives << directive
+          when Nodes::SchemaDefinition
+            stack.peek.as(Nodes::SchemaDefinition).directives << directive
+          when Nodes::ScalarTypeDefinition
+            stack.peek.as(Nodes::ScalarTypeDefinition).directives << directive
+          when Nodes::ObjectTypeDefinition
+            stack.peek.as(Nodes::ObjectTypeDefinition).directives << directive
+          when Nodes::FieldDefinition
+            stack.peek.as(Nodes::FieldDefinition).directives << directive
+          when Nodes::InputValueDefinition
+            stack.peek.as(Nodes::InputValueDefinition).directives << directive
+          when Nodes::InterfaceTypeDefinition
+            stack.peek.as(Nodes::InterfaceTypeDefinition).directives << directive
+          when Nodes::UnionTypeDefinition
+            stack.peek.as(Nodes::UnionTypeDefinition).directives << directive
+          when Nodes::EnumTypeDefinition
+            stack.peek.as(Nodes::EnumTypeDefinition).directives << directive
+          when Nodes::EnumValueDefinition
+            stack.peek.as(Nodes::EnumValueDefinition).directives << directive
           when Nodes::Field
             stack.peek.as(Nodes::Field).directives << directive
           end

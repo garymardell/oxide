@@ -7,8 +7,9 @@ module Graphene
 
       alias Type = NamedType | ListType | NonNullType
       alias TypeDefinition = ScalarTypeDefinition | ObjectTypeDefinition | InterfaceTypeDefinition | UnionTypeDefinition | EnumTypeDefinition | InputObjectTypeDefinition
-      alias Definition = OperationDefinition | FragmentDefinition | SchemaDefinition | TypeDefinition
+      alias Definition = OperationDefinition | FragmentDefinition | SchemaDefinition | TypeDefinition | DirectiveDefinition
       alias Selection = Field | FragmentSpread | InlineFragment
+      alias DirectiveLocation = String
 
       abstract class Node
         include Visitable
@@ -107,13 +108,18 @@ module Graphene
       end
 
       class SchemaDefinition < Node
+        property directives : Array(Directive)
         property operation_type_definitions : Array(OperationTypeDefinition)
 
-        def initialize(@operation_type_definitions = [] of OperationTypeDefinition)
+        def initialize(@operation_type_definitions = [] of OperationTypeDefinition, @directives = [] of Directive)
         end
 
         def accept(visitor : Visitor)
           visitor.enter(self)
+
+          directives.each do |directive|
+            directive.accept(visitor)
+          end
 
           operation_type_definitions.each do |operation_type_definition|
             operation_type_definition.accept(visitor)
@@ -332,8 +338,9 @@ module Graphene
 
       class ScalarTypeDefinition < Node
         property name : String
+        property directives : Array(Directive)
 
-        def initialize(@name)
+        def initialize(@name, @directives = [] of Directive)
         end
 
         def accept(visitor : Visitor)
@@ -345,9 +352,10 @@ module Graphene
       class ObjectTypeDefinition < Node
         property name : String
         property implements : Array(NamedType)
+        property directives : Array(Directive)
         property field_definitions : Array(FieldDefinition)
 
-        def initialize(@name, @implements = [] of NamedType, @field_definitions = [] of FieldDefinition)
+        def initialize(@name, @implements = [] of NamedType, @directives = [] of Directive, @field_definitions = [] of FieldDefinition)
         end
 
         def accept(visitor : Visitor)
@@ -369,8 +377,9 @@ module Graphene
         property name : String
         property argument_definitions : Array(InputValueDefinition)
         property type : NamedType | ListType | NonNullType | Nil
+        property directives : Array(Directive)
 
-        def initialize(@name, @argument_definitions = [] of InputValueDefinition, @type = nil)
+        def initialize(@name, @argument_definitions = [] of InputValueDefinition, @type = nil, @directives = [] of Directive)
         end
 
         def accept(visitor : Visitor)
@@ -392,8 +401,9 @@ module Graphene
         property name : String
         property type : NamedType | ListType | NonNullType | Nil
         property default_value : Value | Nil
+        property directives : Array(Directive)
 
-        def initialize(@name, @type = nil, @default_value = nil)
+        def initialize(@name, @type = nil, @default_value = nil, @directives = [] of Directive)
         end
 
         def accept(visitor : Visitor)
@@ -410,8 +420,9 @@ module Graphene
       class InterfaceTypeDefinition < Node
         property name : String
         property field_definitions : Array(FieldDefinition)
+        property directives : Array(Directive)
 
-        def initialize(@name, @field_definitions = [] of FieldDefinition)
+        def initialize(@name, @field_definitions = [] of FieldDefinition, @directives = [] of Directive)
         end
 
         def accept(visitor : Visitor)
@@ -428,8 +439,9 @@ module Graphene
       class UnionTypeDefinition < Node
         property name : String
         property member_types : Array(NamedType)
+        property directives : Array(Directive)
 
-        def initialize(@name, @member_types = [] of NamedType)
+        def initialize(@name, @member_types = [] of NamedType, @directives = [] of Directive)
         end
 
         def accept(visitor : Visitor)
@@ -446,8 +458,9 @@ module Graphene
       class EnumTypeDefinition < Node
         property name : String
         property value_definitions : Array(EnumValueDefinition)
+        property directives : Array(Directive)
 
-        def initialize(@name, @value_definitions = [] of EnumValueDefinition)
+        def initialize(@name, @directives = [] of Directive, @value_definitions = [] of EnumValueDefinition)
         end
 
         def accept(visitor : Visitor)
@@ -463,8 +476,9 @@ module Graphene
 
       class EnumValueDefinition < Node
         property name : String
+        property directives : Array(Directive)
 
-        def initialize(@name)
+        def initialize(@name, @directives = [] of Directive)
         end
 
         def accept(visitor : Visitor)
@@ -476,6 +490,42 @@ module Graphene
       class InputObjectTypeDefinition < Node
         def accept(visitor : Visitor)
           visitor.enter(self)
+          visitor.exit(self)
+        end
+      end
+
+      class DirectiveDefinition < Node
+        property name : String
+        property arguments_definitions : Array(InputValueDefinition)
+        property directive_locations : Array(DirectiveLocation)
+
+        def initialize(@name, @arguments_definitions = [] of InputValueDefinition, @directive_locations = [] of DirectiveLocation)
+        end
+
+        def accept(visitor : Visitor)
+          visitor.enter(self)
+
+          arguments_definitions.each do |arguments_definition|
+            arguments_definition.accept(visitor)
+          end
+
+          visitor.exit(self)
+        end
+      end
+
+      class ArgumentsDefintion < Node
+        property input_value_definitions : Array(InputValueDefinition)
+
+        def initialize(@input_value_definitions = [] of InputValueDefinition)
+        end
+
+        def accept(visitor : Visitor)
+          visitor.enter(self)
+
+          input_value_definitions.each do |input_value_definition|
+            input_value_definition.accept(visitor)
+          end
+
           visitor.exit(self)
         end
       end

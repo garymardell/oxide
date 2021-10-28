@@ -251,6 +251,8 @@ module Graphene
           case stack.peek
           when Nodes::FieldDefinition
             stack.peek.as(Nodes::FieldDefinition).argument_definitions << input_value_definition
+          when Nodes::DirectiveDefinition
+            stack.peek.as(Nodes::DirectiveDefinition).arguments_definitions << input_value_definition
           end
         }
 
@@ -370,6 +372,30 @@ module Graphene
           when Nodes::EnumTypeDefinition
             stack.peek.as(Nodes::EnumTypeDefinition).value_definitions << enum_value_definition
           end
+        }
+
+        @callbacks.visit_directive_definition = ->(node : LibGraphqlParser::GraphQLAstDirectiveTypeDefinition, data : Pointer(Void)) {
+          log_visit("visit_directive_definition")
+
+          stack = data.as(Pointer(Stack)).value
+
+          directive_definition_name = LibGraphqlParser.GraphQLAstDirectiveDefinition_get_name(node)
+          directive_definition_value = LibGraphqlParser.GraphQLAstName_get_value(directive_definition_name)
+
+          directive_definition = Nodes::DirectiveDefinition.new(String.new(directive_definition_value))
+
+          stack.push(directive_definition)
+          return 1
+        }
+
+        @callbacks.end_visit_directive_definition = ->(node : LibGraphqlParser::GraphQLAstDirectiveTypeDefinition, data : Pointer(Void)) {
+          log_visit("end_visit_directive_definition")
+
+          stack = data.as(Pointer(Stack)).value
+
+          directive_definition = stack.pop.as(Nodes::DirectiveDefinition)
+
+          stack.peek.as(Nodes::Document).definitions << directive_definition
         }
       end
 
