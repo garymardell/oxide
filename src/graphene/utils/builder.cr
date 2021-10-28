@@ -33,6 +33,7 @@ module Graphene
         interface_definitions = document.definitions.select(type: Graphene::Language::Nodes::InterfaceTypeDefinition)
         interfaces = build_interfaces(interface_definitions)
         interfaces.each do |interface|
+          type_map[interface.name] = interface
           interface_map[interface.name] = interface
         end
 
