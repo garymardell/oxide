@@ -5,6 +5,7 @@ module Graphene
     module Nodes
       alias ValueType = String | Int32 | Int64 | Float64 | Bool | Nil | Array(ValueType) | Hash(String, ValueType) | Variable
 
+      alias Type = NamedType | ListType | NonNullType
       alias TypeDefinition = ScalarTypeDefinition | ObjectTypeDefinition | InterfaceTypeDefinition | UnionTypeDefinition | EnumTypeDefinition | InputObjectTypeDefinition
       alias Definition = OperationDefinition | FragmentDefinition | SchemaDefinition | TypeDefinition
       alias Selection = Field | FragmentSpread | InlineFragment
@@ -252,22 +253,19 @@ module Graphene
         end
       end
 
+      class NamedType < Node
+        property name : String
 
-      class Type < Node
+        def initialize(@name)
+        end
+
         def accept(visitor : Visitor)
           visitor.enter(self)
           visitor.exit(self)
         end
       end
 
-      class NamedType < Type
-        property name : String
-
-        def initialize(@name)
-        end
-      end
-
-      class ListType < Type
+      class ListType < Node
         property of_type : NamedType | ListType | Nil
 
         def initialize(@of_type = nil)
@@ -284,7 +282,7 @@ module Graphene
         end
       end
 
-      class NonNullType < Type
+      class NonNullType < Node
         property of_type : NamedType | ListType | Nil
 
         def initialize(@of_type = nil)
