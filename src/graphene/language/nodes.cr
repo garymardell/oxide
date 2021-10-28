@@ -392,8 +392,9 @@ module Graphene
       class InputValueDefinition < Node
         property name : String
         property type : NamedType | ListType | NonNullType | Nil
+        property default_value : Value | Nil
 
-        def initialize(@name, @type = nil)
+        def initialize(@name, @type = nil, @default_value = nil)
         end
 
         def accept(visitor : Visitor)

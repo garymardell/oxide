@@ -203,6 +203,12 @@ module Graphene
 
           field_definition = stack.pop.as(Nodes::FieldDefinition)
 
+          default_value = if stack.peek.is_a?(Nodes::Value)
+            stack.pop.as(Nodes::Value)
+          else
+            nil
+          end
+
           case stack.peek
           when Nodes::ObjectTypeDefinition
             stack.peek.as(Nodes::ObjectTypeDefinition).field_definitions << field_definition
@@ -233,7 +239,14 @@ module Graphene
 
           stack = data.as(Pointer(Stack)).value
 
+          default_value = if stack.peek.is_a?(Nodes::Value)
+            stack.pop.as(Nodes::Value)
+          else
+            nil
+          end
+
           input_value_definition = stack.pop.as(Nodes::InputValueDefinition)
+          input_value_definition.default_value = default_value
 
           case stack.peek
           when Nodes::FieldDefinition

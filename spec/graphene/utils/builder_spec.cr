@@ -56,4 +56,29 @@ describe Graphene::Utils::Builder do
     builder = Graphene::Utils::Builder.new(input)
     builder.build
   end
+
+  it "supports field arguments with default values" do
+    input = <<-INPUT
+      schema {
+        query: Query
+      }
+
+      type Query {
+        isFavouriteNumber(number: Int = 42): Boolean!
+      }
+    INPUT
+
+    builder = Graphene::Utils::Builder.new(input)
+
+    schema = builder.build
+
+    field = schema.query.fields.find(&.name.===("isFavouriteNumber"))
+    field.should_not be_nil
+
+    argument = field.not_nil!.arguments.find(&.name.===("number"))
+    argument.should_not be_nil
+
+    argument.not_nil!.has_default_value?.should be_true
+    argument.not_nil!.default_value.should eq(42)
+  end
 end

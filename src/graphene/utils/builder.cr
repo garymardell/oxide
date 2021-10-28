@@ -142,10 +142,20 @@ module Graphene
 
       private def build_arguments(argument_definitions)
         argument_definitions.map do |argument_definition|
-          Graphene::Schema::Argument.new(
-            name: argument_definition.name,
-            type: build_type(argument_definition.type) # TODO: Default values
-          )
+          default_value = argument_definition.default_value
+
+          if default_value
+            Graphene::Schema::Argument.new(
+              name: argument_definition.name,
+              type: build_type(argument_definition.type),
+              default_value: default_value.value.as(Graphene::Schema::Argument::DefaultValue)
+            )
+          else
+            Graphene::Schema::Argument.new(
+              name: argument_definition.name,
+              type: build_type(argument_definition.type)
+            )
+          end
         end
       end
 
