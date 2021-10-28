@@ -22,6 +22,27 @@ describe Graphene do
     result.should eq({ "charges" => [{ "id" => "1" }, { "id" => "2" }, { "id" => "3" }] })
   end
 
+  it "supports query shorthand" do
+    query_string = <<-QUERY
+      {
+        charges {
+          id
+        }
+      }
+    QUERY
+
+    runtime = Graphene::Execution::Runtime.new(
+      DummySchema,
+      Graphene::Query.new(query_string),
+      resolvers: DummySchemaResolvers,
+      type_resolvers: DummySchemaTypeResolvers
+    )
+
+    result = JSON.parse(runtime.execute)["data"]
+
+    result.should eq({ "charges" => [{ "id" => "1" }, { "id" => "2" }, { "id" => "3" }] })
+  end
+
   it "supports field alias" do
     query_string = <<-QUERY
       {
