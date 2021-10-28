@@ -344,7 +344,7 @@ module Graphene
 
           case selection
           when Graphene::Language::Nodes::Field
-            response_key = selection.name
+            response_key = selection.alias || selection.name
 
             grouped_fields[response_key] ||= [] of Graphene::Language::Nodes::Field
             grouped_fields[response_key] << selection

@@ -188,12 +188,18 @@ module Graphene
         @callbacks.visit_field = ->(node : LibGraphqlParser::GraphQLAstField, data : Pointer(Void)) {
           log_visit("visit_field")
 
+          alias_name = LibGraphqlParser.GraphQLAstField_get_alias(node)
+
+          alias_value = if alias_name
+            String.new(LibGraphqlParser.GraphQLAstName_get_value(alias_name))
+          end
+
           field_name = LibGraphqlParser.GraphQLAstField_get_name(node)
           field_name_value = String.new(LibGraphqlParser.GraphQLAstName_get_value(field_name))
 
           stack = data.as(Pointer(Stack)).value
 
-          field = Nodes::Field.new(field_name_value)
+          field = Nodes::Field.new(field_name_value, alias_value)
 
           copy_location_from_ast(node, field)
 

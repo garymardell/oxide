@@ -173,12 +173,13 @@ module Graphene
       end
 
       class Field < Node
+        property alias : String?
         property name : String
         property arguments : Array(Argument)
         property selection_set : SelectionSet?
         property directives : Array(Directive)
 
-        def initialize(@name, @arguments = [] of Argument, @selection_set = nil, @directives = [] of Directive)
+        def initialize(@name, @alias = nil, @arguments = [] of Argument, @selection_set = nil, @directives = [] of Directive)
         end
 
         # TODO: Re-serailize errors properly
