@@ -1,5 +1,6 @@
 require "./type/*"
 require "./schema/*"
+require "./schema/directives/*"
 require "./language/*"
 require "./execution"
 require "./validation"
@@ -9,12 +10,19 @@ require "./context"
 
 module Graphene
   class Schema
+    DEFAULT_DIRECTIVES = [
+      Graphene::Schema::Directives::SkipDirective.new,
+      Graphene::Schema::Directives::IncludeDirective.new
+    ]
+
     getter query : Graphene::Type::Object
     getter mutation : Graphene::Type::Object | Nil
 
     getter orphan_types : Array(Graphene::Type)
+    getter directives : Array(Graphene::Schema::Directive)
 
-    def initialize(@query, @mutation = nil, @orphan_types = [] of Graphene::Type)
+    def initialize(@query, @mutation = nil, @orphan_types = [] of Graphene::Type, directives = [] of Directive)
+      @directives = DEFAULT_DIRECTIVES + directives
     end
 
     def type_map

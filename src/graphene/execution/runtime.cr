@@ -25,6 +25,7 @@ module Graphene
 
       delegate document, to: query
       delegate context, to: query
+      delegate directives, to: schema
 
       private property current_path : Array(String)
       private property current_object : Graphene::Type::Object?
@@ -163,7 +164,13 @@ module Graphene
         field = fields.first
         field_name = field.name
 
-        argument_values = coerce_argument_values(object_type, field, variable_values)
+        argument_definitions = if schema_field = object_type.get_field(field_name)
+            schema_field.arguments
+        else
+          [] of Graphene::Schema::Argument
+        end
+
+        argument_values = coerce_argument_values(argument_definitions, field.arguments, variable_values)
 
         if field_name == "__typename"
           return object_type.name
@@ -333,11 +340,15 @@ module Graphene
 
         selection_set.each do |selection|
           if selection.responds_to?(:directives) && selection.directives.any?
-            next if selection.directives.each do |directive|
-              if directive.name == "skip"
-                break Graphene::Schema::SkipDirective.skip?(directive, variable_values)
-              elsif directive.name == "include"
-                break Graphene::Schema::IncludeDirective.include?(directive, variable_values)
+            next if selection.directives.any? do |directive|
+              schema_directive = directives.find(&.name.===(directive.name))
+
+              if schema_directive
+                directive_arguments = coerce_argument_values(schema_directive.arguments, directive.arguments, variable_values)
+
+                !schema_directive.include?(object_type, nil, directive_arguments)
+              else
+                false
               end
             end
           end
@@ -398,56 +409,52 @@ module Graphene
         selection_set
       end
 
-      private def coerce_argument_values(object_type, field, variable_values)
+      private def coerce_argument_values(argument_definitions, arguments, variable_values)
         coerced_values = {} of String => ReturnType
 
-        argument_values = field.arguments.each_with_object({} of String => Graphene::Language::Nodes::ValueType) do |argument, memo|
+        argument_values = arguments.each_with_object({} of String => Graphene::Language::Nodes::ValueType) do |argument, memo|
           memo[argument.name] = argument.value.not_nil!.value
         end
 
-        field_name = field.name
-        if schema_field = object_type.get_field(field_name)
-          argument_definitions = schema_field.arguments
-          argument_definitions.each do |argument_definition|
-            argument_name = argument_definition.name
-            argument_type = argument_definition.type
+        argument_definitions.each do |argument_definition|
+          argument_name = argument_definition.name
+          argument_type = argument_definition.type
 
-            has_value = argument_values.has_key?(argument_name)
+          has_value = argument_values.has_key?(argument_name)
 
-            argument_value = argument_values.fetch(argument_name, nil)
+          argument_value = argument_values.fetch(argument_name, nil)
 
-            value = if argument_value.is_a?(Graphene::Language::Nodes::Variable)
-              variable = argument_value.as(Graphene::Language::Nodes::Variable)
-              variable_name = variable.name
+          value = if argument_value.is_a?(Graphene::Language::Nodes::Variable)
+            variable = argument_value.as(Graphene::Language::Nodes::Variable)
+            variable_name = variable.name
 
-              unless variable_values.nil?
-                variable_value = variable_values.not_nil!.fetch(variable_name, nil)
+            unless variable_values.nil?
+              variable_value = variable_values.not_nil!.fetch(variable_name, nil)
 
-                has_value = !variable_value.nil?
+              has_value = !variable_value.nil?
 
-                variable_value
-              else
-                nil
-              end
+              variable_value
             else
-              argument_value
+              nil
             end
+          else
+            argument_value
+          end
 
-            if !has_value && argument_definition.has_default_value?
-              # TODO: Something wrong with this conversion?
-              # coerced_values[argument_name] = argument_definition.default_value.as(ReturnType)
-            elsif argument_type.is_a?(Graphene::Type::NonNull) && (!has_value || value.nil?)
-              raise "non nullable argument has null value"
-            elsif has_value
-              if value.nil?
-                coerced_values[argument_name] = nil
-              elsif argument_value.is_a?(Graphene::Language::Nodes::Variable)
-                coerced_values[argument_name] = value.as(ReturnType)
-              else
-                # If value cannot be coerced according to the input coercion rules of variableType, throw a field error.
-                coerced_value = value.as(ReturnType)
-                coerced_values[argument_name] = coerced_value
-              end
+          if !has_value && argument_definition.has_default_value?
+            # TODO: Something wrong with this conversion?
+            # coerced_values[argument_name] = argument_definition.default_value.as(ReturnType)
+          elsif argument_type.is_a?(Graphene::Type::NonNull) && (!has_value || value.nil?)
+            raise "non nullable argument has null value"
+          elsif has_value
+            if value.nil?
+              coerced_values[argument_name] = nil
+            elsif argument_value.is_a?(Graphene::Language::Nodes::Variable)
+              coerced_values[argument_name] = value.as(ReturnType)
+            else
+              # If value cannot be coerced according to the input coercion rules of variableType, throw a field error.
+              coerced_value = value.as(ReturnType)
+              coerced_values[argument_name] = coerced_value
             end
           end
         end
