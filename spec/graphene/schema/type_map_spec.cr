@@ -5,6 +5,6 @@ describe Graphene::Schema::TypeMap do
     traversal = Graphene::Schema::TypeMap.new(DummySchema)
     type_map = traversal.generate
 
-    type_map.keys.sort.should eq(["Query", "Charge", "ID", "CreditCard", "String", "BankAccount", "Refund", "Boolean", "Transaction"].sort)
+    type_map.keys.sort.should eq(["Query", "Charge", "ID", "CreditCard", "String", "BankAccount", "Refund", "Boolean", "Transaction", "ChargeStatus", "RefundStatus"].sort)
   end
 end

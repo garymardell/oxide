@@ -69,6 +69,10 @@ module Graphene
       def visit(type : Graphene::Type::Scalar)
         type_map[type.name] = type
       end
+
+      def visit(type : Graphene::Type::Enum)
+        type_map[type.name] = type
+      end
     end
   end
 end
