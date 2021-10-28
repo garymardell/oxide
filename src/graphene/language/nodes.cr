@@ -7,7 +7,7 @@ module Graphene
 
       alias TypeDefinition = ScalarTypeDefinition | ObjectTypeDefinition | InterfaceTypeDefinition | UnionTypeDefinition | EnumTypeDefinition | InputObjectTypeDefinition
       alias Definition = OperationDefinition | FragmentDefinition | SchemaDefinition | TypeDefinition
-      alias Selection = Field | FragmentSpread
+      alias Selection = Field | FragmentSpread | InlineFragment
 
       abstract class Node
         include Visitable
