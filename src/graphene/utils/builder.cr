@@ -22,6 +22,13 @@ module Graphene
           raise "query root must be provded"
         end
 
+        # EnumTypeDefinition
+        enum_definitions = document.definitions.select(type: Graphene::Language::Nodes::EnumTypeDefinition)
+        enums = build_enums(enum_definitions)
+        enums.each do |enum_type|
+          type_map[enum_type.name] = enum_type
+        end
+
         # ScalarTypeDefinition
         scalar_definitions = document.definitions.select(type: Graphene::Language::Nodes::ScalarTypeDefinition)
         scalars = build_scalars(scalar_definitions)
@@ -50,13 +57,6 @@ module Graphene
         unions = build_unions(union_definitions)
         unions.each do |union_type|
           type_map[union_type.name] = union_type
-        end
-
-        # EnumTypeDefinition
-        enum_definitions = document.definitions.select(type: Graphene::Language::Nodes::EnumTypeDefinition)
-        enums = build_enums(enum_definitions)
-        enums.each do |enum_type|
-          type_map[enum_type.name] = enum_type
         end
 
         query = type_map[query_definition.named_type.not_nil!.name].as(Graphene::Type::Object)
