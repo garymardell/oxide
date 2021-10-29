@@ -202,4 +202,5 @@ lib LibGraphqlParser
   fun GraphQLAstScalarTypeDefinition_get_name(node : GraphQLAstScalarTypeDefinition) : GraphQLAstName
   fun GraphQLAstEnumValueDefinition_get_name(node : GraphQLAstEnumValueDefinition) : GraphQLAstName
   fun GraphQLAstDirectiveDefinition_get_name(node : GraphQLAstDirectiveTypeDefinition) : GraphQLAstName
+  fun GraphQLAstObjectField_get_name(node : GraphQLAstObjectField) : GraphQLAstName
 end

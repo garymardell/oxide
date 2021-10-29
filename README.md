@@ -6,6 +6,7 @@
   - [ ] Runtime / Response errors
   - [ ] Validation errors
 - [ ] Static validation
+- [x] ObjectValue
 - [ ] Input objects
   - [ ] Runtime support
   - [ ] Validations

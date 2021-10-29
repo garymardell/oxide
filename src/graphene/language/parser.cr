@@ -462,11 +462,24 @@ module Graphene
 
         @callbacks.visit_object_value = ->(node : LibGraphqlParser::GraphQLAstObjectValue, data : Pointer(Void)) {
           log_visit("visit_object_value")
+
+          stack = data.as(Pointer(Stack)).value
+
+          object_value = Nodes::ObjectValue.new
+
+          stack.push(object_value)
+
           return 1
         }
 
         @callbacks.end_visit_object_value = ->(node : LibGraphqlParser::GraphQLAstObjectValue, data : Pointer(Void)) {
           log_visit("end_visit_object_value")
+
+          stack = data.as(Pointer(Stack)).value
+
+          object_value = stack.pop.as(Nodes::ObjectValue)
+
+          stack.push(Nodes::Value.new(object_value))
         }
 
         @callbacks.visit_object_field = ->(node : LibGraphqlParser::GraphQLAstObjectField, data : Pointer(Void)) {
@@ -476,6 +489,17 @@ module Graphene
 
         @callbacks.end_visit_object_field = ->(node : LibGraphqlParser::GraphQLAstObjectField, data : Pointer(Void)) {
           log_visit("end_visit_object_field")
+
+          stack = data.as(Pointer(Stack)).value
+
+          field_name = LibGraphqlParser.GraphQLAstObjectField_get_name(node)
+          field_name_value = LibGraphqlParser.GraphQLAstName_get_value(field_name)
+
+          value = stack.pop.as(Nodes::Value)
+
+          object_field = Nodes::ObjectField.new(String.new(field_name_value), value)
+
+          stack.peek.as(Nodes::ObjectValue).fields << object_field
         }
 
         @callbacks.visit_directive = ->(node : LibGraphqlParser::GraphQLAstDirective, data : Pointer(Void)) {
