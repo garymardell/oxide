@@ -17,8 +17,8 @@ module Graphene
           ]
         end
 
-        def locations : Array(String)
-          ["FIELD", "FRAGMENT_SPREAD", "INLINE_FRAGMENT"]
+        def locations : Array(Directive::Location)
+          [Directive::Location::FIELD, Directive::Location::FRAGMENT_SPREAD, Directive::Location::INLINE_FRAGMENT]
         end
 
         def include?(object, context, argument_values) : Bool
