@@ -3,12 +3,13 @@ require "./visitable"
 module Graphene
   module Language
     module Nodes
-      alias ValueType = String | Int32 | Int64 | Float64 | Bool | Nil | Array(Value) | Hash(String, Value) | Variable | ObjectValue
       alias Type = NamedType | ListType | NonNullType
       alias TypeDefinition = ScalarTypeDefinition | ObjectTypeDefinition | InterfaceTypeDefinition | UnionTypeDefinition | EnumTypeDefinition | InputObjectTypeDefinition
       alias Definition = OperationDefinition | FragmentDefinition | SchemaDefinition | TypeDefinition | DirectiveDefinition
       alias Selection = Field | FragmentSpread | InlineFragment
       alias DirectiveLocation = String
+
+      alias ValueType = String | Int64 | Float64 | Bool | Nil | Array(Value) | Hash(String, Value) | Variable
 
       abstract class Node
         include Visitable
@@ -227,10 +228,8 @@ module Graphene
 
       class VariableDefinition < Node
         property variable : Variable?
-        #  property type : # TODO:  NamedType, ListType, NonNullType
         property type : Type?
-        property default_value : Value? # TODO: Support default value
-        # getter? has_default_value : Bool
+        property default_value : Value?
 
         def initialize(@variable = nil, @type = nil, @default_value = nil)
         end
@@ -242,18 +241,6 @@ module Graphene
             variable.not_nil!.accept(visitor)
           end
 
-          visitor.exit(self)
-        end
-      end
-
-      class Variable < Node
-        property name : String
-
-        def initialize(@name)
-        end
-
-        def accept(visitor : Visitor)
-          visitor.enter(self)
           visitor.exit(self)
         end
       end
@@ -304,10 +291,111 @@ module Graphene
         end
       end
 
-      class Value < Node
-        property value : ValueType
+      abstract class Value < Node
+        abstract def value
+
+        def accept(visitor : Visitor)
+          visitor.enter(self)
+
+          visitor.exit(self)
+        end
+      end
+
+      class StringValue < Value
+        property value : String
 
         def initialize(@value)
+        end
+
+        def accept(visitor : Visitor)
+          visitor.enter(self)
+          visitor.exit(self)
+        end
+      end
+
+      class Variable < Value
+        property name : String
+
+        def initialize(@name)
+        end
+
+        def value
+          name
+        end
+
+        def accept(visitor : Visitor)
+          visitor.enter(self)
+          visitor.exit(self)
+        end
+      end
+
+      class IntValue < Value
+        property value : Int64
+
+        def initialize(@value)
+        end
+
+        def accept(visitor : Visitor)
+          visitor.enter(self)
+          visitor.exit(self)
+        end
+      end
+
+      class FloatValue < Value
+        property value : Float64
+
+        def initialize(@value)
+        end
+
+        def accept(visitor : Visitor)
+          visitor.enter(self)
+          visitor.exit(self)
+        end
+      end
+
+      class BooleanValue < Value
+        property value : Bool
+
+        def initialize(@value)
+        end
+
+        def accept(visitor : Visitor)
+          visitor.enter(self)
+          visitor.exit(self)
+        end
+      end
+
+      class NullValue < Value
+        def value
+          nil
+        end
+
+        def accept(visitor : Visitor)
+          visitor.enter(self)
+          visitor.exit(self)
+        end
+      end
+
+      class EnumValue < Value
+        property value : String
+
+        def initialize(@value)
+        end
+
+        def accept(visitor : Visitor)
+          visitor.enter(self)
+          visitor.exit(self)
+        end
+      end
+
+      class ListValue < Value
+        property values : Array(Value)
+
+        def initialize(@values = [] of Value)
+        end
+
+        def value
+          values
         end
 
         def accept(visitor : Visitor)
@@ -317,10 +405,17 @@ module Graphene
         end
       end
 
-      class ObjectValue < Node
+      class ObjectValue < Value
         property fields : Array(ObjectField)
 
         def initialize(@fields = [] of ObjectField)
+        end
+
+        def value
+          fields.reduce({} of String => Value) do |memo, field|
+            memo[field.name] = field.value
+            memo
+          end
         end
 
         def accept(visitor : Visitor)
@@ -336,7 +431,7 @@ module Graphene
 
       class ObjectField < Node
         property name : String
-        property value : Value?
+        property value : Value
 
         def initialize(@name, @value)
         end

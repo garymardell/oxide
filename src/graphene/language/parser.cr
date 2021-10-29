@@ -240,13 +240,7 @@ module Graphene
 
           stack = data.as(Pointer(Stack)).value
 
-          # TODO: Value could be anything
-          # value = stack.pop.as(Nodes::Value?)
-          value = if stack.peek.is_a?(Nodes::Value)
-            stack.pop.as(Nodes::Value)
-          else
-            Nodes::Value.new(value: stack.pop.as(Nodes::ValueType))
-          end
+          value = stack.pop.as(Nodes::Value)
 
           argument = stack.pop.as(Nodes::Argument)
           argument.value = value
@@ -375,7 +369,7 @@ module Graphene
           log_visit("visit_int_value")
 
           stack = data.as(Pointer(Stack)).value
-          stack.push(Nodes::Value.new(extract_value("GraphQLAstIntValue_get_value", "to_i64")))
+          stack.push(Nodes::IntValue.new(extract_value("GraphQLAstIntValue_get_value", "to_i64")))
           return 1
         }
 
@@ -387,7 +381,7 @@ module Graphene
           log_visit("visit_float_value")
 
           stack = data.as(Pointer(Stack)).value
-          stack.push(Nodes::Value.new(extract_value("GraphQLAstFloatValue_get_value", "to_f64")))
+          stack.push(Nodes::FloatValue.new(extract_value("GraphQLAstFloatValue_get_value", "to_f64")))
 
           return 1
         }
@@ -400,7 +394,7 @@ module Graphene
           log_visit("visit_string_value")
 
           stack = data.as(Pointer(Stack)).value
-          stack.push(Nodes::Value.new(extract_value("GraphQLAstStringValue_get_value", "to_s")))
+          stack.push(Nodes::StringValue.new(extract_value("GraphQLAstStringValue_get_value", "to_s")))
 
           return 1
         }
@@ -413,7 +407,7 @@ module Graphene
           log_visit("visit_boolean_value")
 
           stack = data.as(Pointer(Stack)).value
-          stack.push(Nodes::Value.new(!!LibGraphqlParser.GraphQLAstBooleanValue_get_value(node)))
+          stack.push(Nodes::BooleanValue.new(!!LibGraphqlParser.GraphQLAstBooleanValue_get_value(node)))
 
           return 1
         }
@@ -426,7 +420,7 @@ module Graphene
           log_visit("visit_null_value")
 
           stack = data.as(Pointer(Stack)).value
-          stack.push(Nodes::Value.new(nil))
+          stack.push(Nodes::NullValue.new)
 
           return 1
         }
@@ -442,7 +436,7 @@ module Graphene
 
           enum_value = LibGraphqlParser.GraphQLAstEnumValue_get_value(node)
 
-          stack.push(Nodes::Value.new(String.new(enum_value)))
+          stack.push(Nodes::EnumValue.new(String.new(enum_value)))
 
           return 1
         }
@@ -467,7 +461,7 @@ module Graphene
             values.unshift stack.pop.as(Nodes::Value)
           end
 
-          stack.push(Nodes::Value.new(values))
+          stack.push(Nodes::ListValue.new(values))
         }
 
         @callbacks.visit_object_value = ->(node : LibGraphqlParser::GraphQLAstObjectValue, data : Pointer(Void)) {
@@ -484,16 +478,11 @@ module Graphene
 
         @callbacks.end_visit_object_value = ->(node : LibGraphqlParser::GraphQLAstObjectValue, data : Pointer(Void)) {
           log_visit("end_visit_object_value")
-
-          stack = data.as(Pointer(Stack)).value
-
-          object_value = stack.pop.as(Nodes::ObjectValue)
-
-          stack.push(Nodes::Value.new(object_value))
         }
 
         @callbacks.visit_object_field = ->(node : LibGraphqlParser::GraphQLAstObjectField, data : Pointer(Void)) {
           log_visit("visit_object_field")
+
           return 1
         }
 

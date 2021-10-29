@@ -6,6 +6,7 @@
   - [ ] Runtime / Response errors
   - [ ] Validation errors
 - [ ] Static validation
+- [x] Simplify Value nodes
 - [x] ListValue
 - [x] ObjectValue
 - [ ] Input objects

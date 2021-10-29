@@ -412,8 +412,8 @@ module Graphene
       private def coerce_argument_values(argument_definitions, arguments, variable_values)
         coerced_values = {} of String => ReturnType
 
-        argument_values = arguments.each_with_object({} of String => Graphene::Language::Nodes::ValueType) do |argument, memo|
-          memo[argument.name] = argument.value.not_nil!.value
+        argument_values = arguments.each_with_object({} of String => Graphene::Language::Nodes::Value?) do |argument, memo|
+          memo[argument.name] = argument.value
         end
 
         argument_definitions.each do |argument_definition|
@@ -438,7 +438,7 @@ module Graphene
               nil
             end
           else
-            argument_value
+            argument_value.try &.value
           end
 
           if !has_value && argument_definition.has_default_value?
