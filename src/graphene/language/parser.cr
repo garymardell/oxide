@@ -458,6 +458,16 @@ module Graphene
 
         @callbacks.end_visit_list_value = ->(node : LibGraphqlParser::GraphQLAstListValue, data : Pointer(Void)) {
           log_visit("end_visit_list_value")
+
+          stack = data.as(Pointer(Stack)).value
+
+          values = [] of Nodes::Value
+
+          while stack.peek.is_a?(Nodes::Value)
+            values.unshift stack.pop.as(Nodes::Value)
+          end
+
+          stack.push(Nodes::Value.new(values))
         }
 
         @callbacks.visit_object_value = ->(node : LibGraphqlParser::GraphQLAstObjectValue, data : Pointer(Void)) {
