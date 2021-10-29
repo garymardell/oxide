@@ -24,7 +24,7 @@ describe Graphene do
       type_resolvers: DummySchemaTypeResolvers
     )
 
-    result = JSON.parse(runtime.execute)["data"]
+    result = runtime.execute["data"]
 
     result.should eq({
       "transactions" => [
@@ -57,7 +57,7 @@ describe Graphene do
       type_resolvers: DummySchemaTypeResolvers
     )
 
-    result = JSON.parse(runtime.execute)["data"]
+    result = runtime.execute["data"]
 
     result.should eq({
       "transactions" => [
@@ -90,7 +90,7 @@ describe Graphene do
       type_resolvers: DummySchemaTypeResolvers
     )
 
-    result = JSON.parse(runtime.execute)["data"]
+    result = runtime.execute["data"]
 
     result.should eq({
       "transactions" => [
@@ -123,7 +123,7 @@ describe Graphene do
       type_resolvers: DummySchemaTypeResolvers
     )
 
-    result = JSON.parse(runtime.execute)["data"]
+    result = runtime.execute["data"]
 
     result.should eq({
       "transactions" => [

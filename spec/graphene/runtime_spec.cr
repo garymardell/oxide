@@ -17,7 +17,7 @@ describe Graphene do
       type_resolvers: DummySchemaTypeResolvers
     )
 
-    result = JSON.parse(runtime.execute)["data"]
+    result = runtime.execute["data"]
 
     result.should eq({ "charges" => [{ "id" => "1" }, { "id" => "2" }, { "id" => "3" }] })
   end
@@ -38,7 +38,7 @@ describe Graphene do
       type_resolvers: DummySchemaTypeResolvers
     )
 
-    result = JSON.parse(runtime.execute)["data"]
+    result = runtime.execute["data"]
 
     result.should eq({ "charges" => [{ "id" => "1" }, { "id" => "2" }, { "id" => "3" }] })
   end
@@ -59,7 +59,7 @@ describe Graphene do
       type_resolvers: DummySchemaTypeResolvers
     )
 
-    result = JSON.parse(runtime.execute)["data"]
+    result = runtime.execute["data"]
 
     result.should eq({ "allCharges" => [{ "id" => "1" }, { "id" => "2" }, { "id" => "3" }] })
   end
@@ -81,7 +81,7 @@ describe Graphene do
       type_resolvers: DummySchemaTypeResolvers
     )
 
-    result = JSON.parse(runtime.execute)
+    result = runtime.execute
 
     expected_errors = [
       {
@@ -128,7 +128,7 @@ describe Graphene do
       type_resolvers: DummySchemaTypeResolvers
     )
 
-    result = JSON.parse(runtime.execute)["data"]
+    result = runtime.execute["data"]
 
     expected_response = {
       "charges" => [
@@ -162,7 +162,7 @@ describe Graphene do
       type_resolvers: DummySchemaTypeResolvers
     )
 
-    result = JSON.parse(runtime.execute)["data"]
+    result = runtime.execute["data"]
 
     result.should eq({
       "transactions" => [
@@ -196,7 +196,7 @@ describe Graphene do
       type_resolvers: DummySchemaTypeResolvers
     )
 
-    result = JSON.parse(runtime.execute)["data"]
+    result = runtime.execute["data"]
 
     result.should eq({
       "paymentMethods" => [
@@ -226,7 +226,7 @@ describe Graphene do
       type_resolvers: DummySchemaTypeResolvers
     )
 
-    result = JSON.parse(runtime.execute)["data"]
+    result = runtime.execute["data"]
 
     result.should eq({ "charge" => { "id" => "1" } })
   end
@@ -256,7 +256,7 @@ describe Graphene do
       type_resolvers: DummySchemaTypeResolvers
     )
 
-    result = JSON.parse(runtime.execute)["data"]
+    result = runtime.execute["data"]
 
     result.should eq({ "charge" => { "id" => "10" } })
   end
@@ -282,7 +282,7 @@ describe Graphene do
       type_resolvers: DummySchemaTypeResolvers
     )
 
-    result = JSON.parse(runtime.execute)["data"]
+    result = runtime.execute["data"]
 
     result.should eq({ "charge" => { "id" => "1" } })
   end
@@ -320,7 +320,7 @@ describe Graphene do
       }
     )
 
-    result = JSON.parse(runtime.execute)["data"]
+    result = runtime.execute["data"]
 
     result.should eq({ "foo" => "foo", "bar" => "bar" })
   end
@@ -347,7 +347,7 @@ describe Graphene do
       type_resolvers: DummySchemaTypeResolvers
     )
 
-    result = JSON.parse(runtime.execute)["data"]
+    result = runtime.execute["data"]
 
     result.should eq({ "charges" => [{ "id" => "1" }, { "id" => "2" }, { "id" => "3" }] })
   end

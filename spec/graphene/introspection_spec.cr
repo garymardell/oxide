@@ -18,7 +18,7 @@ describe Graphene do
       type_resolvers: DummySchemaTypeResolvers
     )
 
-    result = JSON.parse(runtime.execute)["data"]
+    result = runtime.execute["data"]
 
     result.should eq({ "charges" => [{ "id" => "1", "__typename" => "Charge" }, { "id" => "2", "__typename" => "Charge" }, { "id" => "3", "__typename" => "Charge" }] })
   end
@@ -42,7 +42,7 @@ describe Graphene do
       type_resolvers: DummySchemaTypeResolvers
     )
 
-    result = JSON.parse(runtime.execute)["data"]
+    result = runtime.execute["data"]
   end
 
   it "supports full introspection" do
@@ -144,6 +144,6 @@ describe Graphene do
       type_resolvers: DummySchemaTypeResolvers
     )
 
-    result = JSON.parse(runtime.execute)["data"]
+    result = runtime.execute["data"]
   end
 end

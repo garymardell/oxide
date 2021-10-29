@@ -62,9 +62,9 @@ module Graphene
         end
 
         if errors.any?
-          { "data" => data, "errors" => serialize_errors(errors) }.to_json
+          { "data" => data, "errors" => serialize_errors(errors) }
         else
-          { "data" => data }.to_json
+          { "data" => data }
         end
       end
 
