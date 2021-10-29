@@ -13,6 +13,10 @@ module Graphene
       def kind
         "INTERFACE"
       end
+
+      def coerce(value)
+        raise "Invalid input type"
+      end
     end
   end
 end

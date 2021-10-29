@@ -7,6 +7,10 @@ module Graphene
 
       def initialize(@typename : ::String)
       end
+
+      def coerce(value)
+        raise "Invalid input type"
+      end
     end
   end
 end

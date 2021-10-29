@@ -11,6 +11,10 @@ module Graphene
       def kind
         "NON_NULL"
       end
+
+      def coerce(value)
+        value
+      end
     end
   end
 end

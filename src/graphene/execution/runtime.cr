@@ -443,7 +443,7 @@ module Graphene
 
           if !has_value && argument_definition.has_default_value?
             # TODO: Something wrong with this conversion?
-            # coerced_values[argument_name] = argument_definition.default_value.as(ReturnType)
+            coerced_values[argument_name] = argument_definition.default_value.not_nil!.as(ReturnType)
           elsif argument_type.is_a?(Graphene::Type::NonNull) && (!has_value || value.nil?)
             raise "non nullable argument has null value"
           elsif has_value
@@ -452,9 +452,8 @@ module Graphene
             elsif argument_value.is_a?(Graphene::Language::Nodes::Variable)
               coerced_values[argument_name] = value.as(ReturnType)
             else
-              # If value cannot be coerced according to the input coercion rules of variableType, throw a field error.
-              coerced_value = value.as(ReturnType)
-              coerced_values[argument_name] = coerced_value
+              coerced_value = argument_type.coerce(value)
+              coerced_values[argument_name] = coerced_value.as(ReturnType)
             end
           end
         end

@@ -25,6 +25,10 @@ module Graphene
         "OBJECT"
       end
 
+      def coerce(value)
+        raise "Invalid input type"
+      end
+
       private def all_fields
         all_fields = [] of Schema::Field
         all_fields.concat fields
