@@ -1,7 +1,7 @@
 module Graphene
   class Schema
     class Argument
-      alias DefaultValue = String | Int32 | Int64 | Float64 | Bool | Nil | Array(DefaultValue) | Hash(String, DefaultValue)
+      alias DefaultValue = String | Int32 | Float32 | Bool | Nil | Array(DefaultValue) | Hash(String, DefaultValue)
 
       getter name : String
       getter type : Graphene::Type

@@ -369,7 +369,7 @@ module Graphene
           log_visit("visit_int_value")
 
           stack = data.as(Pointer(Stack)).value
-          stack.push(Nodes::IntValue.new(extract_value("GraphQLAstIntValue_get_value", "to_i64")))
+          stack.push(Nodes::IntValue.new(extract_value("GraphQLAstIntValue_get_value", "to_i32")))
           return 1
         }
 
@@ -381,7 +381,7 @@ module Graphene
           log_visit("visit_float_value")
 
           stack = data.as(Pointer(Stack)).value
-          stack.push(Nodes::FloatValue.new(extract_value("GraphQLAstFloatValue_get_value", "to_f64")))
+          stack.push(Nodes::FloatValue.new(extract_value("GraphQLAstFloatValue_get_value", "to_f32")))
 
           return 1
         }

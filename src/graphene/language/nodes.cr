@@ -9,7 +9,7 @@ module Graphene
       alias Selection = Field | FragmentSpread | InlineFragment
       alias DirectiveLocation = String
 
-      alias ValueType = String | Int64 | Float64 | Bool | Nil | Array(Value) | Hash(String, Value) | Variable
+      alias ValueType = String | Int32 | Float32 | Bool | Nil | Array(Value) | Hash(String, Value) | Variable
 
       abstract class Node
         include Visitable
@@ -330,7 +330,7 @@ module Graphene
       end
 
       class IntValue < Value
-        property value : Int64
+        property value : Int32
 
         def initialize(@value)
         end
@@ -342,7 +342,7 @@ module Graphene
       end
 
       class FloatValue < Value
-        property value : Float64
+        property value : Float32
 
         def initialize(@value)
         end
