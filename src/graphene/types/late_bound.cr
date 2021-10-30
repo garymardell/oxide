@@ -1,7 +1,7 @@
 require "../type"
 
 module Graphene
-  class Type
+  module Types
     class LateBound < Type
       getter typename : ::String
 

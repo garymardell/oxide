@@ -19,7 +19,7 @@ module Graphene
         types.values
       end
 
-      def visit(type : Graphene::Type::Object)
+      def visit(type : Graphene::Types::Object)
         types[type.name] = type
 
         # TODO: Interfaces
@@ -36,7 +36,7 @@ module Graphene
         end
       end
 
-      def visit(type : Graphene::Type::Interface)
+      def visit(type : Graphene::Types::Interface)
         types[type.name] = type
 
         type.fields.each do |field|
@@ -48,7 +48,7 @@ module Graphene
         end
       end
 
-      def visit(type : Graphene::Type::Union)
+      def visit(type : Graphene::Types::Union)
         types[type.name] = type
 
         type.possible_types.each do |possible_type|
@@ -56,20 +56,20 @@ module Graphene
         end
       end
 
-      def visit(type : Graphene::Type::Enum)
+      def visit(type : Graphene::Types::Enum)
         # types << type
         types[type.name] = type
       end
 
-      def visit(type : Graphene::Type::NonNull)
+      def visit(type : Graphene::Types::NonNull)
         type.of_type.accept(self)
       end
 
-      def visit(type : Graphene::Type::List)
+      def visit(type : Graphene::Types::List)
         type.of_type.accept(self)
       end
 
-      def visit(type : Graphene::Type::Scalar)
+      def visit(type : Graphene::Types::Scalar)
         types[type.name] = type
       end
     end

@@ -1,27 +1,27 @@
 module Graphene
   module Introspection
-    EnumValueType = Graphene::Type::Object.new(
+    EnumValueType = Graphene::Types::Object.new(
       name: "__EnumValue",
       fields: [
         Graphene::Schema::Field.new(
           name: "name",
-          type: Graphene::Type::NonNull.new(
-            of_type: Graphene::Type::String.new
+          type: Graphene::Types::NonNull.new(
+            of_type: Graphene::Types::String.new
           )
         ),
         Graphene::Schema::Field.new(
           name: "description",
-          type: Graphene::Type::String.new
+          type: Graphene::Types::String.new
         ),
         Graphene::Schema::Field.new(
           name: "isDeprecated",
-          type: Graphene::Type::NonNull.new(
-            of_type: Graphene::Type::Boolean.new
+          type: Graphene::Types::NonNull.new(
+            of_type: Graphene::Types::Boolean.new
           )
         ),
         Graphene::Schema::Field.new(
           name: "deprecationReason",
-          type: Graphene::Type::String.new
+          type: Graphene::Types::String.new
         )
       ]
     )

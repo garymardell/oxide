@@ -1,7 +1,7 @@
 require "../type"
 
 module Graphene
-  class Type
+  module Types
     class Enum < Type
       getter name : ::String
       getter values : Array(EnumValue)

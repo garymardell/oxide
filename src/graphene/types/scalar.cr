@@ -1,7 +1,7 @@
   require "../type"
 
 module Graphene
-  class Type
+  module Types
     abstract class Scalar < Type
       def kind
         "SCALAR"

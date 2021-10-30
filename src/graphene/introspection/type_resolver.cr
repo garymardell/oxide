@@ -1,7 +1,7 @@
 module Graphene
   module Introspection
     class TypeResolver < Graphene::Schema::Resolver
-      def resolve(object : Graphene::Type::NonNull, context, field_name, argument_values)
+      def resolve(object : Graphene::Types::NonNull, context, field_name, argument_values)
         case field_name
         when "name"
           nil
@@ -12,7 +12,7 @@ module Graphene
         end
       end
 
-      def resolve(object : Graphene::Type::List, context, field_name, argument_values)
+      def resolve(object : Graphene::Types::List, context, field_name, argument_values)
         case field_name
         when "name"
           nil
@@ -23,7 +23,7 @@ module Graphene
         end
       end
 
-      def resolve(object : Graphene::Type::Object, context, field_name, argument_values)
+      def resolve(object : Graphene::Types::Object, context, field_name, argument_values)
         case field_name
         when "name"
           object.name
@@ -36,7 +36,7 @@ module Graphene
         end
       end
 
-      def resolve(object : Graphene::Type::Scalar, context, field_name, argument_values)
+      def resolve(object : Graphene::Types::Scalar, context, field_name, argument_values)
         case field_name
         when "name"
           object.name
@@ -45,7 +45,7 @@ module Graphene
         end
       end
 
-      def resolve(object : Graphene::Type::Enum, context, field_name, argument_values)
+      def resolve(object : Graphene::Types::Enum, context, field_name, argument_values)
         case field_name
         when "name"
           object.name
@@ -56,7 +56,7 @@ module Graphene
         end
       end
 
-      def resolve(object : Graphene::Type::Union, context, field_name, argument_values)
+      def resolve(object : Graphene::Types::Union, context, field_name, argument_values)
         case field_name
         when "name"
           object.name
@@ -67,7 +67,7 @@ module Graphene
         end
       end
 
-      def resolve(object : Graphene::Type::Interface, context, field_name, argument_values)
+      def resolve(object : Graphene::Types::Interface, context, field_name, argument_values)
         case field_name
         when "name"
           object.name

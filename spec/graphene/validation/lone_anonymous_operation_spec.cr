@@ -11,7 +11,7 @@ describe Graphene::Validation::LoneAnonymousOperation do
     QUERY
 
     schema = Graphene::Schema.new(
-      query: Graphene::Type::Object.new(
+      query: Graphene::Types::Object.new(
         name: "Query"
       )
     )
@@ -47,7 +47,7 @@ describe Graphene::Validation::LoneAnonymousOperation do
     QUERY
 
     schema = Graphene::Schema.new(
-      query: Graphene::Type::Object.new(
+      query: Graphene::Types::Object.new(
         name: "Query"
       )
     )

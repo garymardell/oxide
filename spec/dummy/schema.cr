@@ -12,32 +12,32 @@ class TransactionTypeResolver < Graphene::Schema::TypeResolver
   end
 end
 
-TransactionInterface = Graphene::Type::Interface.new(
+TransactionInterface = Graphene::Types::Interface.new(
   name: "Transaction",
   fields: [
     Graphene::Schema::Field.new(
       name: "id",
-      type: Graphene::Type::Id.new
+      type: Graphene::Types::Id.new
     ),
     Graphene::Schema::Field.new(
       name: "reference",
-      type: Graphene::Type::String.new
+      type: Graphene::Types::String.new
     )
   ]
 )
 
-ChargeType = Graphene::Type::Object.new(
+ChargeType = Graphene::Types::Object.new(
   name: "Charge",
   implements: [TransactionInterface],
   fields: [
     Graphene::Schema::Field.new(
       name: "status",
-      type: Graphene::Type::NonNull.new(
-        of_type: Graphene::Type::Enum.new(
+      type: Graphene::Types::NonNull.new(
+        of_type: Graphene::Types::Enum.new(
           name: "ChargeStatus",
           values: [
-            Graphene::Type::EnumValue.new(name: "PENDING", value: "pending"),
-            Graphene::Type::EnumValue.new(name: "PAID", value: "paid")
+            Graphene::Types::EnumValue.new(name: "PENDING", value: "pending"),
+            Graphene::Types::EnumValue.new(name: "PAID", value: "paid")
           ]
         )
       )
@@ -49,23 +49,23 @@ ChargeType = Graphene::Type::Object.new(
   ]
 )
 
-RefundType = Graphene::Type::Object.new(
+RefundType = Graphene::Types::Object.new(
   name: "Refund",
   implements: [TransactionInterface],
   fields: [
     Graphene::Schema::Field.new(
       name: "status",
-      type: Graphene::Type::Enum.new(
+      type: Graphene::Types::Enum.new(
         name: "RefundStatus",
         values: [
-          Graphene::Type::EnumValue.new(name: "PENDING", value: "pending"),
-          Graphene::Type::EnumValue.new(name: "REFUNDED", value: "refunded")
+          Graphene::Types::EnumValue.new(name: "PENDING", value: "pending"),
+          Graphene::Types::EnumValue.new(name: "REFUNDED", value: "refunded")
         ]
       )
     ),
     Graphene::Schema::Field.new(
       name: "partial",
-      type: Graphene::Type::Boolean.new
+      type: Graphene::Types::Boolean.new
     ),
     Graphene::Schema::Field.new(
       name: "payment_method",
@@ -74,30 +74,30 @@ RefundType = Graphene::Type::Object.new(
   ]
 )
 
-CreditCardType = Graphene::Type::Object.new(
+CreditCardType = Graphene::Types::Object.new(
   name: "CreditCard",
   fields: [
     Graphene::Schema::Field.new(
       name: "id",
-      type: Graphene::Type::Id.new
+      type: Graphene::Types::Id.new
     ),
     Graphene::Schema::Field.new(
       name: "last4",
-      type: Graphene::Type::String.new
+      type: Graphene::Types::String.new
     )
   ]
 )
 
-BankAccountType = Graphene::Type::Object.new(
+BankAccountType = Graphene::Types::Object.new(
   name: "BankAccount",
   fields: [
     Graphene::Schema::Field.new(
       name: "id",
-      type: Graphene::Type::Id.new
+      type: Graphene::Types::Id.new
     ),
     Graphene::Schema::Field.new(
       name: "accountNumber",
-      type: Graphene::Type::String.new
+      type: Graphene::Types::String.new
     )
   ]
 )
@@ -112,7 +112,7 @@ class PaymentMethodTypeResolver < Graphene::Schema::TypeResolver
   end
 end
 
-PaymentMethodType = Graphene::Type::Union.new(
+PaymentMethodType = Graphene::Types::Union.new(
   name: "PaymentMethod",
   possible_types: [
     CreditCardType.as(Graphene::Type),
@@ -121,41 +121,41 @@ PaymentMethodType = Graphene::Type::Union.new(
 )
 
 DummySchema = Graphene::Schema.new(
-  query: Graphene::Type::Object.new(
+  query: Graphene::Types::Object.new(
     name: "Query",
     fields: [
       Graphene::Schema::Field.new(
         name: "charge",
-        type: Graphene::Type::NonNull.new(of_type: ChargeType),
+        type: Graphene::Types::NonNull.new(of_type: ChargeType),
         arguments: [
           Graphene::Schema::Argument.new(
             name: "id",
-            type: Graphene::Type::Id.new
+            type: Graphene::Types::Id.new
           )
         ]
       ),
       Graphene::Schema::Field.new(
         name: "charges",
-        type: Graphene::Type::NonNull.new(
-          of_type: Graphene::Type::List.new(of_type: ChargeType)
+        type: Graphene::Types::NonNull.new(
+          of_type: Graphene::Types::List.new(of_type: ChargeType)
         )
       ),
       Graphene::Schema::Field.new(
         name: "transactions",
-        type: Graphene::Type::NonNull.new(
-          of_type: Graphene::Type::List.new(of_type: TransactionInterface)
+        type: Graphene::Types::NonNull.new(
+          of_type: Graphene::Types::List.new(of_type: TransactionInterface)
         )
       ),
       Graphene::Schema::Field.new(
         name: "paymentMethods",
-        type: Graphene::Type::NonNull.new(
-          of_type: Graphene::Type::List.new(of_type: PaymentMethodType)
+        type: Graphene::Types::NonNull.new(
+          of_type: Graphene::Types::List.new(of_type: PaymentMethodType)
         )
       ),
       Graphene::Schema::Field.new(
         name: "nullList",
-        type: Graphene::Type::List.new(
-          of_type: Graphene::Type::NonNull.new(of_type: ChargeType)
+        type: Graphene::Types::List.new(
+          of_type: Graphene::Types::NonNull.new(of_type: ChargeType)
         )
       )
     ]

@@ -1,7 +1,7 @@
 require "../type"
 
 module Graphene
-  class Type
+  module Types
     class List < Type
       getter of_type : Graphene::Type
 

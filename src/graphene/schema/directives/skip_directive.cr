@@ -10,8 +10,8 @@ module Graphene
           [
             Graphene::Schema::Argument.new(
               name: "if",
-              type: Graphene::Type::NonNull.new(
-                of_type: Graphene::Type::Boolean.new
+              type: Graphene::Types::NonNull.new(
+                of_type: Graphene::Types::Boolean.new
               )
             )
           ]

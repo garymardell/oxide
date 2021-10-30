@@ -97,14 +97,14 @@ module Graphene
           context.argument = argument
           context.input_type_stack << argument_type
         when Graphene::Language::Nodes::ListType
-          list_type = if context.input_type.is_a?(Graphene::Type::NonNull)
-            context.input_type.as(Graphene::Type::NonNull).of_type
+          list_type = if context.input_type.is_a?(Graphene::Types::NonNull)
+            context.input_type.as(Graphene::Types::NonNull).of_type
           else
             context.input_type
           end
 
           case list_type
-          when Graphene::Type::List
+          when Graphene::Types::List
             context.input_type_stack << list_type.of_type
           else
             context.input_type_stack << nil
@@ -155,16 +155,16 @@ module Graphene
 
       private def named_type(type)
         case type
-        when Graphene::Type::List
+        when Graphene::Types::List
           type.of_type
-        when Graphene::Type::NonNull
+        when Graphene::Types::NonNull
           type.of_type
         else
           type
         end
       end
 
-      private def field_definition(parent_type : Graphene::Type::Object, field_name)
+      private def field_definition(parent_type : Graphene::Types::Object, field_name)
         if field_name == "__schema" && parent_type == schema.query
           # Return a fake field definition?
         end

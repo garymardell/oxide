@@ -1,7 +1,7 @@
 module Graphene
   module Validation
     class Context
-      alias Composite = Graphene::Type::Object | Graphene::Type::Interface | Graphene::Type::Union
+      alias Composite = Graphene::Types::Object | Graphene::Types::Interface | Graphene::Types::Union
 
       getter schema : Graphene::Schema
       getter query : Graphene::Query

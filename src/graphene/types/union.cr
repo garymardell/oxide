@@ -2,7 +2,7 @@ require "../schema/type_resolver"
 require "../type"
 
 module Graphene
-  class Type
+  module Types
     class Union < Type
       getter name : ::String
       getter possible_types : Array(Graphene::Type)

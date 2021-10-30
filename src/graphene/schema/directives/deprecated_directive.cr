@@ -10,7 +10,7 @@ module Graphene
           [
             Graphene::Schema::Argument.new(
               name: "reason",
-              type: Graphene::Type::String.new,
+              type: Graphene::Types::String.new,
               default_value: "No longer supported"
             )
           ]

@@ -19,7 +19,7 @@ module Graphene
         type_map
       end
 
-      def visit(type : Graphene::Type::Object)
+      def visit(type : Graphene::Types::Object)
         previous_type = type_map.fetch(type.name, nil)
 
         if previous_type.nil?
@@ -40,7 +40,7 @@ module Graphene
         end
       end
 
-      def visit(type : Graphene::Type::Interface)
+      def visit(type : Graphene::Types::Interface)
         type_map[type.name] = type
 
         type.fields.each do |field|
@@ -52,25 +52,25 @@ module Graphene
         end
       end
 
-      def visit(type : Graphene::Type::Union)
+      def visit(type : Graphene::Types::Union)
         type.possible_types.each do |possible_type|
           possible_type.accept(self)
         end
       end
 
-      def visit(type : Graphene::Type::NonNull)
+      def visit(type : Graphene::Types::NonNull)
         type.of_type.accept(self)
       end
 
-      def visit(type : Graphene::Type::List)
+      def visit(type : Graphene::Types::List)
         type.of_type.accept(self)
       end
 
-      def visit(type : Graphene::Type::Scalar)
+      def visit(type : Graphene::Types::Scalar)
         type_map[type.name] = type
       end
 
-      def visit(type : Graphene::Type::Enum)
+      def visit(type : Graphene::Types::Enum)
         type_map[type.name] = type
       end
     end

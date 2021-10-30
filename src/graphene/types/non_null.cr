@@ -1,7 +1,7 @@
 require "../type"
 
 module Graphene
-  class Type
+  module Types
     class NonNull < Type
       getter of_type : Graphene::Type
 

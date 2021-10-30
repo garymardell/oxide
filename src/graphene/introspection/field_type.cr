@@ -3,44 +3,44 @@ require "./input_value_type"
 
 module Graphene
   module Introspection
-    FieldType = Graphene::Type::Object.new(
+    FieldType = Graphene::Types::Object.new(
       name: "__Field",
       fields: [
         Graphene::Schema::Field.new(
           name: "name",
-          type: Graphene::Type::NonNull.new(
-            of_type: Graphene::Type::String.new
+          type: Graphene::Types::NonNull.new(
+            of_type: Graphene::Types::String.new
           )
         ),
         Graphene::Schema::Field.new(
           name: "description",
-          type: Graphene::Type::String.new
+          type: Graphene::Types::String.new
         ),
         Graphene::Schema::Field.new(
           name: "args",
-          type: Graphene::Type::NonNull.new(
-            of_type: Graphene::Type::List.new(
-              of_type: Graphene::Type::NonNull.new(
-                of_type: Graphene::Type::LateBound.new("__InputValue")
+          type: Graphene::Types::NonNull.new(
+            of_type: Graphene::Types::List.new(
+              of_type: Graphene::Types::NonNull.new(
+                of_type: Graphene::Types::LateBound.new("__InputValue")
               )
             )
           )
         ),
         Graphene::Schema::Field.new(
           name: "type",
-          type: Graphene::Type::NonNull.new(
-            of_type: Graphene::Type::LateBound.new("__Type")
+          type: Graphene::Types::NonNull.new(
+            of_type: Graphene::Types::LateBound.new("__Type")
           )
         ),
         Graphene::Schema::Field.new(
           name: "isDeprecated",
-          type: Graphene::Type::NonNull.new(
-            of_type: Graphene::Type::Boolean.new
+          type: Graphene::Types::NonNull.new(
+            of_type: Graphene::Types::Boolean.new
           )
         ),
         Graphene::Schema::Field.new(
           name: "deprecationReason",
-          type: Graphene::Type::String.new
+          type: Graphene::Types::String.new
         )
       ]
     )

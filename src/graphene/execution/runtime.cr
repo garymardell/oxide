@@ -28,7 +28,7 @@ module Graphene
       delegate directives, to: schema
 
       private property current_path : Array(String)
-      private property current_object : Graphene::Type::Object?
+      private property current_object : Graphene::Types::Object?
       private property current_field : Graphene::Language::Nodes::Field?
 
 
@@ -154,7 +154,7 @@ module Graphene
         if schema.query == object_type && field_name == "__schema"
           Graphene::Schema::Field.new(name: "__schema", type: Graphene::Introspection::SchemaType)
         elsif field_name == "__typename"
-          Graphene::Schema::Field.new(name: "__typename", type: Graphene::Type::String.new)
+          Graphene::Schema::Field.new(name: "__typename", type: Graphene::Types::String.new)
         else
           object_type.get_field(field_name)
         end
@@ -210,7 +210,7 @@ module Graphene
       end
 
 
-      private def complete_value(path : Array(String), field_type : Graphene::Type::Object, fields, result, variable_values) : IntermediateType
+      private def complete_value(path : Array(String), field_type : Graphene::Types::Object, fields, result, variable_values) : IntermediateType
         return nil if result.nil?
 
         object_type = field_type
@@ -225,7 +225,7 @@ module Graphene
       end
 
       # TODO: Merge into object above?
-      private def complete_value(path : Array(String), field_type : Graphene::Type::Union, fields, result, variable_values)
+      private def complete_value(path : Array(String), field_type : Graphene::Types::Union, fields, result, variable_values)
         return nil if result.nil?
 
         object_type = resolve_abstract_type(field_type, result)
@@ -235,7 +235,7 @@ module Graphene
         execute_selection_set(sub_selection_set, object_type, result, variable_values)
       end
 
-      private def complete_value(path : Array(String), field_type : Graphene::Type::Interface, fields, result, variable_values)
+      private def complete_value(path : Array(String), field_type : Graphene::Types::Interface, fields, result, variable_values)
         return nil if result.nil?
 
         object_type = resolve_abstract_type(field_type, result)
@@ -245,7 +245,7 @@ module Graphene
         execute_selection_set(sub_selection_set, object_type, result, variable_values)
       end
 
-      private def complete_value(path : Array(String), field_type : Graphene::Type::Scalar, fields, result, variable_values) : IntermediateType
+      private def complete_value(path : Array(String), field_type : Graphene::Types::Scalar, fields, result, variable_values) : IntermediateType
         return nil if result.nil?
 
         field_type.coerce(result).as(IntermediateType)
@@ -255,7 +255,7 @@ module Graphene
       # If a List type wraps a Non-Null type, and one of the elements of that list resolves to null,
       # then the entire list must resolve to null. If the List type is also wrapped in a Non-Null,
       # the field error continues to propagate upwards.
-      private def complete_value(path : Array(String), field_type : Graphene::Type::List, fields, result, variable_values) : IntermediateType
+      private def complete_value(path : Array(String), field_type : Graphene::Types::List, fields, result, variable_values) : IntermediateType
         return nil if result.nil?
 
         if result.is_a?(Array)
@@ -287,7 +287,7 @@ module Graphene
         end
       end
 
-      private def complete_value(path : Array(String), field_type : Graphene::Type::Enum, fields, result, variable_values) : IntermediateType
+      private def complete_value(path : Array(String), field_type : Graphene::Types::Enum, fields, result, variable_values) : IntermediateType
         return nil if result.nil?
 
         if enum_value = field_type.values.find(&.value.==(result))
@@ -297,7 +297,7 @@ module Graphene
         end
       end
 
-      private def complete_value(path : Array(String), field_type : Graphene::Type::NonNull, fields, result, variable_values) : IntermediateType
+      private def complete_value(path : Array(String), field_type : Graphene::Types::NonNull, fields, result, variable_values) : IntermediateType
         completed_result = complete_value(path, field_type.of_type, fields, result, variable_values)
 
         if completed_result.nil?
@@ -311,7 +311,7 @@ module Graphene
         end
       end
 
-      private def complete_value(path : Array(String), field_type : Graphene::Type::LateBound, fields, result, variable_values) : IntermediateType
+      private def complete_value(path : Array(String), field_type : Graphene::Types::LateBound, fields, result, variable_values) : IntermediateType
         unwrapped_type = get_type(field_type.typename)
 
         complete_value(path, unwrapped_type, fields, result, variable_values)
@@ -444,7 +444,7 @@ module Graphene
           if !has_value && argument_definition.has_default_value?
             # TODO: Something wrong with this conversion?
             coerced_values[argument_name] = argument_definition.default_value.not_nil!.as(ReturnType)
-          elsif argument_type.is_a?(Graphene::Type::NonNull) && (!has_value || value.nil?)
+          elsif argument_type.is_a?(Graphene::Types::NonNull) && (!has_value || value.nil?)
             raise "non nullable argument has null value"
           elsif has_value
             if value.nil?
@@ -506,9 +506,9 @@ module Graphene
 
       private def does_fragment_type_apply(object_type, fragment_type) # TODO: Proper handling of fragment type
         case fragment_type
-        when Graphene::Type::Object
+        when Graphene::Types::Object
           object_type.name == fragment_type.name
-        when Graphene::Type::Union
+        when Graphene::Types::Union
           fragment_type.possible_types.includes?(object_type)
         else
           # TODO: Handle interface type

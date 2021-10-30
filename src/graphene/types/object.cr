@@ -4,13 +4,13 @@ require "../type"
 require "./interface"
 
 module Graphene
-  class Type
+  module Types
     class Object < Type
       getter fields : Array(Schema::Field)
       getter name : ::String
-      getter implements : Array(Graphene::Type::Interface)
+      getter implements : Array(Graphene::Types::Interface)
 
-      def initialize(@name : ::String, @fields = [] of Schema::Field, @implements = [] of Graphene::Type::Interface)
+      def initialize(@name : ::String, @fields = [] of Schema::Field, @implements = [] of Graphene::Types::Interface)
       end
 
       def add_field(field : Schema::Field)
