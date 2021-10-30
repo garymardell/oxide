@@ -12,7 +12,8 @@ describe Graphene::Validation::LoneAnonymousOperation do
 
     schema = Graphene::Schema.new(
       query: Graphene::Types::Object.new(
-        name: "Query"
+        name: "Query",
+        resolver: NullResolver.new
       )
     )
 
@@ -48,7 +49,8 @@ describe Graphene::Validation::LoneAnonymousOperation do
 
     schema = Graphene::Schema.new(
       query: Graphene::Types::Object.new(
-        name: "Query"
+        name: "Query",
+        resolver: NullResolver.new
       )
     )
 

@@ -4,6 +4,7 @@ module Graphene
   module Introspection
     QueryType = Graphene::Types::Object.new(
       name: "__IntrospectionQuery",
+      resolver: QueryResolver.new,
       fields: [
         Graphene::Schema::Field.new(
           name: "__schema",

@@ -4,6 +4,7 @@ module Graphene
   module Introspection
     InputValueType = Graphene::Types::Object.new(
       name: "__InputValue",
+      resolver: InputValueResolver.new,
       fields: [
         Graphene::Schema::Field.new(
           name: "name",

@@ -28,6 +28,7 @@ module Graphene
 
     DirectiveType = Graphene::Types::Object.new(
       name: "__Directive",
+      resolver: DirectiveResolver.new,
       fields: [
         Graphene::Schema::Field.new(
           name: "name",

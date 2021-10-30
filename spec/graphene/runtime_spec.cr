@@ -12,9 +12,7 @@ describe Graphene do
 
     runtime = Graphene::Execution::Runtime.new(
       DummySchema,
-      Graphene::Query.new(query_string),
-      resolvers: DummySchemaResolvers,
-      type_resolvers: DummySchemaTypeResolvers
+      Graphene::Query.new(query_string)
     )
 
     result = runtime.execute["data"]
@@ -33,9 +31,7 @@ describe Graphene do
 
     runtime = Graphene::Execution::Runtime.new(
       DummySchema,
-      Graphene::Query.new(query_string),
-      resolvers: DummySchemaResolvers,
-      type_resolvers: DummySchemaTypeResolvers
+      Graphene::Query.new(query_string)
     )
 
     result = runtime.execute["data"]
@@ -54,9 +50,7 @@ describe Graphene do
 
     runtime = Graphene::Execution::Runtime.new(
       DummySchema,
-      Graphene::Query.new(query_string),
-      resolvers: DummySchemaResolvers,
-      type_resolvers: DummySchemaTypeResolvers
+      Graphene::Query.new(query_string)
     )
 
     result = runtime.execute["data"]
@@ -76,9 +70,7 @@ describe Graphene do
 
     runtime = Graphene::Execution::Runtime.new(
       DummySchema,
-      Graphene::Query.new(query_string),
-      resolvers: DummySchemaResolvers,
-      type_resolvers: DummySchemaTypeResolvers
+      Graphene::Query.new(query_string)
     )
 
     result = runtime.execute
@@ -123,9 +115,7 @@ describe Graphene do
 
     runtime = Graphene::Execution::Runtime.new(
       DummySchema,
-      Graphene::Query.new(query_string),
-      resolvers: DummySchemaResolvers,
-      type_resolvers: DummySchemaTypeResolvers
+      Graphene::Query.new(query_string)
     )
 
     result = runtime.execute["data"]
@@ -157,9 +147,7 @@ describe Graphene do
 
     runtime = Graphene::Execution::Runtime.new(
       DummySchema,
-      Graphene::Query.new(query_string),
-      resolvers: DummySchemaResolvers,
-      type_resolvers: DummySchemaTypeResolvers
+      Graphene::Query.new(query_string)
     )
 
     result = runtime.execute["data"]
@@ -191,9 +179,7 @@ describe Graphene do
 
     runtime = Graphene::Execution::Runtime.new(
       DummySchema,
-      Graphene::Query.new(query_string),
-      resolvers: DummySchemaResolvers,
-      type_resolvers: DummySchemaTypeResolvers
+      Graphene::Query.new(query_string)
     )
 
     result = runtime.execute["data"]
@@ -221,9 +207,7 @@ describe Graphene do
 
     runtime = Graphene::Execution::Runtime.new(
       DummySchema,
-      Graphene::Query.new(query_string),
-      resolvers: DummySchemaResolvers,
-      type_resolvers: DummySchemaTypeResolvers
+      Graphene::Query.new(query_string)
     )
 
     result = runtime.execute["data"]
@@ -251,9 +235,7 @@ describe Graphene do
       Graphene::Query.new(
         query_string,
         variables: variables.as_h
-      ),
-      resolvers: DummySchemaResolvers,
-      type_resolvers: DummySchemaTypeResolvers
+      )
     )
 
     result = runtime.execute["data"]
@@ -277,9 +259,7 @@ describe Graphene do
       Graphene::Query.new(
         query_string,
         variables: variables
-      ),
-      resolvers: DummySchemaResolvers,
-      type_resolvers: DummySchemaTypeResolvers
+      )
     )
 
     result = runtime.execute["data"]
@@ -295,6 +275,7 @@ describe Graphene do
 
     query_type = Graphene::Types::Object.new(
       name: "DynamicQuery",
+      resolver: DynamicResolver.new,
       fields: fields.map do |field_name|
         Graphene::Schema::Field.new(
           name: field_name,
@@ -314,10 +295,7 @@ describe Graphene do
 
     runtime = Graphene::Execution::Runtime.new(
       schema,
-      Graphene::Query.new(query_string),
-      resolvers: {
-        "DynamicQuery" => DynamicResolver.new.as(Graphene::Schema::Resolvable)
-      }
+      Graphene::Query.new(query_string)
     )
 
     result = runtime.execute["data"]
@@ -342,9 +320,7 @@ describe Graphene do
 
     runtime = Graphene::Execution::Runtime.new(
       DummySchema,
-      Graphene::Query.new(query_string, operation_name: "allCharges"),
-      resolvers: DummySchemaResolvers,
-      type_resolvers: DummySchemaTypeResolvers
+      Graphene::Query.new(query_string, operation_name: "allCharges")
     )
 
     result = runtime.execute["data"]

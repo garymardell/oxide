@@ -4,8 +4,10 @@ module Graphene
       property input : String
       property type_map : Hash(String, Graphene::Type)
       property interface_map : Hash(String, Graphene::Types::Interface)
+      property resolvers : Hash(String, Schema::Resolvable)
+      property type_resolvers : Hash(String, Schema::TypeResolver)
 
-      def initialize(@input : String)
+      def initialize(@input : String, @resolvers : Hash(String, Schema::Resolvable), @type_resolvers : Hash(String, Schema::TypeResolver))
         @type_map = {} of String => Graphene::Type
         @interface_map = {} of String => Graphene::Types::Interface
       end
@@ -81,6 +83,7 @@ module Graphene
 
           Graphene::Types::Union.new(
             name: union_definition.name,
+            type_resolver: type_resolvers[union_definition.name],
             possible_types: possible_types
           )
         end
@@ -115,6 +118,7 @@ module Graphene
 
           Graphene::Types::Object.new(
             name: object_definition.name,
+            resolver: resolvers[object_definition.name],
             fields: build_fields(object_definition.field_definitions),
             implements: interfaces
           )
@@ -125,6 +129,7 @@ module Graphene
         interface_definitions.map do |interface_definition|
           interface = Graphene::Types::Interface.new(
             name: interface_definition.name,
+            type_resolver: type_resolvers[interface_definition.name],
             fields: build_fields(interface_definition.field_definitions)
           )
         end

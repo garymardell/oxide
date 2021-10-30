@@ -5,9 +5,10 @@ module Graphene
   module Types
     class Interface < Type
       getter name : ::String
+      getter type_resolver : Schema::TypeResolver
       getter fields : Array(Schema::Field)
 
-      def initialize(@name : ::String, @fields = [] of Schema::Field)
+      def initialize(@name, @type_resolver, @fields = [] of Schema::Field)
       end
 
       def kind

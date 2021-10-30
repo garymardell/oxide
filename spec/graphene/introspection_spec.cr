@@ -13,9 +13,7 @@ describe Graphene do
 
     runtime = Graphene::Execution::Runtime.new(
       DummySchema,
-      Graphene::Query.new(query_string),
-      resolvers: DummySchemaResolvers,
-      type_resolvers: DummySchemaTypeResolvers
+      Graphene::Query.new(query_string)
     )
 
     result = runtime.execute["data"]
@@ -37,9 +35,7 @@ describe Graphene do
 
     runtime = Graphene::Execution::Runtime.new(
       DummySchema,
-      Graphene::Query.new(query_string),
-      resolvers: DummySchemaResolvers,
-      type_resolvers: DummySchemaTypeResolvers
+      Graphene::Query.new(query_string)
     )
 
     result = runtime.execute["data"]
@@ -139,9 +135,7 @@ describe Graphene do
 
     runtime = Graphene::Execution::Runtime.new(
       DummySchema,
-      Graphene::Query.new(query_string),
-      resolvers: DummySchemaResolvers,
-      type_resolvers: DummySchemaTypeResolvers
+      Graphene::Query.new(query_string)
     )
 
     result = runtime.execute["data"]

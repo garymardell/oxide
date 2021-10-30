@@ -31,18 +31,9 @@ module Graphene
       private property current_object : Graphene::Types::Object?
       private property current_field : Graphene::Language::Nodes::Field?
 
-
       private property errors : Set(String)
 
-      property resolvers : Hash(String, Graphene::Schema::Resolvable)
-      property type_resolvers : Hash(String, Graphene::Schema::TypeResolver)
-
-      def initialize(
-        @schema : Graphene::Schema,
-        @query : Graphene::Query,
-        @resolvers = {} of String => Graphene::Schema::Resolvable,
-        @type_resolvers = {} of String => Graphene::Schema::TypeResolver
-      )
+      def initialize(@schema : Graphene::Schema, @query : Graphene::Query)
         @current_path = [] of String
         @errors = Set(String).new
       end
@@ -184,7 +175,7 @@ module Graphene
           when "__Schema", "__Type", "__InputValue", "__Directive", "__EnumValue", "__Field"
             Graphene::IntrospectionSystem.resolvers[object_type.name]
           else
-            resolvers[object_type.name]
+            object_type.resolver
           end
         end
 
@@ -517,7 +508,8 @@ module Graphene
       end
 
       private def resolve_abstract_type(field_type, result)
-        if resolved_type = type_resolvers[field_type.name].resolve_type(result, context)
+        # if resolved_type = type_resolvers[field_type.name].resolve_type(result, context)
+        if resolved_type = field_type.type_resolver.resolve_type(result, context)
           resolved_type
         else
           raise "abstract type could not be resolved"

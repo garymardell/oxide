@@ -1,5 +1,11 @@
 require "../../spec_helper"
 
+class BuilderResolver < Graphene::Schema::Resolver
+end
+
+class BuilderTypeResolver < Graphene::Schema::TypeResolver
+end
+
 describe Graphene::Utils::Builder do
   it "parses schema and builds schema object" do
     input = <<-INPUT
@@ -53,7 +59,11 @@ describe Graphene::Utils::Builder do
       union HumanOrAlien = Human | Alien
     INPUT
 
-    builder = Graphene::Utils::Builder.new(input)
+    builder = Graphene::Utils::Builder.new(
+      input,
+      resolvers: Hash(String, Graphene::Schema::Resolvable).new(default_value: BuilderResolver.new),
+      type_resolvers: Hash(String, Graphene::Schema::TypeResolver).new(default_value: BuilderTypeResolver.new)
+    )
     builder.build
   end
 
@@ -68,7 +78,11 @@ describe Graphene::Utils::Builder do
       }
     INPUT
 
-    builder = Graphene::Utils::Builder.new(input)
+    builder = Graphene::Utils::Builder.new(
+      input,
+      resolvers: Hash(String, Graphene::Schema::Resolvable).new(default_value: BuilderResolver.new),
+      type_resolvers: Hash(String, Graphene::Schema::TypeResolver).new(default_value: BuilderTypeResolver.new)
+    )
 
     schema = builder.build
 

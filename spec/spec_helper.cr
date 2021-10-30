@@ -17,6 +17,30 @@ DogCommandEnum = Graphene::Types::Enum.new(
   ]
 )
 
+class SentientTypeResolver < Graphene::Schema::TypeResolver
+  def resolve_type(object, context)
+    AlienType
+  end
+end
+
+class CatOrDogTypeResolver < Graphene::Schema::TypeResolver
+  def resolve_type(object, context)
+    CatType
+  end
+end
+
+class DogOrHumanTypeResolver < Graphene::Schema::TypeResolver
+  def resolve_type(object, context)
+    HumanType
+  end
+end
+
+class HumanOrAlienTypeResolver < Graphene::Schema::TypeResolver
+  def resolve_type(object, context)
+    HumanType
+  end
+end
+
 class PetTypeResolver < Graphene::Schema::TypeResolver
   def resolve_type(object, context)
     DogType
@@ -25,6 +49,7 @@ end
 
 SentientInterface = Graphene::Types::Interface.new(
   name: "Sentient",
+  type_resolver: SentientTypeResolver.new,
   fields: [
     Graphene::Schema::Field.new(
       name: "name",
@@ -37,6 +62,7 @@ SentientInterface = Graphene::Types::Interface.new(
 
 AlienType = Graphene::Types::Object.new(
   name: "Alien",
+  resolver: NullResolver.new,
   fields: [
     Graphene::Schema::Field.new(
       name: "name",
@@ -53,6 +79,7 @@ AlienType = Graphene::Types::Object.new(
 
 HumanType = Graphene::Types::Object.new(
   name: "Human",
+  resolver: NullResolver.new,
   fields: [
     Graphene::Schema::Field.new(
       name: "name",
@@ -66,6 +93,7 @@ HumanType = Graphene::Types::Object.new(
 
 PetInterface = Graphene::Types::Interface.new(
   name: "Pet",
+  type_resolver: PetTypeResolver.new,
   fields: [
     Graphene::Schema::Field.new(
       name: "name",
@@ -85,6 +113,7 @@ CatCommandEnum = Graphene::Types::Enum.new(
 
 CatType = Graphene::Types::Object.new(
   name: "Cat",
+  resolver: NullResolver.new,
   implements: [PetInterface],
   fields: [
     Graphene::Schema::Field.new(
@@ -120,6 +149,7 @@ CatType = Graphene::Types::Object.new(
 
 CatOrDogUnion = Graphene::Types::Union.new(
   name: "CatOrDog",
+  type_resolver: CatOrDogTypeResolver.new,
   possible_types: [
     CatType.as(Graphene::Type),
     DogType.as(Graphene::Type)
@@ -128,6 +158,7 @@ CatOrDogUnion = Graphene::Types::Union.new(
 
 DogOrHumanUnion = Graphene::Types::Union.new(
   name: "DogOrHuman",
+  type_resolver: DogOrHumanTypeResolver.new,
   possible_types: [
     DogType.as(Graphene::Type),
     HumanType.as(Graphene::Type)
@@ -136,6 +167,7 @@ DogOrHumanUnion = Graphene::Types::Union.new(
 
 HumanOrAlienUnion = Graphene::Types::Union.new(
   name: "HumanOrAlien",
+  type_resolver: HumanOrAlienTypeResolver.new,
   possible_types: [
     AlienType.as(Graphene::Type),
     HumanType.as(Graphene::Type)
@@ -144,6 +176,7 @@ HumanOrAlienUnion = Graphene::Types::Union.new(
 
 DogType = Graphene::Types::Object.new(
   name: "Dog",
+  resolver: NullResolver.new,
   implements: [PetInterface],
   fields: [
     Graphene::Schema::Field.new(
@@ -196,6 +229,7 @@ DogType = Graphene::Types::Object.new(
 ValidationsSchema = Graphene::Schema.new(
   query: Graphene::Types::Object.new(
     name: "Query",
+    resolver: NullResolver.new,
     fields: [
       Graphene::Schema::Field.new(
         name: "dog",

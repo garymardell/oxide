@@ -14,6 +14,7 @@ end
 
 TransactionInterface = Graphene::Types::Interface.new(
   name: "Transaction",
+  type_resolver: TransactionTypeResolver.new,
   fields: [
     Graphene::Schema::Field.new(
       name: "id",
@@ -28,6 +29,7 @@ TransactionInterface = Graphene::Types::Interface.new(
 
 ChargeType = Graphene::Types::Object.new(
   name: "Charge",
+  resolver: ChargeResolver.new,
   implements: [TransactionInterface],
   fields: [
     Graphene::Schema::Field.new(
@@ -51,6 +53,7 @@ ChargeType = Graphene::Types::Object.new(
 
 RefundType = Graphene::Types::Object.new(
   name: "Refund",
+  resolver: RefundResolver.new,
   implements: [TransactionInterface],
   fields: [
     Graphene::Schema::Field.new(
@@ -76,6 +79,7 @@ RefundType = Graphene::Types::Object.new(
 
 CreditCardType = Graphene::Types::Object.new(
   name: "CreditCard",
+  resolver: CreditCardResolver.new,
   fields: [
     Graphene::Schema::Field.new(
       name: "id",
@@ -90,6 +94,7 @@ CreditCardType = Graphene::Types::Object.new(
 
 BankAccountType = Graphene::Types::Object.new(
   name: "BankAccount",
+  resolver: BankAccountResolver.new,
   fields: [
     Graphene::Schema::Field.new(
       name: "id",
@@ -114,6 +119,7 @@ end
 
 PaymentMethodType = Graphene::Types::Union.new(
   name: "PaymentMethod",
+  type_resolver: PaymentMethodTypeResolver.new,
   possible_types: [
     CreditCardType.as(Graphene::Type),
     BankAccountType.as(Graphene::Type)
@@ -123,6 +129,7 @@ PaymentMethodType = Graphene::Types::Union.new(
 DummySchema = Graphene::Schema.new(
   query: Graphene::Types::Object.new(
     name: "Query",
+    resolver: QueryResolver.new,
     fields: [
       Graphene::Schema::Field.new(
         name: "charge",
@@ -165,16 +172,3 @@ DummySchema = Graphene::Schema.new(
     RefundType.as(Graphene::Type)
   ]
 )
-
-DummySchemaResolvers = {
-  "Query" => QueryResolver.new.as(Graphene::Schema::Resolvable),
-  "BankAccount" => BankAccountResolver.new.as(Graphene::Schema::Resolvable),
-  "Charge" => ChargeResolver.new.as(Graphene::Schema::Resolvable),
-  "CreditCard" => CreditCardResolver.new.as(Graphene::Schema::Resolvable),
-  "Refund" => RefundResolver.new.as(Graphene::Schema::Resolvable),
-}
-
-DummySchemaTypeResolvers = {
-  "Transaction" => TransactionTypeResolver.new,
-  "PaymentMethod" => PaymentMethodTypeResolver.new
-}
