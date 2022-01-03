@@ -119,8 +119,9 @@ module Graphene
     class CustomScalar < Scalar
       getter name : ::String
       getter description : ::String?
+      getter specified_by_url : ::String?
 
-      def initialize(@name : ::String, @description : ::String? = nil)
+      def initialize(@name : ::String, @description : ::String? = nil, @specified_by_url : ::String? = nil)
       end
 
       def coerce(value)

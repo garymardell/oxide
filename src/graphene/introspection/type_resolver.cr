@@ -50,6 +50,10 @@ module Graphene
           object.description
         when "kind"
           object.kind
+        when "specifiedByURL"
+          if object.responds_to?(:specified_by_url)
+            object.specified_by_url
+          end
         end
       end
 
