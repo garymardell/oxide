@@ -177,7 +177,7 @@ HumanOrAlienUnion = Graphene::Types::Union.new(
 DogType = Graphene::Types::Object.new(
   name: "Dog",
   resolver: NullResolver.new,
-  implements: [PetInterface],
+  interfaces: [PetInterface],
   fields: [
     Graphene::Schema::Field.new(
       name: "name",
