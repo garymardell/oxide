@@ -22,8 +22,7 @@ module Graphene
       def visit(type : Graphene::Types::Object)
         types[type.name] = type
 
-        # TODO: Interfaces
-        type.implements.each do |interface|
+        type.interfaces.each do |interface|
           interface.accept(self)
         end
 

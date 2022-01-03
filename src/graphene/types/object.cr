@@ -8,11 +8,11 @@ module Graphene
     class Object < Type
       getter fields : Array(Schema::Field)
       getter name : ::String
-      getter implements : Array(Graphene::Types::Interface)
       getter description : ::String?
+      getter interfaces : Array(Graphene::Types::Interface)
       getter resolver : Schema::Resolvable
 
-      def initialize(@name, @resolver, @description : ::String? = nil, @fields = [] of Schema::Field, @implements = [] of Graphene::Types::Interface)
+      def initialize(@name, @resolver, @description : ::String? = nil, @fields = [] of Schema::Field, @interfaces = [] of Graphene::Types::Interface)
       end
 
       def add_field(field : Schema::Field)
@@ -35,7 +35,7 @@ module Graphene
         all_fields = [] of Schema::Field
         all_fields.concat fields
 
-        implements.each do |interface|
+        interfaces.each do |interface|
           all_fields.concat interface.fields
         end
 

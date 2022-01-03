@@ -30,7 +30,7 @@ TransactionInterface = Graphene::Types::Interface.new(
 ChargeType = Graphene::Types::Object.new(
   name: "Charge",
   resolver: ChargeResolver.new,
-  implements: [TransactionInterface],
+  interfaces: [TransactionInterface],
   fields: [
     Graphene::Schema::Field.new(
       name: "status",
@@ -54,7 +54,7 @@ ChargeType = Graphene::Types::Object.new(
 RefundType = Graphene::Types::Object.new(
   name: "Refund",
   resolver: RefundResolver.new,
-  implements: [TransactionInterface],
+  interfaces: [TransactionInterface],
   fields: [
     Graphene::Schema::Field.new(
       name: "status",

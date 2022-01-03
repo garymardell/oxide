@@ -112,7 +112,7 @@ module Graphene
 
       private def build_objects(object_definitions)
         object_definitions.map do |object_definition|
-          interfaces = object_definition.implements.map do |implement|
+          interfaces = object_definition.interfaces.map do |implement|
             interface_map[implement.name]
           end
 
@@ -120,7 +120,7 @@ module Graphene
             name: object_definition.name,
             resolver: resolvers[object_definition.name],
             fields: build_fields(object_definition.field_definitions),
-            implements: interfaces
+            interfaces: interfaces
           )
         end
       end

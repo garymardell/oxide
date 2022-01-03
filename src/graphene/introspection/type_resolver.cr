@@ -34,7 +34,7 @@ module Graphene
         when "fields"
           object.fields
         when "interfaces"
-          object.implements
+          object.interfaces
         end
       end
 

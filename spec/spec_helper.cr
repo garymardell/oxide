@@ -114,7 +114,7 @@ CatCommandEnum = Graphene::Types::Enum.new(
 CatType = Graphene::Types::Object.new(
   name: "Cat",
   resolver: NullResolver.new,
-  implements: [PetInterface],
+  interfaces: [PetInterface],
   fields: [
     Graphene::Schema::Field.new(
       name: "name",

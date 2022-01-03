@@ -26,8 +26,7 @@ module Graphene
           type_map[type.name] = type
         end
 
-        # TODO: Interfaces
-        type.implements.each do |interface|
+        type.interfaces.each do |interface|
           interface.accept(self)
         end
 
