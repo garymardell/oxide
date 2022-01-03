@@ -7,7 +7,7 @@ module Graphene
       getter description : ::String?
       getter values : Array(EnumValue)
 
-      def initialize(@name : ::String, @values : Array(EnumValue), @description : ::String? = nil)
+      def initialize(@name, @values, @description = nil)
       end
 
       def coerce(value)
@@ -31,7 +31,7 @@ module Graphene
       getter value : ::String
       getter deprecation_reason : ::String?
 
-      def initialize(@name : ::String, @description : ::String? = nil, value : ::String? = nil, @deprecation_reason : ::String? = nil)
+      def initialize(@name, @description = nil, value = nil, @deprecation_reason = nil)
         @value = value || @name
       end
 

@@ -6,7 +6,7 @@ module Graphene
       getter description : ::String?
       getter of_type : Graphene::Type
 
-      def initialize(@of_type : Graphene::Type, @description : ::String? = nil)
+      def initialize(@of_type, @description = nil)
       end
 
       def kind

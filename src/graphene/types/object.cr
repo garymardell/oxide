@@ -12,7 +12,7 @@ module Graphene
       getter interfaces : Array(Graphene::Types::Interface)
       getter resolver : Schema::Resolvable
 
-      def initialize(@name, @resolver, @description : ::String? = nil, @fields = [] of Schema::Field, @interfaces = [] of Graphene::Types::Interface)
+      def initialize(@name, @resolver, @description = nil, @fields = [] of Schema::Field, @interfaces = [] of Graphene::Types::Interface)
       end
 
       def add_field(field : Schema::Field)

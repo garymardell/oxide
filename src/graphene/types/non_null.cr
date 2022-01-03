@@ -5,7 +5,7 @@ module Graphene
     class NonNull < Type
       getter of_type : Graphene::Type
 
-      def initialize(@of_type : Graphene::Type)
+      def initialize(@of_type)
       end
 
       def description

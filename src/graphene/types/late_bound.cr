@@ -5,7 +5,7 @@ module Graphene
     class LateBound < Type
       getter typename : ::String
 
-      def initialize(@typename : ::String)
+      def initialize(@typename)
       end
 
       def description
