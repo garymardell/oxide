@@ -12,7 +12,7 @@ module Graphene
         when "type"
           object.type
         when "isDeprecated"
-          object.deprecated? # TODO: Support deprecated flag
+          object.deprecated?
         when "deprecationReason"
           object.deprecation_reason
         end
