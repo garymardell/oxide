@@ -62,7 +62,11 @@ module Graphene
         when "kind"
           object.kind
         when "enumValues"
-          object.values
+          if argument_values["includeDeprecated"]?
+            object.values
+          else
+            object.values.reject(&.deprecated?)
+          end
         end
       end
 

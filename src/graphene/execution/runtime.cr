@@ -156,7 +156,7 @@ module Graphene
         field_name = field.name
 
         argument_definitions = if schema_field = object_type.get_field(field_name)
-            schema_field.arguments
+          schema_field.arguments
         else
           [] of Graphene::Schema::Argument
         end

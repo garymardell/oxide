@@ -34,6 +34,10 @@ module Graphene
       def initialize(@name : ::String, @description : ::String? = nil, value : ::String? = nil, @deprecation_reason : ::String? = nil)
         @value = value || @name
       end
+
+      def deprecated?
+        !deprecation_reason.nil?
+      end
     end
   end
 end

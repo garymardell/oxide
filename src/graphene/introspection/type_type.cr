@@ -67,6 +67,13 @@ module Graphene
         ),
         Graphene::Schema::Field.new(
           name: "enumValues",
+          arguments: [
+            Graphene::Schema::Argument.new(
+              name: "includeDeprecated",
+              type: Graphene::Types::Boolean.new,
+              default_value: false
+            )
+          ],
           type: Graphene::Types::List.new(
             of_type: Graphene::Types::NonNull.new(
               of_type: Introspection::EnumValueType

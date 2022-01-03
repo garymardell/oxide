@@ -6,10 +6,11 @@ module Graphene
         when "name"
           object.name
         when "description"
-          ""
+          object.description
         when "isDeprecated"
-          false
+          object.deprecated?
         when "deprecationReason"
+          object.deprecation_reason
         end
       end
     end
