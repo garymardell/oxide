@@ -4,9 +4,10 @@ module Graphene
   module Types
     class InputObject < Type
       getter name : ::String
+      getter description : ::String?
       getter fields : Array(Schema::Field)
 
-      def initialize(@name : ::String, @fields = [] of Schema::Field)
+      def initialize(@name : ::String, @description : ::String? = nil, @fields = [] of Schema::Field)
       end
 
       def kind

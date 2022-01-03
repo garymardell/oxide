@@ -8,6 +8,9 @@ module Graphene
       def initialize(@of_type : Graphene::Type)
       end
 
+      def description
+      end
+
       def kind
         "NON_NULL"
       end

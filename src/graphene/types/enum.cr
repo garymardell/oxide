@@ -4,9 +4,10 @@ module Graphene
   module Types
     class Enum < Type
       getter name : ::String
+      getter description : ::String?
       getter values : Array(EnumValue)
 
-      def initialize(@name : ::String, @values : Array(EnumValue))
+      def initialize(@name : ::String, @values : Array(EnumValue), @description : ::String? = nil)
       end
 
       def coerce(value)

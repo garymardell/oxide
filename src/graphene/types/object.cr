@@ -9,9 +9,10 @@ module Graphene
       getter fields : Array(Schema::Field)
       getter name : ::String
       getter implements : Array(Graphene::Types::Interface)
+      getter description : ::String?
       getter resolver : Schema::Resolvable
 
-      def initialize(@name, @resolver, @fields = [] of Schema::Field, @implements = [] of Graphene::Types::Interface)
+      def initialize(@name, @resolver, @description : ::String? = nil, @fields = [] of Schema::Field, @implements = [] of Graphene::Types::Interface)
       end
 
       def add_field(field : Schema::Field)

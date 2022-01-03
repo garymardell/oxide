@@ -27,6 +27,8 @@ module Graphene
         case field_name
         when "name"
           object.name
+        when "description"
+          object.description
         when "kind"
           object.kind
         when "fields"
@@ -40,6 +42,8 @@ module Graphene
         case field_name
         when "name"
           object.name
+        when "description"
+          object.description
         when "kind"
           object.kind
         end
@@ -49,6 +53,8 @@ module Graphene
         case field_name
         when "name"
           object.name
+        when "description"
+          object.description
         when "kind"
           object.kind
         when "enumValues"
@@ -60,6 +66,8 @@ module Graphene
         case field_name
         when "name"
           object.name
+        when "description"
+          object.description
         when "kind"
           object.kind
         when "possibleTypes"
@@ -71,6 +79,8 @@ module Graphene
         case field_name
         when "name"
           object.name
+        when "description"
+          object.description
         when "kind"
           object.kind
         end

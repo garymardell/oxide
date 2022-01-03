@@ -13,6 +13,10 @@ module Graphene
         "ID"
       end
 
+      def description
+        "Represents a unique identifier that is Base64 obfuscated. It is often used to refetch an object or as key for a cache. The ID type appears in a JSON response as a String; however, it is not intended to be human-readable. When expected as an input type, any string (such as `\"VXNlci0xMA==\"`) or integer (such as `4`) input value will be accepted as an ID."
+      end
+
       def coerce(value)
         return value if value.nil?
 
@@ -29,6 +33,10 @@ module Graphene
     class String < Scalar
       def name
         "String"
+      end
+
+      def description
+        "Represents textual data as UTF-8 character sequences. This type is most often used by GraphQL to represent free-form human-readable text."
       end
 
       def coerce(value)
@@ -49,6 +57,10 @@ module Graphene
         "Int"
       end
 
+      def description
+        "Represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1."
+      end
+
       def coerce(value)
         return value if value.nil?
 
@@ -65,6 +77,10 @@ module Graphene
     class Float < Scalar
       def name
         "Float"
+      end
+
+      def description
+        "Represents signed double-precision fractional values as specified by [IEEE 754](https://en.wikipedia.org/wiki/IEEE_floating_point)."
       end
 
       def coerce(value)
@@ -85,6 +101,10 @@ module Graphene
         "Boolean"
       end
 
+      def description
+        "Represents `true` or `false` values."
+      end
+
       def coerce(value)
         return value if value.nil?
 
@@ -98,8 +118,9 @@ module Graphene
 
     class CustomScalar < Scalar
       getter name : ::String
+      getter description : ::String?
 
-      def initialize(@name : ::String)
+      def initialize(@name : ::String, @description : ::String? = nil)
       end
 
       def coerce(value)

@@ -5,10 +5,11 @@ module Graphene
   module Types
     class Union < Type
       getter name : ::String
+      getter description : ::String?
       getter type_resolver : Schema::TypeResolver
       getter possible_types : Array(Graphene::Type)
 
-      def initialize(@name, @type_resolver, @possible_types = [] of Graphene::Type)
+      def initialize(@name, @type_resolver, @description : ::String? = nil, @possible_types = [] of Graphene::Type)
       end
 
       def kind
