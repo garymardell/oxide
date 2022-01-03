@@ -495,15 +495,14 @@ module Graphene
         coerced_variables
       end
 
-      private def does_fragment_type_apply(object_type, fragment_type) # TODO: Proper handling of fragment type
+      private def does_fragment_type_apply(object_type, fragment_type)
         case fragment_type
         when Graphene::Types::Object
           object_type.name == fragment_type.name
         when Graphene::Types::Union
           fragment_type.possible_types.includes?(object_type)
         else
-          # TODO: Handle interface type
-          raise "Handle interface"
+          object_type.interfaces.includes?(fragment_type)
         end
       end
 
