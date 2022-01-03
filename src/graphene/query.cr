@@ -2,10 +2,10 @@ module Graphene
   class Query
     include Language::Visitable
 
-    property query_string : String
-    property context : Graphene::Context?
-    property variables : Hash(String, JSON::Any)
-    property operation_name : String | Nil
+    getter query_string : String
+    getter context : Graphene::Context?
+    getter variables : Hash(String, JSON::Any)
+    getter operation_name : String | Nil
 
     def initialize(@query_string, @context = nil, @variables = {} of String => JSON::Any, @operation_name = nil)
     end
