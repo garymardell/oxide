@@ -13,6 +13,10 @@ module Graphene
       def add_argument(argument : Graphene::Schema::Argument)
         @arguments << argument
       end
+
+      def deprecated?
+        !deprecation_reason.nil?
+      end
     end
   end
 end

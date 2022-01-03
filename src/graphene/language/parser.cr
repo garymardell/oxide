@@ -407,7 +407,7 @@ module Graphene
           log_visit("visit_boolean_value")
 
           stack = data.as(Pointer(Stack)).value
-          stack.push(Nodes::BooleanValue.new(!!LibGraphqlParser.GraphQLAstBooleanValue_get_value(node)))
+          stack.push(Nodes::BooleanValue.new(LibGraphqlParser.GraphQLAstBooleanValue_get_value(node) != 0))
 
           return 1
         }
