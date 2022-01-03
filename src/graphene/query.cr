@@ -1,5 +1,3 @@
-require "http"
-
 module Graphene
   class Query
     include Language::Visitable
