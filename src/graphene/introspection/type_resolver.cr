@@ -97,6 +97,14 @@ module Graphene
           else
             object.fields.reject(&.deprecated?)
           end
+        when "interfaces"
+          object.interfaces
+        when "possibleTypes"
+          schema.not_nil!.type_map.each_with_object([] of Graphene::Type) do |(_, type), memo|
+            if type.responds_to?(:interfaces) && type.interfaces.includes?(object)
+              memo << type
+            end
+          end
         end
       end
     end
