@@ -3,8 +3,6 @@ module Graphene
     class TypeResolver < Graphene::Schema::Resolver
       def resolve(object : Graphene::Types::NonNull, context, field_name, argument_values)
         case field_name
-        when "name"
-          nil
         when "kind"
           object.kind
         when "ofType"
@@ -14,8 +12,6 @@ module Graphene
 
       def resolve(object : Graphene::Types::List, context, field_name, argument_values)
         case field_name
-        when "name"
-          nil
         when "kind"
           object.kind
         when "ofType"
