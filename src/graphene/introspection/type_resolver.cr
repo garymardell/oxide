@@ -107,6 +107,12 @@ module Graphene
           end
         end
       end
+
+      def resolve(object : Graphene::Types::LateBound, context, field_name, argument_values)
+        unwrapped_type = IntrospectionSystem.types[object.typename]
+
+        resolve(unwrapped_type, context, field_name, argument_values)
+      end
     end
   end
 end
