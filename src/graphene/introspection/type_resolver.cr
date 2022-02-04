@@ -109,9 +109,18 @@ module Graphene
       end
 
       def resolve(object : Graphene::Types::LateBound, context, field_name, argument_values)
-        unwrapped_type = IntrospectionSystem.types[object.typename]
+        unwrapped_type = get_type(object.typename)
 
         resolve(unwrapped_type, context, field_name, argument_values)
+      end
+
+      private def get_type(typename)
+        case typename
+        when "__Schema", "__Type", "__InputValue", "__Directive", "__EnumValue", "__Field"
+          IntrospectionSystem.types[typename]
+        else
+          schema.not_nil!.get_type(typename)
+        end
       end
     end
   end
