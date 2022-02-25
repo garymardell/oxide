@@ -6,7 +6,7 @@ class RefundLoader < Graphene::Loader(Int32, Refund?)
   end
 end
 
-class ChargeResolver < Graphene::Schema::Resolver
+class ChargeResolver < Graphene::Resolver
   property loader : RefundLoader
 
   def initialize

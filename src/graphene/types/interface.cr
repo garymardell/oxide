@@ -1,4 +1,4 @@
-require "../schema/type_resolver"
+require "../type_resolver"
 require "../type"
 
 module Graphene
@@ -6,11 +6,11 @@ module Graphene
     class Interface < Type
       getter name : ::String
       getter description : ::String?
-      getter type_resolver : Schema::TypeResolver
+      getter type_resolver : TypeResolver
       getter interfaces : Array(Graphene::Types::Interface)
-      getter fields : Array(Schema::Field)
+      getter fields : Array(Field)
 
-      def initialize(@name, @type_resolver, @description = nil, @fields = [] of Schema::Field, @interfaces = [] of Graphene::Types::Interface)
+      def initialize(@name, @type_resolver, @description = nil, @fields = [] of Field, @interfaces = [] of Graphene::Types::Interface)
       end
 
       def kind

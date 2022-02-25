@@ -1,9 +1,9 @@
-require "./schema/resolver"
-require "./schema/visitable"
+require "./resolver"
+require "./visitable"
 
 module Graphene
   abstract class Type
-    include Schema::Visitable
+    include Visitable
 
     abstract def description
     abstract def coerce(value)

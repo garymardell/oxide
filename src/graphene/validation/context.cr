@@ -6,18 +6,18 @@ module Graphene
       getter schema : Graphene::Schema
       getter query : Graphene::Query
 
-      property argument : Graphene::Schema::Argument?
+      property argument : Graphene::Argument?
 
       getter type_stack : Array(Graphene::Type?)
       getter parent_type_stack : Array(Composite?)
       getter input_type_stack : Array(Graphene::Type?)
-      getter field_definition_stack : Array(Graphene::Schema::Field?)
+      getter field_definition_stack : Array(Graphene::Field?)
 
       def initialize(@schema, @query)
         @type_stack = [] of Graphene::Type?
         @input_type_stack = [] of Graphene::Type?
         @parent_type_stack = [] of Composite?
-        @field_definition_stack = [] of Graphene::Schema::Field?
+        @field_definition_stack = [] of Graphene::Field?
       end
 
       def type

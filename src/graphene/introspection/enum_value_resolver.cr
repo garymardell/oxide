@@ -1,6 +1,6 @@
 module Graphene
   module Introspection
-    class EnumValueResolver < Graphene::Schema::Resolver
+    class EnumValueResolver < Graphene::Resolver
       def resolve(object : Graphene::Types::EnumValue, context, field_name, argument_values)
         case field_name
         when "name"

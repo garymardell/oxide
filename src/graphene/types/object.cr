@@ -1,27 +1,27 @@
-require "../schema/resolvable"
-require "../schema/field"
+require "../resolvable"
+require "../field"
 require "../type"
 require "./interface"
 
 module Graphene
   module Types
     class Object < Type
-      getter fields : Array(Schema::Field)
+      getter fields : Array(Field)
       getter name : ::String
       getter description : ::String?
       getter interfaces : Array(Graphene::Types::Interface)
-      getter resolver : Schema::Resolvable
+      getter resolver : Resolvable
 
       def initialize(
         @name,
         @resolver,
         @description = nil,
-        @fields = [] of Schema::Field,
+        @fields = [] of Field,
         @interfaces = [] of Graphene::Types::Interface
       )
       end
 
-      def add_field(field : Schema::Field)
+      def add_field(field : Field)
         @fields << field
       end
 
@@ -42,7 +42,7 @@ module Graphene
       end
 
       private def all_fields
-        all_fields = [] of Schema::Field
+        all_fields = [] of Field
         all_fields.concat fields
 
         interfaces.each do |interface|

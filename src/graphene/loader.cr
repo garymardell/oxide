@@ -4,7 +4,7 @@ module Graphene
 
     def initialize
       @queue = [] of Q
-      @cache = {} of Q => Graphene::Lazy(R)
+      @cache = {} of Q => Graphene::Execution::Lazy(R)
     end
 
     def resolve
@@ -26,7 +26,7 @@ module Graphene
     def load(item : Q)
       queue << item
 
-      @cache[item] ||= Graphene::Lazy(R).new {
+      @cache[item] ||= Graphene::Execution::Lazy(R).new {
         resolve
       }
     end

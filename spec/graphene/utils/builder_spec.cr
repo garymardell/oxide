@@ -1,9 +1,9 @@
 require "../../spec_helper"
 
-class BuilderResolver < Graphene::Schema::Resolver
+class BuilderResolver < Graphene::Resolver
 end
 
-class BuilderTypeResolver < Graphene::Schema::TypeResolver
+class BuilderTypeResolver < Graphene::TypeResolver
 end
 
 describe Graphene::Utils::Builder do
@@ -61,8 +61,8 @@ describe Graphene::Utils::Builder do
 
     builder = Graphene::Utils::Builder.new(
       input,
-      resolvers: Hash(String, Graphene::Schema::Resolvable).new(default_value: BuilderResolver.new),
-      type_resolvers: Hash(String, Graphene::Schema::TypeResolver).new(default_value: BuilderTypeResolver.new)
+      resolvers: Hash(String, Graphene::Resolvable).new(default_value: BuilderResolver.new),
+      type_resolvers: Hash(String, Graphene::TypeResolver).new(default_value: BuilderTypeResolver.new)
     )
     builder.build
   end
@@ -80,8 +80,8 @@ describe Graphene::Utils::Builder do
 
     builder = Graphene::Utils::Builder.new(
       input,
-      resolvers: Hash(String, Graphene::Schema::Resolvable).new(default_value: BuilderResolver.new),
-      type_resolvers: Hash(String, Graphene::Schema::TypeResolver).new(default_value: BuilderTypeResolver.new)
+      resolvers: Hash(String, Graphene::Resolvable).new(default_value: BuilderResolver.new),
+      type_resolvers: Hash(String, Graphene::TypeResolver).new(default_value: BuilderTypeResolver.new)
     )
 
     schema = builder.build

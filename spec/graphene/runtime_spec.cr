@@ -277,7 +277,7 @@ describe Graphene do
       name: "DynamicQuery",
       resolver: DynamicResolver.new,
       fields: fields.map do |field_name|
-        Graphene::Schema::Field.new(
+        Graphene::Field.new(
           name: field_name,
           type: Graphene::Types::String.new
         )

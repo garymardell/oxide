@@ -4,10 +4,10 @@ module Graphene
       property input : String
       property type_map : Hash(String, Graphene::Type)
       property interface_map : Hash(String, Graphene::Types::Interface)
-      property resolvers : Hash(String, Schema::Resolvable)
-      property type_resolvers : Hash(String, Schema::TypeResolver)
+      property resolvers : Hash(String, Resolvable)
+      property type_resolvers : Hash(String, TypeResolver)
 
-      def initialize(@input : String, @resolvers : Hash(String, Schema::Resolvable), @type_resolvers : Hash(String, Schema::TypeResolver))
+      def initialize(@input : String, @resolvers : Hash(String, Resolvable), @type_resolvers : Hash(String, TypeResolver))
         @type_map = {} of String => Graphene::Type
         @interface_map = {} of String => Graphene::Types::Interface
       end
@@ -137,7 +137,7 @@ module Graphene
 
       private def build_fields(field_definitions)
         field_definitions.map do |field_definition|
-          Graphene::Schema::Field.new(
+          Graphene::Field.new(
             name: field_definition.name,
             type: build_type(field_definition.type),
             arguments: build_arguments(field_definition.argument_definitions)
@@ -150,13 +150,13 @@ module Graphene
           default_value = argument_definition.default_value
 
           if default_value
-            Graphene::Schema::Argument.new(
+            Graphene::Argument.new(
               name: argument_definition.name,
               type: build_type(argument_definition.type),
-              default_value: default_value.value.as(Graphene::Schema::Argument::DefaultValue)
+              default_value: default_value.value.as(Graphene::Argument::DefaultValue)
             )
           else
-            Graphene::Schema::Argument.new(
+            Graphene::Argument.new(
               name: argument_definition.name,
               type: build_type(argument_definition.type)
             )

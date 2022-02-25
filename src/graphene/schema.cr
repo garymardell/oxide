@@ -1,25 +1,24 @@
 require "./types"
-require "./schema/*"
-require "./schema/directives/*"
+require "./directives/*"
 require "./language/*"
 require "./execution"
 require "./validation"
-require "./lazy"
 require "./loader"
 require "./context"
+require "./type_map"
 
 module Graphene
   class Schema
     DEFAULT_DIRECTIVES = [
-      Graphene::Schema::Directives::SkipDirective.new,
-      Graphene::Schema::Directives::IncludeDirective.new
+      Graphene::Directives::SkipDirective.new,
+      Graphene::Directives::IncludeDirective.new
     ]
 
     getter query : Graphene::Types::Object
     getter mutation : Graphene::Types::Object | Nil
 
     getter orphan_types : Array(Graphene::Type)
-    getter directives : Array(Graphene::Schema::Directive)
+    getter directives : Array(Graphene::Directive)
 
     def initialize(@query, @mutation = nil, @orphan_types = [] of Graphene::Type, directives = [] of Directive)
       @directives = DEFAULT_DIRECTIVES + directives
@@ -31,8 +30,7 @@ module Graphene
     end
 
     def types
-      types = Types.new(self)
-      types.generate
+      type_map.values
     end
 
     def get_type(name)

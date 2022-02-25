@@ -2,7 +2,7 @@ require "spec"
 require "../src/graphene"
 require "./dummy/schema"
 
-class NullResolver < Graphene::Schema::Resolver
+class NullResolver < Graphene::Resolver
   def resolve(object, context, field_name, argument_values)
     nil
   end
@@ -17,31 +17,31 @@ DogCommandEnum = Graphene::Types::Enum.new(
   ]
 )
 
-class SentientTypeResolver < Graphene::Schema::TypeResolver
+class SentientTypeResolver < Graphene::TypeResolver
   def resolve_type(object, context)
     AlienType
   end
 end
 
-class CatOrDogTypeResolver < Graphene::Schema::TypeResolver
+class CatOrDogTypeResolver < Graphene::TypeResolver
   def resolve_type(object, context)
     CatType
   end
 end
 
-class DogOrHumanTypeResolver < Graphene::Schema::TypeResolver
+class DogOrHumanTypeResolver < Graphene::TypeResolver
   def resolve_type(object, context)
     HumanType
   end
 end
 
-class HumanOrAlienTypeResolver < Graphene::Schema::TypeResolver
+class HumanOrAlienTypeResolver < Graphene::TypeResolver
   def resolve_type(object, context)
     HumanType
   end
 end
 
-class PetTypeResolver < Graphene::Schema::TypeResolver
+class PetTypeResolver < Graphene::TypeResolver
   def resolve_type(object, context)
     DogType
   end
@@ -51,7 +51,7 @@ SentientInterface = Graphene::Types::Interface.new(
   name: "Sentient",
   type_resolver: SentientTypeResolver.new,
   fields: [
-    Graphene::Schema::Field.new(
+    Graphene::Field.new(
       name: "name",
       type: Graphene::Types::NonNull.new(
         of_type: Graphene::Types::String.new
@@ -64,13 +64,13 @@ AlienType = Graphene::Types::Object.new(
   name: "Alien",
   resolver: NullResolver.new,
   fields: [
-    Graphene::Schema::Field.new(
+    Graphene::Field.new(
       name: "name",
       type: Graphene::Types::NonNull.new(
         of_type: Graphene::Types::String.new
       )
     ),
-    Graphene::Schema::Field.new(
+    Graphene::Field.new(
       name: "homePlanet",
       type: Graphene::Types::String.new
     )
@@ -81,7 +81,7 @@ HumanType = Graphene::Types::Object.new(
   name: "Human",
   resolver: NullResolver.new,
   fields: [
-    Graphene::Schema::Field.new(
+    Graphene::Field.new(
       name: "name",
       type: Graphene::Types::NonNull.new(
         of_type: Graphene::Types::String.new
@@ -95,7 +95,7 @@ PetInterface = Graphene::Types::Interface.new(
   name: "Pet",
   type_resolver: PetTypeResolver.new,
   fields: [
-    Graphene::Schema::Field.new(
+    Graphene::Field.new(
       name: "name",
       type: Graphene::Types::NonNull.new(
         of_type: Graphene::Types::String.new
@@ -116,20 +116,20 @@ CatType = Graphene::Types::Object.new(
   resolver: NullResolver.new,
   interfaces: [PetInterface],
   fields: [
-    Graphene::Schema::Field.new(
+    Graphene::Field.new(
       name: "name",
       type: Graphene::Types::NonNull.new(
         of_type: Graphene::Types::String.new
       )
     ),
-    Graphene::Schema::Field.new(
+    Graphene::Field.new(
       name: "nickname",
       type: Graphene::Types::String.new
     ),
-    Graphene::Schema::Field.new(
+    Graphene::Field.new(
       name: "doesKnowCommand",
       arguments: [
-        Graphene::Schema::Argument.new(
+        Graphene::Argument.new(
           name: "catCommand",
           type: Graphene::Types::NonNull.new(
             of_type: CatCommandEnum
@@ -140,7 +140,7 @@ CatType = Graphene::Types::Object.new(
         of_type: Graphene::Types::Boolean.new
       )
     ),
-    Graphene::Schema::Field.new(
+    Graphene::Field.new(
       name: "meowVolume",
       type: Graphene::Types::Int.new
     )
@@ -179,24 +179,24 @@ DogType = Graphene::Types::Object.new(
   resolver: NullResolver.new,
   interfaces: [PetInterface],
   fields: [
-    Graphene::Schema::Field.new(
+    Graphene::Field.new(
       name: "name",
       type: Graphene::Types::NonNull.new(
         of_type: Graphene::Types::String.new
       )
     ),
-    Graphene::Schema::Field.new(
+    Graphene::Field.new(
       name: "nickname",
       type: Graphene::Types::String.new
     ),
-    Graphene::Schema::Field.new(
+    Graphene::Field.new(
       name: "barkVolume",
       type: Graphene::Types::Int.new
     ),
-    Graphene::Schema::Field.new(
+    Graphene::Field.new(
       name: "doesKnowCommand",
       arguments: [
-        Graphene::Schema::Argument.new(
+        Graphene::Argument.new(
           name: "dogCommand",
           type: Graphene::Types::NonNull.new(
             of_type: DogCommandEnum
@@ -207,10 +207,10 @@ DogType = Graphene::Types::Object.new(
         of_type: Graphene::Types::Boolean.new
       )
     ),
-    Graphene::Schema::Field.new(
+    Graphene::Field.new(
       name: "isHousetrained",
       arguments: [
-        Graphene::Schema::Argument.new(
+        Graphene::Argument.new(
           name: "atOtherHomes",
           type: Graphene::Types::Boolean.new
         )
@@ -219,7 +219,7 @@ DogType = Graphene::Types::Object.new(
         of_type: Graphene::Types::Boolean.new
       )
     ),
-    Graphene::Schema::Field.new(
+    Graphene::Field.new(
       name: "owner",
       type: HumanType
     )
@@ -231,7 +231,7 @@ ValidationsSchema = Graphene::Schema.new(
     name: "Query",
     resolver: NullResolver.new,
     fields: [
-      Graphene::Schema::Field.new(
+      Graphene::Field.new(
         name: "dog",
         type: DogType
       )

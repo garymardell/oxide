@@ -3,7 +3,7 @@ module Graphene
     struct ResolutionContext
       getter schema : Graphene::Schema
       getter query : Graphene::Query
-      getter field : Graphene::Schema::Field?
+      getter field : Graphene::Field?
       getter context : Graphene::Context?
 
       def initialize(@schema, @query, @field = nil, @context = nil)

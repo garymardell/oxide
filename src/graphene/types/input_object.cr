@@ -1,13 +1,14 @@
 require "../type"
+require "../input_value"
 
 module Graphene
   module Types
     class InputObject < Type
       getter name : ::String
       getter description : ::String?
-      getter input_fields : Array(Schema::InputValue)
+      getter input_fields : Array(InputValue)
 
-      def initialize(@name, @description = nil, @input_fields = [] of Schema::InputValue)
+      def initialize(@name, @description = nil, @input_fields = [] of InputValue)
       end
 
       def kind

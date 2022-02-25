@@ -7,7 +7,7 @@ class PaymentMethodLoader < Graphene::Loader(Int32, BankAccount | CreditCard | N
 end
 
 
-class RefundResolver < Graphene::Schema::Resolver
+class RefundResolver < Graphene::Resolver
   property loader : PaymentMethodLoader
 
   def initialize

@@ -2,7 +2,7 @@ require "../../src/graphene"
 require "./models/*"
 require "./resolvers/*"
 
-class TransactionTypeResolver < Graphene::Schema::TypeResolver
+class TransactionTypeResolver < Graphene::TypeResolver
   def resolve_type(object : Charge, context)
     ChargeType
   end
@@ -16,11 +16,11 @@ TransactionInterface = Graphene::Types::Interface.new(
   name: "Transaction",
   type_resolver: TransactionTypeResolver.new,
   fields: [
-    Graphene::Schema::Field.new(
+    Graphene::Field.new(
       name: "id",
       type: Graphene::Types::Id.new
     ),
-    Graphene::Schema::Field.new(
+    Graphene::Field.new(
       name: "reference",
       type: Graphene::Types::String.new
     )
@@ -32,7 +32,7 @@ ChargeType = Graphene::Types::Object.new(
   resolver: ChargeResolver.new,
   interfaces: [TransactionInterface],
   fields: [
-    Graphene::Schema::Field.new(
+    Graphene::Field.new(
       name: "status",
       type: Graphene::Types::NonNull.new(
         of_type: Graphene::Types::Enum.new(
@@ -44,7 +44,7 @@ ChargeType = Graphene::Types::Object.new(
         )
       )
     ),
-    Graphene::Schema::Field.new(
+    Graphene::Field.new(
       name: "refund",
       type: RefundType
     )
@@ -56,7 +56,7 @@ RefundType = Graphene::Types::Object.new(
   resolver: RefundResolver.new,
   interfaces: [TransactionInterface],
   fields: [
-    Graphene::Schema::Field.new(
+    Graphene::Field.new(
       name: "status",
       type: Graphene::Types::Enum.new(
         name: "RefundStatus",
@@ -66,11 +66,11 @@ RefundType = Graphene::Types::Object.new(
         ]
       )
     ),
-    Graphene::Schema::Field.new(
+    Graphene::Field.new(
       name: "partial",
       type: Graphene::Types::Boolean.new
     ),
-    Graphene::Schema::Field.new(
+    Graphene::Field.new(
       name: "payment_method",
       type: PaymentMethodType
     )
@@ -81,11 +81,11 @@ CreditCardType = Graphene::Types::Object.new(
   name: "CreditCard",
   resolver: CreditCardResolver.new,
   fields: [
-    Graphene::Schema::Field.new(
+    Graphene::Field.new(
       name: "id",
       type: Graphene::Types::Id.new
     ),
-    Graphene::Schema::Field.new(
+    Graphene::Field.new(
       name: "last4",
       type: Graphene::Types::String.new
     )
@@ -96,18 +96,18 @@ BankAccountType = Graphene::Types::Object.new(
   name: "BankAccount",
   resolver: BankAccountResolver.new,
   fields: [
-    Graphene::Schema::Field.new(
+    Graphene::Field.new(
       name: "id",
       type: Graphene::Types::Id.new
     ),
-    Graphene::Schema::Field.new(
+    Graphene::Field.new(
       name: "accountNumber",
       type: Graphene::Types::String.new
     )
   ]
 )
 
-class PaymentMethodTypeResolver < Graphene::Schema::TypeResolver
+class PaymentMethodTypeResolver < Graphene::TypeResolver
   def resolve_type(object : CreditCard, context)
     CreditCardType
   end
@@ -131,35 +131,35 @@ DummySchema = Graphene::Schema.new(
     name: "Query",
     resolver: QueryResolver.new,
     fields: [
-      Graphene::Schema::Field.new(
+      Graphene::Field.new(
         name: "charge",
         type: Graphene::Types::NonNull.new(of_type: ChargeType),
         arguments: [
-          Graphene::Schema::Argument.new(
+          Graphene::Argument.new(
             name: "id",
             type: Graphene::Types::Id.new
           )
         ]
       ),
-      Graphene::Schema::Field.new(
+      Graphene::Field.new(
         name: "charges",
         type: Graphene::Types::NonNull.new(
           of_type: Graphene::Types::List.new(of_type: ChargeType)
         )
       ),
-      Graphene::Schema::Field.new(
+      Graphene::Field.new(
         name: "transactions",
         type: Graphene::Types::NonNull.new(
           of_type: Graphene::Types::List.new(of_type: TransactionInterface)
         )
       ),
-      Graphene::Schema::Field.new(
+      Graphene::Field.new(
         name: "paymentMethods",
         type: Graphene::Types::NonNull.new(
           of_type: Graphene::Types::List.new(of_type: PaymentMethodType)
         )
       ),
-      Graphene::Schema::Field.new(
+      Graphene::Field.new(
         name: "nullList",
         type: Graphene::Types::List.new(
           of_type: Graphene::Types::NonNull.new(of_type: ChargeType)

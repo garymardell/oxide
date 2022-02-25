@@ -6,7 +6,7 @@ module Graphene
       name: "__IntrospectionQuery",
       resolver: QueryResolver.new,
       fields: [
-        Graphene::Schema::Field.new(
+        Graphene::Field.new(
           name: "__schema",
           type: Graphene::Types::LateBound.new("__Schema")
         )

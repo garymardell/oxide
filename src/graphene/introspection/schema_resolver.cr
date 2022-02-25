@@ -1,14 +1,14 @@
 module Graphene
   module Introspection
-    class SchemaResolver < Graphene::Schema::Resolver
+    class SchemaResolver < Graphene::Resolver
       def resolve(object, context, field_name, argument_values)
         case field_name
         when "types"
-          schema.not_nil!.types
+          context.schema.types
         when "queryType"
-          schema.not_nil!.query
+          context.schema.query
         when "mutationType"
-          schema.not_nil!.mutation
+          context.schema.mutation
         when "subscriptionType"
           nil # TODO: Support subscriptions
         when "directives"

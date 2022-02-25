@@ -144,9 +144,9 @@ module Graphene
 
       private def get_field(object_type, field_name)
         if schema.query == object_type && field_name == "__schema"
-          Graphene::Schema::Field.new(name: "__schema", type: Graphene::Introspection::SchemaType)
+          Graphene::Field.new(name: "__schema", type: Graphene::Introspection::SchemaType)
         elsif field_name == "__typename"
-          Graphene::Schema::Field.new(name: "__typename", type: Graphene::Types::String.new)
+          Graphene::Field.new(name: "__typename", type: Graphene::Types::String.new)
         else
           object_type.get_field(field_name)
         end
@@ -159,7 +159,7 @@ module Graphene
         argument_definitions = if schema_field = object_type.get_field(field_name)
           schema_field.arguments
         else
-          [] of Graphene::Schema::Argument
+          [] of Graphene::Argument
         end
 
         argument_values = coerce_argument_values(argument_definitions, field.arguments, variable_values)
@@ -179,8 +179,6 @@ module Graphene
             object_type.resolver
           end
         end
-
-        resolver.schema = schema
 
         resolution_context = ResolutionContext.new(
           schema: schema,
