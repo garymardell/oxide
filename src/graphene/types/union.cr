@@ -19,6 +19,9 @@ module Graphene
       def coerce(value)
         raise "Invalid input type"
       end
+
+      def serialize(value)
+      end
     end
   end
 end

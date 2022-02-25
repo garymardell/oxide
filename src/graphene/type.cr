@@ -7,5 +7,6 @@ module Graphene
 
     abstract def description
     abstract def coerce(value)
+    abstract def serialize(value)
   end
 end

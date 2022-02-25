@@ -12,7 +12,13 @@ module Graphene
       getter interfaces : Array(Graphene::Types::Interface)
       getter resolver : Schema::Resolvable
 
-      def initialize(@name, @resolver, @description = nil, @fields = [] of Schema::Field, @interfaces = [] of Graphene::Types::Interface)
+      def initialize(
+        @name,
+        @resolver,
+        @description = nil,
+        @fields = [] of Schema::Field,
+        @interfaces = [] of Graphene::Types::Interface
+      )
       end
 
       def add_field(field : Schema::Field)
@@ -29,6 +35,10 @@ module Graphene
 
       def coerce(value)
         raise "Invalid input type"
+      end
+
+      def serialize(value)
+        coerce(value)
       end
 
       private def all_fields

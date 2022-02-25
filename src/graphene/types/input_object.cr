@@ -5,9 +5,9 @@ module Graphene
     class InputObject < Type
       getter name : ::String
       getter description : ::String?
-      getter fields : Array(Schema::Field)
+      getter input_fields : Array(Schema::InputValue)
 
-      def initialize(@name : ::String, @description : ::String? = nil, @fields = [] of Schema::Field)
+      def initialize(@name, @description = nil, @input_fields = [] of Schema::InputValue)
       end
 
       def kind
@@ -16,6 +16,10 @@ module Graphene
 
       def coerce(value)
         value
+      end
+
+      def serialize(value)
+        coerce(value)
       end
     end
   end

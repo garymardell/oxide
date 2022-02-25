@@ -28,6 +28,10 @@ module Graphene
           raise "Could not coerce value to Id"
         end
       end
+
+      def serialize(value)
+        coerce(value)
+      end
     end
 
     class String < Scalar
@@ -39,7 +43,15 @@ module Graphene
         "Represents textual data as UTF-8 character sequences. This type is most often used by GraphQL to represent free-form human-readable text."
       end
 
+      def coerce(value : ::String)
+        value
+      end
+
       def coerce(value)
+        raise "String cannot represent a non-string value"
+      end
+
+      def serialize(value)
         return value if value.nil?
 
         if value.responds_to?(:to_s)
@@ -61,7 +73,15 @@ module Graphene
         "Represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1."
       end
 
+      def coerce(value : Int32)
+        value
+      end
+
       def coerce(value)
+        raise "Int cannot represent a non-interger value"
+      end
+
+      def serialize(value)
         return value if value.nil?
 
         if value.responds_to?(:to_i32)
@@ -69,7 +89,7 @@ module Graphene
         elsif value.responds_to?(:as_i)
           value.as_i
         else
-          raise "Could not coerce value to Int"
+          raise "Could not serialize value to Int"
         end
       end
     end
@@ -94,6 +114,10 @@ module Graphene
           raise "Could not coerce value to Float"
         end
       end
+
+      def serialize(value)
+        coerce(value)
+      end
     end
 
     class Boolean < Scalar
@@ -114,6 +138,10 @@ module Graphene
           !!value
         end
       end
+
+      def serialize(value)
+        coerce(value)
+      end
     end
 
     class CustomScalar < Scalar
@@ -125,6 +153,10 @@ module Graphene
       end
 
       def coerce(value)
+      end
+
+      def serialize(value)
+        value
       end
     end
   end

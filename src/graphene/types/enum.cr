@@ -10,7 +10,21 @@ module Graphene
       def initialize(@name, @values, @description = nil)
       end
 
+      def coerce(value : ::String)
+        enum_value = values.find { |ev| ev.value == value }
+
+        if enum_value
+          enum_value.value
+        else
+          raise "Value could be coerced into enum"
+        end
+      end
+
       def coerce(value)
+        raise "Value could not be coerced"
+      end
+
+      def serialize(value)
         enum_value = values.find { |ev| ev.value == value.to_s }
 
         if enum_value

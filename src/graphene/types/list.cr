@@ -16,6 +16,10 @@ module Graphene
       def coerce(value)
         value
       end
+
+      def serialize(value)
+        value
+      end
     end
   end
 end

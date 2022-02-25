@@ -248,7 +248,7 @@ module Graphene
       private def complete_value(path : Array(String), field_type : Graphene::Types::Scalar, fields, result, variable_values) : IntermediateType
         return nil if result.nil?
 
-        field_type.coerce(result).as(IntermediateType)
+        field_type.serialize(result).as(IntermediateType)
       end
 
 
