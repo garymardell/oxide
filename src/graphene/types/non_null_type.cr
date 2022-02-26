@@ -2,7 +2,7 @@ require "../type"
 
 module Graphene
   module Types
-    class NonNull < Type
+    class NonNullType < Type
       getter of_type : Graphene::Type
 
       def initialize(@of_type)

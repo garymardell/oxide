@@ -3,45 +3,45 @@ require "./input_value_type"
 
 module Graphene
   module Introspection
-    FieldType = Graphene::Types::Object.new(
+    FieldType = Graphene::Types::ObjectType.new(
       name: "__Field",
       resolver: FieldResolver.new,
       fields: [
         Graphene::Field.new(
           name: "name",
-          type: Graphene::Types::NonNull.new(
-            of_type: Graphene::Types::String.new
+          type: Graphene::Types::NonNullType.new(
+            of_type: Graphene::Types::StringType.new
           )
         ),
         Graphene::Field.new(
           name: "description",
-          type: Graphene::Types::String.new
+          type: Graphene::Types::StringType.new
         ),
         Graphene::Field.new(
           name: "args",
-          type: Graphene::Types::NonNull.new(
-            of_type: Graphene::Types::List.new(
-              of_type: Graphene::Types::NonNull.new(
-                of_type: Graphene::Types::LateBound.new("__InputValue")
+          type: Graphene::Types::NonNullType.new(
+            of_type: Graphene::Types::ListType.new(
+              of_type: Graphene::Types::NonNullType.new(
+                of_type: Graphene::Types::LateBoundType.new("__InputValue")
               )
             )
           )
         ),
         Graphene::Field.new(
           name: "type",
-          type: Graphene::Types::NonNull.new(
-            of_type: Graphene::Types::LateBound.new("__Type")
+          type: Graphene::Types::NonNullType.new(
+            of_type: Graphene::Types::LateBoundType.new("__Type")
           )
         ),
         Graphene::Field.new(
           name: "isDeprecated",
-          type: Graphene::Types::NonNull.new(
-            of_type: Graphene::Types::Boolean.new
+          type: Graphene::Types::NonNullType.new(
+            of_type: Graphene::Types::BooleanType.new
           )
         ),
         Graphene::Field.new(
           name: "deprecationReason",
-          type: Graphene::Types::String.new
+          type: Graphene::Types::StringType.new
         )
       ]
     )

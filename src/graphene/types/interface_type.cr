@@ -3,14 +3,14 @@ require "../type"
 
 module Graphene
   module Types
-    class Interface < Type
-      getter name : ::String
-      getter description : ::String?
+    class InterfaceType < Type
+      getter name : String
+      getter description : String?
       getter type_resolver : TypeResolver
-      getter interfaces : Array(Graphene::Types::Interface)
+      getter interfaces : Array(Graphene::Types::InterfaceType)
       getter fields : Array(Field)
 
-      def initialize(@name, @type_resolver, @description = nil, @fields = [] of Field, @interfaces = [] of Graphene::Types::Interface)
+      def initialize(@name, @type_resolver, @description = nil, @fields = [] of Field, @interfaces = [] of Graphene::Types::InterfaceType)
       end
 
       def kind

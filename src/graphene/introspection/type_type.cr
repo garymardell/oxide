@@ -4,7 +4,7 @@ require "./input_value_type"
 
 module Graphene
   module Introspection
-    TypeKindType = Graphene::Types::Enum.new(
+    TypeKindType = Graphene::Types::EnumType.new(
       name: "__TypeKind",
       values: [
         Graphene::Types::EnumValue.new(name: "SCALAR"),
@@ -18,50 +18,50 @@ module Graphene
       ]
     )
 
-    TypeType = Graphene::Types::Object.new(
+    TypeType = Graphene::Types::ObjectType.new(
       name: "__Type",
       resolver: TypeResolver.new,
       fields: [
         Graphene::Field.new(
           name: "kind",
-          type: Graphene::Types::NonNull.new(of_type: TypeKindType)
+          type: Graphene::Types::NonNullType.new(of_type: TypeKindType)
         ),
         Graphene::Field.new(
           name: "name",
-          type: Graphene::Types::String.new
+          type: Graphene::Types::StringType.new
         ),
         Graphene::Field.new(
           name: "description",
-          type: Graphene::Types::String.new
+          type: Graphene::Types::StringType.new
         ),
         Graphene::Field.new(
           name: "fields",
           arguments: [
             Graphene::Argument.new(
               name: "includeDeprecated",
-              type: Graphene::Types::Boolean.new,
+              type: Graphene::Types::BooleanType.new,
               default_value: false
             )
           ],
-          type: Graphene::Types::List.new(
-            of_type: Graphene::Types::NonNull.new(
-              of_type: Graphene::Types::LateBound.new("__Field") # Introspection::Field
+          type: Graphene::Types::ListType.new(
+            of_type: Graphene::Types::NonNullType.new(
+              of_type: Graphene::Types::LateBoundType.new("__Field") # Introspection::Field
             )
           )
         ),
         Graphene::Field.new(
           name: "interfaces",
-          type: Graphene::Types::List.new(
-            of_type: Graphene::Types::NonNull.new(
-              of_type: Graphene::Types::LateBound.new("__Type")  # Introspection::Type
+          type: Graphene::Types::ListType.new(
+            of_type: Graphene::Types::NonNullType.new(
+              of_type: Graphene::Types::LateBoundType.new("__Type")  # Introspection::Type
             )
           )
         ),
         Graphene::Field.new(
           name: "possibleTypes",
-          type: Graphene::Types::List.new(
-            of_type: Graphene::Types::NonNull.new(
-              of_type: Graphene::Types::LateBound.new("__Type")
+          type: Graphene::Types::ListType.new(
+            of_type: Graphene::Types::NonNullType.new(
+              of_type: Graphene::Types::LateBoundType.new("__Type")
             )
           )
         ),
@@ -70,27 +70,27 @@ module Graphene
           arguments: [
             Graphene::Argument.new(
               name: "includeDeprecated",
-              type: Graphene::Types::Boolean.new,
+              type: Graphene::Types::BooleanType.new,
               default_value: false
             )
           ],
-          type: Graphene::Types::List.new(
-            of_type: Graphene::Types::NonNull.new(
+          type: Graphene::Types::ListType.new(
+            of_type: Graphene::Types::NonNullType.new(
               of_type: Introspection::EnumValueType
             )
           )
         ),
         Graphene::Field.new(
           name: "inputFields",
-          type: Graphene::Types::List.new(
-            of_type: Graphene::Types::NonNull.new(
-              of_type: Graphene::Types::LateBound.new("__InputValue") # Introspection::InputValue
+          type: Graphene::Types::ListType.new(
+            of_type: Graphene::Types::NonNullType.new(
+              of_type: Graphene::Types::LateBoundType.new("__InputValue") # Introspection::InputValue
             )
           )
         ),
         Graphene::Field.new(
           name: "ofType",
-          type: Graphene::Types::LateBound.new("__Type")
+          type: Graphene::Types::LateBoundType.new("__Type")
         )
       ]
     )

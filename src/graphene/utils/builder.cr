@@ -3,13 +3,13 @@ module Graphene
     class Builder
       property input : String
       property type_map : Hash(String, Graphene::Type)
-      property interface_map : Hash(String, Graphene::Types::Interface)
+      property interface_map : Hash(String, Graphene::Types::InterfaceType)
       property resolvers : Hash(String, Resolvable)
       property type_resolvers : Hash(String, TypeResolver)
 
       def initialize(@input : String, @resolvers : Hash(String, Resolvable), @type_resolvers : Hash(String, TypeResolver))
         @type_map = {} of String => Graphene::Type
-        @interface_map = {} of String => Graphene::Types::Interface
+        @interface_map = {} of String => Graphene::Types::InterfaceType
       end
 
       def build
@@ -61,11 +61,11 @@ module Graphene
           type_map[union_type.name] = union_type
         end
 
-        query = type_map[query_definition.named_type.not_nil!.name].as(Graphene::Types::Object)
+        query = type_map[query_definition.named_type.not_nil!.name].as(Graphene::Types::ObjectType)
 
         mutation_definition = schema_definition.operation_type_definitions.find { |op_def| op_def.operation_type == "mutation"  }
         mutation = if mutation_definition
-          type_map[mutation_definition.named_type.not_nil!.name].as(Graphene::Types::Object)
+          type_map[mutation_definition.named_type.not_nil!.name].as(Graphene::Types::ObjectType)
         end
 
         schema = Graphene::Schema.new(
@@ -81,7 +81,7 @@ module Graphene
             get_type(member_type.name)
           end
 
-          Graphene::Types::Union.new(
+          Graphene::Types::UnionType.new(
             name: union_definition.name,
             type_resolver: type_resolvers[union_definition.name],
             possible_types: possible_types
@@ -97,7 +97,7 @@ module Graphene
             )
           end
 
-          Graphene::Types::Enum.new(
+          Graphene::Types::EnumType.new(
             name: enum_definition.name,
             values: enum_values
           )
@@ -106,7 +106,7 @@ module Graphene
 
       private def build_scalars(scalar_definitions)
         scalar_definitions.map do |scalar_definition|
-          Graphene::Types::CustomScalar.new(scalar_definition.name)
+          Graphene::Types::CustomScalarType.new(scalar_definition.name)
         end
       end
 
@@ -116,7 +116,7 @@ module Graphene
             interface_map[implement.name]
           end
 
-          Graphene::Types::Object.new(
+          Graphene::Types::ObjectType.new(
             name: object_definition.name,
             resolver: resolvers[object_definition.name],
             fields: build_fields(object_definition.field_definitions),
@@ -127,7 +127,7 @@ module Graphene
 
       private def build_interfaces(interface_definitions)
         interface_definitions.map do |interface_definition|
-          interface = Graphene::Types::Interface.new(
+          interface = Graphene::Types::InterfaceType.new(
             name: interface_definition.name,
             type_resolver: type_resolvers[interface_definition.name],
             fields: build_fields(interface_definition.field_definitions)
@@ -169,11 +169,11 @@ module Graphene
         when Graphene::Language::Nodes::NamedType
           build_named_type(type)
         when Graphene::Language::Nodes::ListType
-          Graphene::Types::List.new(
+          Graphene::Types::ListType.new(
             of_type: build_type(type.of_type)
           )
         when Graphene::Language::Nodes::NonNullType
-          Graphene::Types::NonNull.new(
+          Graphene::Types::NonNullType.new(
             of_type: build_type(type.of_type)
           )
         else
@@ -184,22 +184,22 @@ module Graphene
       private def build_named_type(type)
         case type.name
         when "String"
-          Graphene::Types::String.new
+          Graphene::Types::StringType.new
         when "Int"
-          Graphene::Types::Int.new
+          Graphene::Types::IntType.new
         when "ID"
-          Graphene::Types::Id.new
+          Graphene::Types::IdType.new
         when "Float"
-          Graphene::Types::Float.new
+          Graphene::Types::FloatType.new
         when "Boolean"
-          Graphene::Types::Boolean.new
+          Graphene::Types::BooleanType.new
         else
-          Graphene::Types::LateBound.new(type.name)
+          Graphene::Types::LateBoundType.new(type.name)
         end
       end
 
       private def get_type(name)
-        type_map[name]? || Graphene::Types::LateBound.new(name)
+        type_map[name]? || Graphene::Types::LateBoundType.new(name)
       end
 
       private def parse

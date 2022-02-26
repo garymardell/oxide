@@ -14,8 +14,8 @@ module Graphene
       Graphene::Directives::IncludeDirective.new
     ]
 
-    getter query : Graphene::Types::Object
-    getter mutation : Graphene::Types::Object | Nil
+    getter query : Graphene::Types::ObjectType
+    getter mutation : Graphene::Types::ObjectType | Nil
 
     getter orphan_types : Array(Graphene::Type)
     getter directives : Array(Graphene::Directive)
@@ -44,11 +44,11 @@ module Graphene
       when Graphene::Language::Nodes::NonNullType
         inner_type = get_type_from_ast(ast_node.of_type)
 
-        Graphene::Types::NonNull.new(of_type: inner_type)
+        Graphene::Types::NonNullType.new(of_type: inner_type)
       when Graphene::Language::Nodes::ListType
         inner_type = get_type_from_ast(ast_node.of_type)
 
-        Graphene::Types::List.new(of_type: inner_type)
+        Graphene::Types::ListType.new(of_type: inner_type)
       else
         raise "Couldn't get type #{ast_node}"
       end

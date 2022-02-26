@@ -15,7 +15,7 @@ describe Graphene::Validation::FragmentsMustBeUsed do
     QUERY
 
     schema = Graphene::Schema.new(
-      query: Graphene::Types::Object.new(
+      query: Graphene::Types::ObjectType.new(
         name: "Query",
         resolver: NullResolver.new
       )
@@ -49,7 +49,7 @@ describe Graphene::Validation::FragmentsMustBeUsed do
     QUERY
 
     schema = Graphene::Schema.new(
-      query: Graphene::Types::Object.new(
+      query: Graphene::Types::ObjectType.new(
         name: "Query",
         resolver: NullResolver.new
       )

@@ -11,11 +11,11 @@ module Graphene
         selection_type = context.field_definition.try &.type
 
         case selection_type
-        when Graphene::Types::Scalar, Graphene::Types::Enum
+        when Graphene::Types::ScalarType, Graphene::Types::EnumType
           if node.selection_set && node.selection_set.not_nil!.selections.any?
             errors << Error.new("selections on scalar values are not allowed")
           end
-        when Graphene::Types::Interface, Graphene::Types::Union, Graphene::Types::Object
+        when Graphene::Types::InterfaceType, Graphene::Types::UnionType, Graphene::Types::ObjectType
           if node.selection_set.nil? || node.selection_set.not_nil!.selections.empty?
             errors << Error.new("selection must be provided for #{node.name}")
           end

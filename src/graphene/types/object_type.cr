@@ -1,15 +1,15 @@
 require "../resolvable"
 require "../field"
 require "../type"
-require "./interface"
+require "./interface_type"
 
 module Graphene
   module Types
-    class Object < Type
+    class ObjectType < Type
       getter fields : Array(Field)
-      getter name : ::String
-      getter description : ::String?
-      getter interfaces : Array(Graphene::Types::Interface)
+      getter name : String
+      getter description : String?
+      getter interfaces : Array(Graphene::Types::InterfaceType)
       getter resolver : Resolvable
 
       def initialize(
@@ -17,7 +17,7 @@ module Graphene
         @resolver,
         @description = nil,
         @fields = [] of Field,
-        @interfaces = [] of Graphene::Types::Interface
+        @interfaces = [] of Graphene::Types::InterfaceType
       )
       end
 

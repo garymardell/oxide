@@ -2,13 +2,13 @@ require "./schema_type"
 
 module Graphene
   module Introspection
-    QueryType = Graphene::Types::Object.new(
+    QueryType = Graphene::Types::ObjectType.new(
       name: "__IntrospectionQuery",
       resolver: QueryResolver.new,
       fields: [
         Graphene::Field.new(
           name: "__schema",
-          type: Graphene::Types::LateBound.new("__Schema")
+          type: Graphene::Types::LateBoundType.new("__Schema")
         )
       ]
     )

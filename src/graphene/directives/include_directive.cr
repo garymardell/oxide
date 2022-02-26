@@ -11,8 +11,8 @@ module Graphene
         [
           Graphene::Argument.new(
             name: "if",
-            type: Graphene::Types::NonNull.new(
-              of_type: Graphene::Types::Boolean.new
+            type: Graphene::Types::NonNullType.new(
+              of_type: Graphene::Types::BooleanType.new
             )
           )
         ]

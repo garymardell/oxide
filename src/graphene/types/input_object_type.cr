@@ -3,9 +3,9 @@ require "../input_value"
 
 module Graphene
   module Types
-    class InputObject < Type
-      getter name : ::String
-      getter description : ::String?
+    class InputObjectType < Type
+      getter name : String
+      getter description : String?
       getter input_fields : Array(InputValue)
 
       def initialize(@name, @description = nil, @input_fields = [] of InputValue)

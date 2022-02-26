@@ -2,15 +2,15 @@ require "../type"
 
 module Graphene
   module Types
-    class Enum < Type
-      getter name : ::String
-      getter description : ::String?
+    class EnumType < Type
+      getter name : String
+      getter description : String?
       getter values : Array(EnumValue)
 
       def initialize(@name, @values, @description = nil)
       end
 
-      def coerce(value : ::String)
+      def coerce(value : String)
         enum_value = values.find { |ev| ev.value == value }
 
         if enum_value
@@ -40,10 +40,10 @@ module Graphene
     end
 
     class EnumValue
-      getter name : ::String
-      getter description : ::String?
-      getter value : ::String
-      getter deprecation_reason : ::String?
+      getter name : String
+      getter description : String?
+      getter value : String
+      getter deprecation_reason : String?
 
       def initialize(@name, @description = nil, value = nil, @deprecation_reason = nil)
         @value = value || @name

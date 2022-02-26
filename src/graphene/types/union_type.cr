@@ -3,9 +3,9 @@ require "../type"
 
 module Graphene
   module Types
-    class Union < Type
-      getter name : ::String
-      getter description : ::String?
+    class UnionType < Type
+      getter name : String
+      getter description : String?
       getter type_resolver : TypeResolver
       getter possible_types : Array(Graphene::Type)
 

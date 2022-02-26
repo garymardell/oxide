@@ -2,13 +2,13 @@
 
 module Graphene
   module Types
-    abstract class Scalar < Type
+    abstract class ScalarType < Type
       def kind
         "SCALAR"
       end
     end
 
-    class Id < Scalar
+    class IdType < ScalarType
       def name
         "ID"
       end
@@ -34,7 +34,7 @@ module Graphene
       end
     end
 
-    class String < Scalar
+    class StringType < ScalarType
       def name
         "String"
       end
@@ -43,7 +43,7 @@ module Graphene
         "Represents textual data as UTF-8 character sequences. This type is most often used by GraphQL to represent free-form human-readable text."
       end
 
-      def coerce(value : ::String)
+      def coerce(value : String)
         value
       end
 
@@ -64,7 +64,7 @@ module Graphene
       end
     end
 
-    class Int < Scalar
+    class IntType < ScalarType
       def name
         "Int"
       end
@@ -94,7 +94,7 @@ module Graphene
       end
     end
 
-    class Float < Scalar
+    class FloatType < ScalarType
       def name
         "Float"
       end
@@ -120,7 +120,7 @@ module Graphene
       end
     end
 
-    class Boolean < Scalar
+    class BooleanType < ScalarType
       def name
         "Boolean"
       end
@@ -144,12 +144,12 @@ module Graphene
       end
     end
 
-    class CustomScalar < Scalar
-      getter name : ::String
-      getter description : ::String?
-      getter specified_by_url : ::String?
+    class CustomScalarType < ScalarType
+      getter name : String
+      getter description : String?
+      getter specified_by_url : String?
 
-      def initialize(@name : ::String, @description : ::String? = nil, @specified_by_url : ::String? = nil)
+      def initialize(@name : String, @description : String? = nil, @specified_by_url : String? = nil)
       end
 
       def coerce(value)

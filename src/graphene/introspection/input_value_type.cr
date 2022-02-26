@@ -2,29 +2,29 @@ require "./type_type"
 
 module Graphene
   module Introspection
-    InputValueType = Graphene::Types::Object.new(
+    InputValueType = Graphene::Types::ObjectType.new(
       name: "__InputValue",
       resolver: InputValueResolver.new,
       fields: [
         Graphene::Field.new(
           name: "name",
-          type: Graphene::Types::NonNull.new(
-            of_type: Graphene::Types::String.new
+          type: Graphene::Types::NonNullType.new(
+            of_type: Graphene::Types::StringType.new
           )
         ),
         Graphene::Field.new(
           name: "description",
-          type: Graphene::Types::String.new
+          type: Graphene::Types::StringType.new
         ),
         Graphene::Field.new(
           name: "type",
-          type: Graphene::Types::NonNull.new(
-            of_type: Graphene::Types::LateBound.new("__Type")
+          type: Graphene::Types::NonNullType.new(
+            of_type: Graphene::Types::LateBoundType.new("__Type")
           )
         ),
         Graphene::Field.new(
           name: "defaultValue",
-          type: Graphene::Types::String.new
+          type: Graphene::Types::StringType.new
         )
       ]
     )

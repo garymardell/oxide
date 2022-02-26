@@ -273,13 +273,13 @@ describe Graphene do
       "bar"
     ]
 
-    query_type = Graphene::Types::Object.new(
+    query_type = Graphene::Types::ObjectType.new(
       name: "DynamicQuery",
       resolver: DynamicResolver.new,
       fields: fields.map do |field_name|
         Graphene::Field.new(
           name: field_name,
-          type: Graphene::Types::String.new
+          type: Graphene::Types::StringType.new
         )
       end
     )

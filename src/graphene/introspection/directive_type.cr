@@ -2,7 +2,7 @@ require "./input_value_type"
 
 module Graphene
   module Introspection
-    DirectiveLocationType = Graphene::Types::Enum.new(
+    DirectiveLocationType = Graphene::Types::EnumType.new(
       name: "__DirectiveLocation",
       values: [
         Graphene::Types::EnumValue.new(name: "QUERY"),
@@ -26,25 +26,25 @@ module Graphene
       ]
     )
 
-    DirectiveType = Graphene::Types::Object.new(
+    DirectiveType = Graphene::Types::ObjectType.new(
       name: "__Directive",
       resolver: DirectiveResolver.new,
       fields: [
         Graphene::Field.new(
           name: "name",
-          type: Graphene::Types::NonNull.new(
-            of_type: Graphene::Types::String.new
+          type: Graphene::Types::NonNullType.new(
+            of_type: Graphene::Types::StringType.new
           )
         ),
         Graphene::Field.new(
           name: "description",
-          type: Graphene::Types::String.new
+          type: Graphene::Types::StringType.new
         ),
         Graphene::Field.new(
           name: "locations",
-          type: Graphene::Types::NonNull.new(
-            of_type: Graphene::Types::List.new(
-              of_type: Graphene::Types::NonNull.new(
+          type: Graphene::Types::NonNullType.new(
+            of_type: Graphene::Types::ListType.new(
+              of_type: Graphene::Types::NonNullType.new(
                 of_type: DirectiveLocationType
               )
             )
@@ -52,10 +52,10 @@ module Graphene
         ),
         Graphene::Field.new(
           name: "args",
-          type: Graphene::Types::NonNull.new(
-            of_type: Graphene::Types::List.new(
-              of_type: Graphene::Types::NonNull.new(
-                of_type: Graphene::Types::LateBound.new("__InputValue")
+          type: Graphene::Types::NonNullType.new(
+            of_type: Graphene::Types::ListType.new(
+              of_type: Graphene::Types::NonNullType.new(
+                of_type: Graphene::Types::LateBoundType.new("__InputValue")
               )
             )
           )

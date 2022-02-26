@@ -7,7 +7,7 @@ module Graphene
         return unless type = context.parent_type
 
         case type
-        when Graphene::Types::Object, Graphene::Types::Interface
+        when Graphene::Types::ObjectType, Graphene::Types::InterfaceType
           if context.field_definition.nil?
             errors << Error.new("field #{field_name} not defined on #{type.name}")
           end

@@ -2,8 +2,8 @@ require "../type"
 
 module Graphene
   module Types
-    class List < Type
-      getter description : ::String?
+    class ListType < Type
+      getter description : String?
       getter of_type : Graphene::Type
 
       def initialize(@of_type, @description = nil)

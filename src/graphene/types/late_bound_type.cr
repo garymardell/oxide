@@ -2,8 +2,8 @@ require "../type"
 
 module Graphene
   module Types
-    class LateBound < Type
-      getter typename : ::String
+    class LateBoundType < Type
+      getter typename : String
 
       def initialize(@typename)
       end

@@ -9,12 +9,12 @@ def build_enum_value(name = "paid", description = "Item is paid", value = nil, d
   )
 end
 
-describe Graphene::Types::Enum do
+describe Graphene::Types::EnumType do
   describe "#new" do
     it "accepts an array of EnumValues" do
       values = [build_enum_value]
 
-      e = Graphene::Types::Enum.new(
+      e = Graphene::Types::EnumType.new(
         name: "Test",
         values: values
       )
