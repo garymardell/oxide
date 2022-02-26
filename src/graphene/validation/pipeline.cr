@@ -116,7 +116,7 @@ module Graphene
         end
       end
 
-      def exit(node)
+      def leave(node)
         case node
         when Graphene::Language::Nodes::SelectionSet
           context.parent_type_stack.pop?
@@ -137,7 +137,7 @@ module Graphene
         end
 
         rules.each do |rule|
-          rule.exit(node, context)
+          rule.leave(node, context)
         end
       end
 

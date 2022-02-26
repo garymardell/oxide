@@ -33,7 +33,7 @@ module Graphene
             definition.accept(visitor)
           end
 
-          visitor.exit(self)
+          visitor.leave(self)
         end
       end
 
@@ -62,7 +62,7 @@ module Graphene
             directive.accept(visitor)
           end
 
-          visitor.exit(self)
+          visitor.leave(self)
         end
       end
 
@@ -79,7 +79,7 @@ module Graphene
             selection.accept(visitor)
           end
 
-          visitor.exit(self)
+          visitor.leave(self)
         end
       end
 
@@ -103,7 +103,7 @@ module Graphene
             directive.accept(visitor)
           end
 
-          visitor.exit(self)
+          visitor.leave(self)
         end
       end
 
@@ -125,7 +125,7 @@ module Graphene
             operation_type_definition.accept(visitor)
           end
 
-          visitor.exit(self)
+          visitor.leave(self)
         end
       end
 
@@ -138,7 +138,7 @@ module Graphene
 
         def accept(visitor : Visitor)
           visitor.enter(self)
-          visitor.exit(self)
+          visitor.leave(self)
         end
       end
 
@@ -156,7 +156,7 @@ module Graphene
             directive.accept(visitor)
           end
 
-          visitor.exit(self)
+          visitor.leave(self)
         end
       end
 
@@ -175,7 +175,7 @@ module Graphene
             directive.accept(visitor)
           end
 
-          visitor.exit(self)
+          visitor.leave(self)
         end
       end
 
@@ -209,7 +209,7 @@ module Graphene
             directive.accept(visitor)
           end
 
-          visitor.exit(self)
+          visitor.leave(self)
         end
       end
 
@@ -222,7 +222,7 @@ module Graphene
 
         def accept(visitor : Visitor)
           visitor.enter(self)
-          visitor.exit(self)
+          visitor.leave(self)
         end
       end
 
@@ -241,7 +241,7 @@ module Graphene
             variable.not_nil!.accept(visitor)
           end
 
-          visitor.exit(self)
+          visitor.leave(self)
         end
       end
 
@@ -253,7 +253,7 @@ module Graphene
 
         def accept(visitor : Visitor)
           visitor.enter(self)
-          visitor.exit(self)
+          visitor.leave(self)
         end
       end
 
@@ -270,7 +270,7 @@ module Graphene
             of_type.not_nil!.accept(visitor)
           end
 
-          visitor.exit(self)
+          visitor.leave(self)
         end
       end
 
@@ -287,7 +287,7 @@ module Graphene
             of_type.not_nil!.accept(visitor)
           end
 
-          visitor.exit(self)
+          visitor.leave(self)
         end
       end
 
@@ -297,7 +297,7 @@ module Graphene
         def accept(visitor : Visitor)
           visitor.enter(self)
 
-          visitor.exit(self)
+          visitor.leave(self)
         end
       end
 
@@ -309,7 +309,7 @@ module Graphene
 
         def accept(visitor : Visitor)
           visitor.enter(self)
-          visitor.exit(self)
+          visitor.leave(self)
         end
       end
 
@@ -325,7 +325,7 @@ module Graphene
 
         def accept(visitor : Visitor)
           visitor.enter(self)
-          visitor.exit(self)
+          visitor.leave(self)
         end
       end
 
@@ -337,7 +337,7 @@ module Graphene
 
         def accept(visitor : Visitor)
           visitor.enter(self)
-          visitor.exit(self)
+          visitor.leave(self)
         end
       end
 
@@ -349,7 +349,7 @@ module Graphene
 
         def accept(visitor : Visitor)
           visitor.enter(self)
-          visitor.exit(self)
+          visitor.leave(self)
         end
       end
 
@@ -361,7 +361,7 @@ module Graphene
 
         def accept(visitor : Visitor)
           visitor.enter(self)
-          visitor.exit(self)
+          visitor.leave(self)
         end
       end
 
@@ -372,7 +372,7 @@ module Graphene
 
         def accept(visitor : Visitor)
           visitor.enter(self)
-          visitor.exit(self)
+          visitor.leave(self)
         end
       end
 
@@ -384,7 +384,7 @@ module Graphene
 
         def accept(visitor : Visitor)
           visitor.enter(self)
-          visitor.exit(self)
+          visitor.leave(self)
         end
       end
 
@@ -401,7 +401,7 @@ module Graphene
         def accept(visitor : Visitor)
           visitor.enter(self)
 
-          visitor.exit(self)
+          visitor.leave(self)
         end
       end
 
@@ -425,7 +425,7 @@ module Graphene
             field.accept(visitor)
           end
 
-          visitor.exit(self)
+          visitor.leave(self)
         end
       end
 
@@ -439,7 +439,7 @@ module Graphene
         def accept(visitor : Visitor)
           visitor.enter(self)
 
-          visitor.exit(self)
+          visitor.leave(self)
         end
       end
 
@@ -457,7 +457,7 @@ module Graphene
             argument.accept(visitor)
           end
 
-          visitor.exit(self)
+          visitor.leave(self)
         end
       end
 
@@ -470,7 +470,7 @@ module Graphene
 
         def accept(visitor : Visitor)
           visitor.enter(self)
-          visitor.exit(self)
+          visitor.leave(self)
         end
       end
 
@@ -494,7 +494,7 @@ module Graphene
             field_definition.accept(visitor)
           end
 
-          visitor.exit(self)
+          visitor.leave(self)
         end
       end
 
@@ -518,7 +518,7 @@ module Graphene
             type.not_nil!.accept(visitor)
           end
 
-          visitor.exit(self)
+          visitor.leave(self)
         end
       end
 
@@ -538,7 +538,7 @@ module Graphene
             type.not_nil!.accept(visitor)
           end
 
-          visitor.exit(self)
+          visitor.leave(self)
         end
       end
 
@@ -557,7 +557,7 @@ module Graphene
             field_definition.accept(visitor)
           end
 
-          visitor.exit(self)
+          visitor.leave(self)
         end
       end
 
@@ -576,7 +576,7 @@ module Graphene
             member_type.accept(visitor)
           end
 
-          visitor.exit(self)
+          visitor.leave(self)
         end
       end
 
@@ -595,7 +595,7 @@ module Graphene
             value_definition.accept(visitor)
           end
 
-          visitor.exit(self)
+          visitor.leave(self)
         end
       end
 
@@ -608,14 +608,14 @@ module Graphene
 
         def accept(visitor : Visitor)
           visitor.enter(self)
-          visitor.exit(self)
+          visitor.leave(self)
         end
       end
 
       class InputObjectTypeDefinition < Node
         def accept(visitor : Visitor)
           visitor.enter(self)
-          visitor.exit(self)
+          visitor.leave(self)
         end
       end
 
@@ -634,7 +634,7 @@ module Graphene
             arguments_definition.accept(visitor)
           end
 
-          visitor.exit(self)
+          visitor.leave(self)
         end
       end
 
@@ -651,7 +651,7 @@ module Graphene
             input_value_definition.accept(visitor)
           end
 
-          visitor.exit(self)
+          visitor.leave(self)
         end
       end
     end

@@ -14,7 +14,7 @@ module Graphene
         @variable_names = Set(String).new
       end
 
-      def exit(node : Graphene::Language::Nodes::OperationDefinition, context)
+      def leave(node : Graphene::Language::Nodes::OperationDefinition, context)
         variable_names.clear
       end
 

@@ -21,7 +21,7 @@ module Graphene
         fragments_used << node.name
       end
 
-      def exit(node : Graphene::Language::Nodes::Document, context)
+      def leave(node : Graphene::Language::Nodes::Document, context)
         unused_fragments = fragments_defined - fragments_used
         unused_fragments.each do |fragment_name|
           errors << Error.new("fragment #{fragment_name} is defined but not used")

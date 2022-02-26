@@ -4,7 +4,7 @@ module Graphene
       def enter(node)
       end
 
-      def exit(node)
+      def leave(node)
       end
     end
   end

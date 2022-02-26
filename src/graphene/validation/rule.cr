@@ -12,7 +12,7 @@ module Graphene
       def enter(node, context)
       end
 
-      def exit(node, context)
+      def leave(node, context)
       end
     end
   end
