@@ -1,5 +1,5 @@
 class BankAccountResolver < Graphene::Resolver
-  def resolve(object : BankAccount, context, field_name, argument_values)
+  def resolve(object : BankAccount, field_name, context, argument_values, resolution_info)
     case field_name
     when "id"
       object.id

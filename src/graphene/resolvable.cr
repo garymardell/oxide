@@ -1,7 +1,5 @@
 module Graphene
   module Resolvable
-    # property schema : Graphene::Schema?
-
-    abstract def resolve(object, context, field_name, argument_values)
+    abstract def resolve(object, field_name, argument_values, context, resolution_info)
   end
 end

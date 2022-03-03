@@ -1,5 +1,5 @@
 class QueryResolver < Graphene::Resolver
-  def resolve(object, context, field_name, argument_values)
+  def resolve(object, field_name, argument_values, context, resolution_info)
     case field_name
     when "charge"
       # TODO: Had to add `to_s` as value comes bakc as int64 due to missing variable coercion

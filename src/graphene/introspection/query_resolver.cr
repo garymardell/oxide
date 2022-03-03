@@ -1,10 +1,10 @@
 module Graphene
   module Introspection
     class QueryResolver < Graphene::Resolver
-      def resolve(object, context, field_name, argument_values)
+      def resolve(object, field_name, argument_values, context, resolution_info)
         case field_name
         when "__schema"
-          context.schema
+          resolution_info.schema
         end
       end
     end

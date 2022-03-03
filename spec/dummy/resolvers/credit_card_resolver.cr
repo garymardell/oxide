@@ -1,5 +1,5 @@
 class CreditCardResolver < Graphene::Resolver
-  def resolve(object : CreditCard, context, field_name, argument_values)
+  def resolve(object : CreditCard, field_name, argument_values, context, resolution_info)
     case field_name
     when "id"
       object.id

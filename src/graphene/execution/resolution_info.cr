@@ -1,15 +1,12 @@
 module Graphene
   module Execution
-    struct ResolutionContext
+    struct ResolutionInfo
       getter schema : Graphene::Schema
       getter query : Graphene::Query
       getter field : Graphene::Field?
-      getter context : Graphene::Context?
 
-      def initialize(@schema, @query, @field = nil, @context = nil)
+      def initialize(@schema, @query, @field = nil)
       end
-
-      forward_missing_to @context
     end
   end
 end

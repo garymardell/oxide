@@ -4,7 +4,7 @@ module Graphene
       # [x] kind must return __TypeKind.NON_NULL.
       # [x] ofType must return a type of any kind except Non-Null.
       # [x] All other fields must return null.
-      def resolve(object : Graphene::Types::NonNullType, context, field_name, argument_values)
+      def resolve(object : Graphene::Types::NonNullType, field_name, argument_values, context, resolution_info)
         case field_name
         when "kind"
           object.kind
@@ -16,7 +16,7 @@ module Graphene
       # [x] kind must return __TypeKind.LIST.
       # [x] ofType must return a type of any kind.
       # [x] All other fields must return null.
-      def resolve(object : Graphene::Types::ListType, context, field_name, argument_values)
+      def resolve(object : Graphene::Types::ListType, field_name, argument_values, context, resolution_info)
         case field_name
         when "kind"
           object.kind
@@ -32,7 +32,7 @@ module Graphene
       # [x] Accepts the argument includeDeprecated which defaults to false. If true, deprecated fields are also returned.
       # [x] interfaces must return the set of interfaces that an object implements (if none, interfaces must return the empty set).
       # [x] All other fields must return null.
-      def resolve(object : Graphene::Types::ObjectType, context, field_name, argument_values)
+      def resolve(object : Graphene::Types::ObjectType, field_name, argument_values, context, resolution_info)
         case field_name
         when "name"
           object.name
@@ -56,7 +56,7 @@ module Graphene
       # [x] description may return a String or null.
       # [x] specifiedByURL may return a String (in the form of a URL) for custom scalars, otherwise must be null.
       # [x] All other fields must return null.
-      def resolve(object : Graphene::Types::ScalarType, context, field_name, argument_values)
+      def resolve(object : Graphene::Types::ScalarType, field_name, argument_values, context, resolution_info)
         case field_name
         when "name"
           object.name
@@ -77,7 +77,7 @@ module Graphene
       # [x] enumValues must return the set of enum values as a list of __EnumValue. There must be at least one and they must have unique names.
       # [x] Accepts the argument includeDeprecated which defaults to false. If true, deprecated enum values are also returned.
       # [x] All other fields must return null.
-      def resolve(object : Graphene::Types::EnumType, context, field_name, argument_values)
+      def resolve(object : Graphene::Types::EnumType, field_name, argument_values, context, resolution_info)
         case field_name
         when "name"
           object.name
@@ -99,7 +99,7 @@ module Graphene
       # [x] description may return a String or null.
       # [x] possibleTypes returns the list of types that can be represented within this union. They must be object types.
       # [x] All other fields must return null.
-      def resolve(object : Graphene::Types::UnionType, context, field_name, argument_values)
+      def resolve(object : Graphene::Types::UnionType, field_name, argument_values, context, resolution_info)
         case field_name
         when "name"
           object.name
@@ -120,7 +120,7 @@ module Graphene
       # [x] interfaces must return the set of interfaces that an object implements (if none, interfaces must return the empty set).
       # [x] possibleTypes returns the list of types that implement this interface. They must be object types.
       # [x] All other fields must return null.
-      def resolve(object : Graphene::Types::InterfaceType, context, field_name, argument_values)
+      def resolve(object : Graphene::Types::InterfaceType, field_name, argument_values, context, resolution_info)
         case field_name
         when "name"
           object.name
@@ -137,7 +137,7 @@ module Graphene
         when "interfaces"
           object.interfaces
         when "possibleTypes"
-          context.schema.not_nil!.type_map.each_with_object([] of Graphene::Type) do |(_, type), memo|
+          resolution_info.schema.not_nil!.type_map.each_with_object([] of Graphene::Type) do |(_, type), memo|
             if type.responds_to?(:interfaces) && type.interfaces.includes?(object)
               memo << type
             end
@@ -145,10 +145,10 @@ module Graphene
         end
       end
 
-      def resolve(object : Graphene::Types::LateBoundType, context, field_name, argument_values)
-        unwrapped_type = get_type(context.schema, object.typename)
+      def resolve(object : Graphene::Types::LateBoundType, field_name, argument_values, context, resolution_info)
+        unwrapped_type = get_type(resolution_info.schema, object.typename)
 
-        resolve(unwrapped_type, context, field_name, argument_values)
+        resolve(unwrapped_type, field_name, argument_values, context, resolution_info)
       end
 
       private def get_type(schema, typename)

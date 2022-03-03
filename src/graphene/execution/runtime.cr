@@ -5,7 +5,7 @@ require "../query"
 require "../schema"
 require "../introspection_system"
 require "../introspection/*"
-require "./resolution_context"
+require "./resolution_info"
 
 module Graphene
   module Execution
@@ -194,15 +194,13 @@ module Graphene
           end
         end
 
-        resolution_context = ResolutionContext.new(
+        resolution_info = ResolutionInfo.new(
           schema: schema,
           query: query,
           field: schema_field,
-          context: context
         )
 
-
-        value = resolver.resolve(object_value, resolution_context, field_name, argument_values)
+        value = resolver.resolve(object_value, field_name, argument_values, context, resolution_info)
 
         if value.is_a?(Lazy)
           Proc(IntermediateType).new {

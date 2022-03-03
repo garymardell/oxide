@@ -3,7 +3,7 @@ require "../src/graphene"
 require "./dummy/schema"
 
 class NullResolver < Graphene::Resolver
-  def resolve(object, context, field_name, argument_values)
+  def resolve(object, field_name, argument_values, context, resolution_info)
     nil
   end
 end

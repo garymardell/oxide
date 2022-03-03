@@ -14,7 +14,7 @@ class RefundResolver < Graphene::Resolver
     @loader = PaymentMethodLoader.new
   end
 
-  def resolve(object : Refund, context, field_name, argument_values)
+  def resolve(object : Refund, field_name, context, argument_values, resolution_info)
     case field_name
     when "id"
       object.id
