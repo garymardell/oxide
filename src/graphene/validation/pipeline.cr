@@ -177,7 +177,7 @@ module Graphene
           # Return a fake field definition?
         end
 
-        parent_type.fields.find { |field| field.name == field_name }
+        parent_type.fields[field_name]?
       end
 
       private def field_definition(parent_type, field_name)

@@ -50,58 +50,58 @@ end
 SentientInterface = Graphene::Types::Interface.new(
   name: "Sentient",
   type_resolver: SentientTypeResolver.new,
-  fields: [
-    Graphene::Field.new(
+  fields: {
+    "name" => Graphene::Field.new(
       name: "name",
       type: Graphene::Types::NonNullType.new(
         of_type: Graphene::Types::StringType.new
       )
     )
-  ]
+  }
 )
 
 AlienType = Graphene::Types::ObjectType.new(
   name: "Alien",
   resolver: NullResolver.new,
-  fields: [
-    Graphene::Field.new(
+  fields: {
+    "name" => Graphene::Field.new(
       name: "name",
       type: Graphene::Types::NonNullType.new(
         of_type: Graphene::Types::StringType.new
       )
     ),
-    Graphene::Field.new(
+    "homePlanet" => Graphene::Field.new(
       name: "homePlanet",
       type: Graphene::Types::StringType.new
     )
-  ]
+  }
 )
 
 HumanType = Graphene::Types::ObjectType.new(
   name: "Human",
   resolver: NullResolver.new,
-  fields: [
-    Graphene::Field.new(
+  fields: {
+    "name" => Graphene::Field.new(
       name: "name",
       type: Graphene::Types::NonNullType.new(
         of_type: Graphene::Types::StringType.new
       )
     )
-  ]
+  }
 )
 
 
 PetInterface = Graphene::Types::InterfaceType.new(
   name: "Pet",
   type_resolver: PetTypeResolver.new,
-  fields: [
-    Graphene::Field.new(
+  fields: {
+    "name" => Graphene::Field.new(
       name: "name",
       type: Graphene::Types::NonNullType.new(
         of_type: Graphene::Types::StringType.new
       )
     )
-  ]
+  }
 )
 
 CatCommandEnum = Graphene::Types::EnumType.new(
@@ -115,18 +115,18 @@ CatType = Graphene::Types::ObjectType.new(
   name: "Cat",
   resolver: NullResolver.new,
   interfaces: [PetInterface],
-  fields: [
-    Graphene::Field.new(
+  fields: {
+    "name" => Graphene::Field.new(
       name: "name",
       type: Graphene::Types::NonNullType.new(
         of_type: Graphene::Types::StringType.new
       )
     ),
-    Graphene::Field.new(
+    "nickname" => Graphene::Field.new(
       name: "nickname",
       type: Graphene::Types::StringType.new
     ),
-    Graphene::Field.new(
+    "doesKnowCommand" => Graphene::Field.new(
       name: "doesKnowCommand",
       arguments: [
         Graphene::Argument.new(
@@ -140,11 +140,11 @@ CatType = Graphene::Types::ObjectType.new(
         of_type: Graphene::Types::BooleanType.new
       )
     ),
-    Graphene::Field.new(
+    "meowVolume" => Graphene::Field.new(
       name: "meowVolume",
       type: Graphene::Types::IntType.new
     )
-  ]
+  }
 )
 
 CatOrDogUnion = Graphene::Types::UnionType.new(
@@ -178,22 +178,22 @@ DogType = Graphene::Types::ObjectType.new(
   name: "Dog",
   resolver: NullResolver.new,
   interfaces: [PetInterface],
-  fields: [
-    Graphene::Field.new(
+  fields: {
+    "name" => Graphene::Field.new(
       name: "name",
       type: Graphene::Types::NonNullType.new(
         of_type: Graphene::Types::StringType.new
       )
     ),
-    Graphene::Field.new(
+    "nickname" => Graphene::Field.new(
       name: "nickname",
       type: Graphene::Types::StringType.new
     ),
-    Graphene::Field.new(
+    "barkVolume" => Graphene::Field.new(
       name: "barkVolume",
       type: Graphene::Types::IntType.new
     ),
-    Graphene::Field.new(
+    "doesKnowCommand" => Graphene::Field.new(
       name: "doesKnowCommand",
       arguments: [
         Graphene::Argument.new(
@@ -207,7 +207,7 @@ DogType = Graphene::Types::ObjectType.new(
         of_type: Graphene::Types::BooleanType.new
       )
     ),
-    Graphene::Field.new(
+    "isHousetrained" => Graphene::Field.new(
       name: "isHousetrained",
       arguments: [
         Graphene::Argument.new(
@@ -219,23 +219,23 @@ DogType = Graphene::Types::ObjectType.new(
         of_type: Graphene::Types::BooleanType.new
       )
     ),
-    Graphene::Field.new(
+    "owner" => Graphene::Field.new(
       name: "owner",
       type: HumanType
     )
-  ]
+  }
 )
 
 ValidationsSchema = Graphene::Schema.new(
   query: Graphene::Types::ObjectType.new(
     name: "Query",
     resolver: NullResolver.new,
-    fields: [
-      Graphene::Field.new(
+    fields: {
+      "dog" => Graphene::Field.new(
         name: "dog",
         type: DogType
       )
-    ]
+    }
   ),
   orphan_types: [
     CatOrDogUnion.as(Graphene::Type),

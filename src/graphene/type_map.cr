@@ -29,7 +29,7 @@ module Graphene
         interface.accept(self)
       end
 
-      type.fields.each do |field|
+      type.fields.each do |name, field|
         field.type.accept(self)
 
         field.arguments.each do |argument|
@@ -41,7 +41,7 @@ module Graphene
     def visit(type : Graphene::Types::InterfaceType)
       type_map[type.name] = type
 
-      type.fields.each do |field|
+      type.fields.each do |name, field|
         field.type.accept(self)
 
         field.arguments.each do |argument|

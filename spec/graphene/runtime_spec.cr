@@ -276,8 +276,8 @@ describe Graphene do
     query_type = Graphene::Types::ObjectType.new(
       name: "DynamicQuery",
       resolver: DynamicResolver.new,
-      fields: fields.map do |field_name|
-        Graphene::Field.new(
+      fields: fields.each_with_object({} of String => Graphene::Field) do |field_name, memo|
+        memo[field_name] = Graphene::Field.new(
           name: field_name,
           type: Graphene::Types::StringType.new
         )

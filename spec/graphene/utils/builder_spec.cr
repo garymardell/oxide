@@ -86,7 +86,7 @@ describe Graphene::Utils::Builder do
 
     schema = builder.build
 
-    field = schema.query.fields.find(&.name.===("isFavouriteNumber"))
+    field = schema.query.fields["isFavouriteNumber"]
     field.should_not be_nil
 
     argument = field.not_nil!.arguments.find(&.name.===("number"))

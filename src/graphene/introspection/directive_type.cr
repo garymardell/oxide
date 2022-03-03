@@ -29,18 +29,18 @@ module Graphene
     DirectiveType = Graphene::Types::ObjectType.new(
       name: "__Directive",
       resolver: DirectiveResolver.new,
-      fields: [
-        Graphene::Field.new(
+      fields: {
+        "name" => Graphene::Field.new(
           name: "name",
           type: Graphene::Types::NonNullType.new(
             of_type: Graphene::Types::StringType.new
           )
         ),
-        Graphene::Field.new(
+        "description" => Graphene::Field.new(
           name: "description",
           type: Graphene::Types::StringType.new
         ),
-        Graphene::Field.new(
+        "locations" => Graphene::Field.new(
           name: "locations",
           type: Graphene::Types::NonNullType.new(
             of_type: Graphene::Types::ListType.new(
@@ -50,7 +50,7 @@ module Graphene
             )
           )
         ),
-        Graphene::Field.new(
+        "args" => Graphene::Field.new(
           name: "args",
           type: Graphene::Types::NonNullType.new(
             of_type: Graphene::Types::ListType.new(
@@ -60,7 +60,7 @@ module Graphene
             )
           )
         )
-      ]
+      }
     )
   end
 end

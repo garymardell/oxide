@@ -42,9 +42,9 @@ module Graphene
           object.kind
         when "fields"
           if argument_values["includeDeprecated"]?
-            object.fields
+            object.fields.values
           else
-            object.fields.reject(&.deprecated?)
+            object.fields.values.reject(&.deprecated?)
           end
         when "interfaces"
           object.interfaces
@@ -130,9 +130,9 @@ module Graphene
           object.kind
         when "fields"
           if argument_values["includeDeprecated"]?
-            object.fields
+            object.fields.values
           else
-            object.fields.reject(&.deprecated?)
+            object.fields.values.reject(&.deprecated?)
           end
         when "interfaces"
           object.interfaces

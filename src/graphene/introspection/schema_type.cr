@@ -6,8 +6,8 @@ module Graphene
     SchemaType = Graphene::Types::ObjectType.new(
       name: "__Schema",
       resolver: SchemaResolver.new,
-      fields: [
-        Graphene::Field.new(
+      fields: {
+        "types" => Graphene::Field.new(
           name: "types",
           type: Graphene::Types::NonNullType.new(
             of_type: Graphene::Types::ListType.new(
@@ -17,21 +17,21 @@ module Graphene
             )
           )
         ),
-        Graphene::Field.new(
+        "queryType" => Graphene::Field.new(
           name: "queryType",
           type: Graphene::Types::NonNullType.new(
             of_type: Graphene::Types::LateBoundType.new("__Type")
           )
         ),
-        Graphene::Field.new(
+        "mutationType" => Graphene::Field.new(
           name: "mutationType",
           type: Graphene::Types::LateBoundType.new("__Type")
         ),
-        Graphene::Field.new(
+        "subscriptionType" => Graphene::Field.new(
           name: "subscriptionType",
           type: Graphene::Types::LateBoundType.new("__Type")
         ),
-        Graphene::Field.new(
+        "directives" => Graphene::Field.new(
           name: "directives",
           type: Graphene::Types::NonNullType.new(
             of_type: Graphene::Types::ListType.new(
@@ -41,7 +41,7 @@ module Graphene
             )
           )
         )
-      ]
+      }
     )
   end
 end

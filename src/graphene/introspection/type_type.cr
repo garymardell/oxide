@@ -21,20 +21,20 @@ module Graphene
     TypeType = Graphene::Types::ObjectType.new(
       name: "__Type",
       resolver: TypeResolver.new,
-      fields: [
-        Graphene::Field.new(
+      fields: {
+        "kind" => Graphene::Field.new(
           name: "kind",
           type: Graphene::Types::NonNullType.new(of_type: TypeKindType)
         ),
-        Graphene::Field.new(
+        "name" => Graphene::Field.new(
           name: "name",
           type: Graphene::Types::StringType.new
         ),
-        Graphene::Field.new(
+        "description" => Graphene::Field.new(
           name: "description",
           type: Graphene::Types::StringType.new
         ),
-        Graphene::Field.new(
+        "fields" => Graphene::Field.new(
           name: "fields",
           arguments: [
             Graphene::Argument.new(
@@ -49,7 +49,7 @@ module Graphene
             )
           )
         ),
-        Graphene::Field.new(
+        "interfaces" => Graphene::Field.new(
           name: "interfaces",
           type: Graphene::Types::ListType.new(
             of_type: Graphene::Types::NonNullType.new(
@@ -57,7 +57,7 @@ module Graphene
             )
           )
         ),
-        Graphene::Field.new(
+        "possibleTypes" => Graphene::Field.new(
           name: "possibleTypes",
           type: Graphene::Types::ListType.new(
             of_type: Graphene::Types::NonNullType.new(
@@ -65,7 +65,7 @@ module Graphene
             )
           )
         ),
-        Graphene::Field.new(
+        "enumValues" => Graphene::Field.new(
           name: "enumValues",
           arguments: [
             Graphene::Argument.new(
@@ -80,7 +80,7 @@ module Graphene
             )
           )
         ),
-        Graphene::Field.new(
+        "inputFields" => Graphene::Field.new(
           name: "inputFields",
           type: Graphene::Types::ListType.new(
             of_type: Graphene::Types::NonNullType.new(
@@ -88,11 +88,11 @@ module Graphene
             )
           )
         ),
-        Graphene::Field.new(
+        "ofType" => Graphene::Field.new(
           name: "ofType",
           type: Graphene::Types::LateBoundType.new("__Type")
         )
-      ]
+      }
     )
   end
 end

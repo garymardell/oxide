@@ -1,7 +1,7 @@
 require "../../spec_helper"
 
 describe Graphene::Validation::ArgumentNames do
-  it "gives an error if argument does not exit on field" do
+  it "gives an error if argument does not exist on field" do
     query_string = <<-QUERY
       fragment invalidArgName on Dog {
         doesKnowCommand(command: CLEAN_UP_HOUSE)

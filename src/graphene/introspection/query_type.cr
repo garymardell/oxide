@@ -5,12 +5,12 @@ module Graphene
     QueryType = Graphene::Types::ObjectType.new(
       name: "__IntrospectionQuery",
       resolver: QueryResolver.new,
-      fields: [
-        Graphene::Field.new(
+      fields: {
+        "__schema" => Graphene::Field.new(
           name: "__schema",
           type: Graphene::Types::LateBoundType.new("__Schema")
         )
-      ]
+      }
     )
   end
 end

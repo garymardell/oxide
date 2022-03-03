@@ -148,15 +148,29 @@ module Graphene
         elsif field_name == "__typename"
           Graphene::Field.new(name: "__typename", type: Graphene::Types::StringType.new)
         else
-          object_type.get_field(field_name)
+          get_field_from_object_type(object_type, field_name)
         end
+      end
+
+      private def get_field_from_object_type(object_type, field_name)
+        if field = object_type.fields[field_name]?
+          return field
+        end
+
+        object_type.interfaces.each do |interface_type|
+          if field = interface_type.fields[field_name]?
+            return field
+          end
+        end
+
+        nil
       end
 
       private def execute_field(object_type, object_value, field_type, fields, variable_values) : IntermediateType
         field = fields.first
         field_name = field.name
 
-        argument_definitions = if schema_field = object_type.get_field(field_name)
+        argument_definitions = if schema_field = object_type.fields[field_name]?
           schema_field.arguments
         else
           [] of Graphene::Argument

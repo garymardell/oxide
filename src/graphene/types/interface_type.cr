@@ -8,9 +8,9 @@ module Graphene
       getter description : String?
       getter type_resolver : TypeResolver
       getter interfaces : Array(Graphene::Types::InterfaceType)
-      getter fields : Array(Field)
+      getter fields : Hash(String, Field)
 
-      def initialize(@name, @type_resolver, @description = nil, @fields = [] of Field, @interfaces = [] of Graphene::Types::InterfaceType)
+      def initialize(@name, @type_resolver, @description = nil, @fields = {} of String => Field, @interfaces = [] of Graphene::Types::InterfaceType)
       end
 
       def kind
