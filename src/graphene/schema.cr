@@ -6,6 +6,7 @@ require "./validation"
 require "./loader"
 require "./context"
 require "./type_map"
+require "./error"
 
 module Graphene
   class Schema

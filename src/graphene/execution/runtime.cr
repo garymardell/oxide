@@ -1,6 +1,5 @@
 require "json"
 
-require "./error"
 require "../query"
 require "../schema"
 require "../introspection_system"

@@ -6,8 +6,16 @@ module Graphene
   module Validation
     class ArgumentNames < Rule
       def enter(node : Graphene::Language::Nodes::Argument, context)
-        unless context.argument
-          errors << Error.new("argument #{node.name} is not valid for #{context.field_definition.try &.name}")
+        definition = context.argument
+        field_definition = context.field_definition
+        parent_type = context.parent_type
+
+        if !definition && field_definition && parent_type
+          type_name = if parent_type.responds_to?(:name)
+            parent_type.name
+          end
+
+          context.errors << Error.new("Unknown argument \"#{node.name}\" on field \"#{type_name}.#{field_definition.name}\"")
         end
       end
     end
