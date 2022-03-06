@@ -7,14 +7,14 @@ module Graphene
         "deprecated"
       end
 
-      def arguments : Array(Graphene::Argument)
-        [
-          Graphene::Argument.new(
+      def arguments : Hash(String, Graphene::Argument)
+        {
+          "reason" => Graphene::Argument.new(
             name: "reason",
             type: Graphene::Types::StringType.new,
             default_value: "No longer supported"
           )
-        ]
+        }
       end
 
       def locations : Array(Directive::Location)

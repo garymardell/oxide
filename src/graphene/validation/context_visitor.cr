@@ -145,7 +145,7 @@ module Graphene
         type = nil
 
         if field = context.field_definition
-          definition = field.arguments.find { |argument| argument.name === node.name }
+          definition = field.arguments[node.name]?
           type = definition.try &.type
         end
 

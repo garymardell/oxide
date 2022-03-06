@@ -7,15 +7,15 @@ module Graphene
         "skip"
       end
 
-      def arguments : Array(Graphene::Argument)
-        [
-          Graphene::Argument.new(
+      def arguments : Hash(String, Graphene::Argument)
+        {
+          "if" => Graphene::Argument.new(
             name: "if",
             type: Graphene::Types::NonNullType.new(
               of_type: Graphene::Types::BooleanType.new
             )
           )
-        ]
+        }
       end
 
       def locations : Array(Directive::Location)

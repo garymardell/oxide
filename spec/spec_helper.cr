@@ -128,14 +128,14 @@ CatType = Graphene::Types::ObjectType.new(
     ),
     "doesKnowCommand" => Graphene::Field.new(
       name: "doesKnowCommand",
-      arguments: [
-        Graphene::Argument.new(
+      arguments: {
+        "catCommand" => Graphene::Argument.new(
           name: "catCommand",
           type: Graphene::Types::NonNullType.new(
             of_type: CatCommandEnum
           )
         )
-      ],
+      },
       type: Graphene::Types::NonNullType.new(
         of_type: Graphene::Types::BooleanType.new
       )
@@ -195,26 +195,26 @@ DogType = Graphene::Types::ObjectType.new(
     ),
     "doesKnowCommand" => Graphene::Field.new(
       name: "doesKnowCommand",
-      arguments: [
-        Graphene::Argument.new(
+      arguments: {
+        "dogCommand" => Graphene::Argument.new(
           name: "dogCommand",
           type: Graphene::Types::NonNullType.new(
             of_type: DogCommandEnum
           )
         )
-      ],
+      },
       type: Graphene::Types::NonNullType.new(
         of_type: Graphene::Types::BooleanType.new
       )
     ),
     "isHousetrained" => Graphene::Field.new(
       name: "isHousetrained",
-      arguments: [
-        Graphene::Argument.new(
+      arguments: {
+        "atOtherHomes" => Graphene::Argument.new(
           name: "atOtherHomes",
           type: Graphene::Types::BooleanType.new
         )
-      ],
+      },
       type: Graphene::Types::NonNullType.new(
         of_type: Graphene::Types::BooleanType.new
       )

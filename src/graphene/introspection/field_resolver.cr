@@ -8,7 +8,7 @@ module Graphene
         when "description"
           nil
         when "args"
-          object.arguments
+          object.arguments.values
         when "type"
           object.type
         when "isDeprecated"

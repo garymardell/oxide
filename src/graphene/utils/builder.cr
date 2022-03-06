@@ -146,10 +146,10 @@ module Graphene
       end
 
       private def build_arguments(argument_definitions)
-        argument_definitions.map do |argument_definition|
+        argument_definitions.each_with_object({} of String => Graphene::Argument) do |argument_definition, memo|
           default_value = argument_definition.default_value
 
-          if default_value
+          memo[argument_definition.name] = if default_value
             Graphene::Argument.new(
               name: argument_definition.name,
               type: build_type(argument_definition.type),

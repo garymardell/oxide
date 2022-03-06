@@ -36,13 +36,13 @@ module Graphene
         ),
         "fields" => Graphene::Field.new(
           name: "fields",
-          arguments: [
-            Graphene::Argument.new(
+          arguments: {
+            "includeDeprecated" => Graphene::Argument.new(
               name: "includeDeprecated",
               type: Graphene::Types::BooleanType.new,
               default_value: false
             )
-          ],
+          },
           type: Graphene::Types::ListType.new(
             of_type: Graphene::Types::NonNullType.new(
               of_type: Graphene::Types::LateBoundType.new("__Field") # Introspection::Field
@@ -67,13 +67,13 @@ module Graphene
         ),
         "enumValues" => Graphene::Field.new(
           name: "enumValues",
-          arguments: [
-            Graphene::Argument.new(
+          arguments: {
+            "includeDeprecated" => Graphene::Argument.new(
               name: "includeDeprecated",
               type: Graphene::Types::BooleanType.new,
               default_value: false
             )
-          ],
+          },
           type: Graphene::Types::ListType.new(
             of_type: Graphene::Types::NonNullType.new(
               of_type: Introspection::EnumValueType

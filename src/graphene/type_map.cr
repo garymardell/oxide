@@ -32,7 +32,7 @@ module Graphene
       type.fields.each do |name, field|
         field.type.accept(self)
 
-        field.arguments.each do |argument|
+        field.arguments.each do |name, argument|
           argument.type.accept(self)
         end
       end
@@ -44,7 +44,7 @@ module Graphene
       type.fields.each do |name, field|
         field.type.accept(self)
 
-        field.arguments.each do |argument|
+        field.arguments.each do |name, argument|
           argument.type.accept(self)
         end
       end

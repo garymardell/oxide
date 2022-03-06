@@ -25,7 +25,7 @@ module Graphene
     end
 
     abstract def name : String
-    abstract def arguments : Array(Graphene::Argument)
+    abstract def arguments : Hash(String, Graphene::Argument)
     abstract def locations : Array(Location)
 
     abstract def include?(object, context, argument_values) : Bool

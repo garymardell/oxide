@@ -89,7 +89,7 @@ describe Graphene::Utils::Builder do
     field = schema.query.fields["isFavouriteNumber"]
     field.should_not be_nil
 
-    argument = field.not_nil!.arguments.find(&.name.===("number"))
+    argument = field.not_nil!.arguments["number"]?
     argument.should_not be_nil
 
     argument.not_nil!.has_default_value?.should be_true
