@@ -278,7 +278,6 @@ describe Graphene do
       resolver: DynamicResolver.new,
       fields: fields.each_with_object({} of String => Graphene::Field) do |field_name, memo|
         memo[field_name] = Graphene::Field.new(
-          name: field_name,
           type: Graphene::Types::StringType.new
         )
       end

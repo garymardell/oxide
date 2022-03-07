@@ -138,7 +138,6 @@ module Graphene
       private def build_fields(field_definitions)
         field_definitions.each_with_object({} of String => Graphene::Field) do |field_definition, memo|
           memo[field_definition.name] = Graphene::Field.new(
-            name: field_definition.name,
             type: build_type(field_definition.type),
             arguments: build_arguments(field_definition.argument_definitions)
           )

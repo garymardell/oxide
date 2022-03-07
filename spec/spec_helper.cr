@@ -52,7 +52,6 @@ SentientInterface = Graphene::Types::Interface.new(
   type_resolver: SentientTypeResolver.new,
   fields: {
     "name" => Graphene::Field.new(
-      name: "name",
       type: Graphene::Types::NonNullType.new(
         of_type: Graphene::Types::StringType.new
       )
@@ -65,13 +64,11 @@ AlienType = Graphene::Types::ObjectType.new(
   resolver: NullResolver.new,
   fields: {
     "name" => Graphene::Field.new(
-      name: "name",
       type: Graphene::Types::NonNullType.new(
         of_type: Graphene::Types::StringType.new
       )
     ),
     "homePlanet" => Graphene::Field.new(
-      name: "homePlanet",
       type: Graphene::Types::StringType.new
     )
   }
@@ -82,7 +79,6 @@ HumanType = Graphene::Types::ObjectType.new(
   resolver: NullResolver.new,
   fields: {
     "name" => Graphene::Field.new(
-      name: "name",
       type: Graphene::Types::NonNullType.new(
         of_type: Graphene::Types::StringType.new
       )
@@ -96,7 +92,6 @@ PetInterface = Graphene::Types::InterfaceType.new(
   type_resolver: PetTypeResolver.new,
   fields: {
     "name" => Graphene::Field.new(
-      name: "name",
       type: Graphene::Types::NonNullType.new(
         of_type: Graphene::Types::StringType.new
       )
@@ -117,17 +112,14 @@ CatType = Graphene::Types::ObjectType.new(
   interfaces: [PetInterface],
   fields: {
     "name" => Graphene::Field.new(
-      name: "name",
       type: Graphene::Types::NonNullType.new(
         of_type: Graphene::Types::StringType.new
       )
     ),
     "nickname" => Graphene::Field.new(
-      name: "nickname",
       type: Graphene::Types::StringType.new
     ),
     "doesKnowCommand" => Graphene::Field.new(
-      name: "doesKnowCommand",
       arguments: {
         "catCommand" => Graphene::Argument.new(
           name: "catCommand",
@@ -141,7 +133,6 @@ CatType = Graphene::Types::ObjectType.new(
       )
     ),
     "meowVolume" => Graphene::Field.new(
-      name: "meowVolume",
       type: Graphene::Types::IntType.new
     )
   }
@@ -180,21 +171,17 @@ DogType = Graphene::Types::ObjectType.new(
   interfaces: [PetInterface],
   fields: {
     "name" => Graphene::Field.new(
-      name: "name",
       type: Graphene::Types::NonNullType.new(
         of_type: Graphene::Types::StringType.new
       )
     ),
     "nickname" => Graphene::Field.new(
-      name: "nickname",
       type: Graphene::Types::StringType.new
     ),
     "barkVolume" => Graphene::Field.new(
-      name: "barkVolume",
       type: Graphene::Types::IntType.new
     ),
     "doesKnowCommand" => Graphene::Field.new(
-      name: "doesKnowCommand",
       arguments: {
         "dogCommand" => Graphene::Argument.new(
           name: "dogCommand",
@@ -208,7 +195,6 @@ DogType = Graphene::Types::ObjectType.new(
       )
     ),
     "isHousetrained" => Graphene::Field.new(
-      name: "isHousetrained",
       arguments: {
         "atOtherHomes" => Graphene::Argument.new(
           name: "atOtherHomes",
@@ -220,7 +206,6 @@ DogType = Graphene::Types::ObjectType.new(
       )
     ),
     "owner" => Graphene::Field.new(
-      name: "owner",
       type: HumanType
     )
   }
@@ -232,7 +217,6 @@ ValidationsSchema = Graphene::Schema.new(
     resolver: NullResolver.new,
     fields: {
       "dog" => Graphene::Field.new(
-        name: "dog",
         type: DogType
       )
     }

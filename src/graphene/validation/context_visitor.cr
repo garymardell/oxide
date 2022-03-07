@@ -27,7 +27,7 @@ module Graphene
           type = definition.try &.type
         end
 
-        context.field_definition_stack << definition
+        context.field_definition_stack << (definition ? {node.name, definition} : nil)
         context.type_stack << (output_type?(type) ? type : nil)
       end
 
@@ -144,7 +144,9 @@ module Graphene
         definition = nil
         type = nil
 
-        if field = context.field_definition
+        if field_tuple = context.field_definition
+          name, field = field_tuple
+
           definition = field.arguments[node.name]?
           type = definition.try &.type
         end

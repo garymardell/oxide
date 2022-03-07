@@ -143,9 +143,9 @@ module Graphene
 
       private def get_field(object_type, field_name)
         if schema.query == object_type && field_name == "__schema"
-          Graphene::Field.new(name: "__schema", type: Graphene::Introspection::SchemaType)
+          Graphene::Field.new(type: Graphene::Introspection::SchemaType)
         elsif field_name == "__typename"
-          Graphene::Field.new(name: "__typename", type: Graphene::Types::StringType.new)
+          Graphene::Field.new(type: Graphene::Types::StringType.new)
         else
           get_field_from_object_type(object_type, field_name)
         end

@@ -31,17 +31,14 @@ module Graphene
       resolver: DirectiveResolver.new,
       fields: {
         "name" => Graphene::Field.new(
-          name: "name",
           type: Graphene::Types::NonNullType.new(
             of_type: Graphene::Types::StringType.new
           )
         ),
         "description" => Graphene::Field.new(
-          name: "description",
           type: Graphene::Types::StringType.new
         ),
         "locations" => Graphene::Field.new(
-          name: "locations",
           type: Graphene::Types::NonNullType.new(
             of_type: Graphene::Types::ListType.new(
               of_type: Graphene::Types::NonNullType.new(
@@ -51,7 +48,6 @@ module Graphene
           )
         ),
         "args" => Graphene::Field.new(
-          name: "args",
           type: Graphene::Types::NonNullType.new(
             of_type: Graphene::Types::ListType.new(
               of_type: Graphene::Types::NonNullType.new(

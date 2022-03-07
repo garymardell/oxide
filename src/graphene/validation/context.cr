@@ -9,7 +9,7 @@ module Graphene
       getter type_stack : Array(Graphene::Type?)
       getter parent_type_stack : Array(Composite?)
       getter input_type_stack : Array(Graphene::Type?)
-      getter field_definition_stack : Array(Graphene::Field?)
+      getter field_definition_stack : Array(Tuple(String, Graphene::Field)?)
       # default_value_stack
       property directive : Graphene::Directive?
       property argument : Graphene::Argument?
@@ -21,7 +21,7 @@ module Graphene
         @type_stack = [] of Graphene::Type?
         @input_type_stack = [] of Graphene::Type?
         @parent_type_stack = [] of Composite?
-        @field_definition_stack = [] of Graphene::Field?
+        @field_definition_stack = [] of Tuple(String, Graphene::Field)?
         @errors = [] of Error
       end
 
@@ -37,7 +37,7 @@ module Graphene
         parent_type_stack.last?
       end
 
-      def field_definition
+      def field_definition : Tuple(String, Graphene::Field)?
         field_definition_stack.last?
       end
     end

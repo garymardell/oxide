@@ -1,20 +1,22 @@
 module Graphene
   module Introspection
     class FieldResolver  < Graphene::Resolver
-      def resolve(object : Graphene::Field, field_name, argument_values, context, resolution_info)
+      def resolve(object : Tuple(String, Graphene::Field), field_name, argument_values, context, resolution_info)
+        name, field = object
+
         case field_name
         when "name"
-          object.name
+          name
         when "description"
           nil
         when "args"
-          object.arguments.values
+          field.arguments.values
         when "type"
-          object.type
+          field.type
         when "isDeprecated"
-          object.deprecated?
+          field.deprecated?
         when "deprecationReason"
-          object.deprecation_reason
+          field.deprecation_reason
         end
       end
     end

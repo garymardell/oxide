@@ -23,19 +23,15 @@ module Graphene
       resolver: TypeResolver.new,
       fields: {
         "kind" => Graphene::Field.new(
-          name: "kind",
           type: Graphene::Types::NonNullType.new(of_type: TypeKindType)
         ),
         "name" => Graphene::Field.new(
-          name: "name",
           type: Graphene::Types::StringType.new
         ),
         "description" => Graphene::Field.new(
-          name: "description",
           type: Graphene::Types::StringType.new
         ),
         "fields" => Graphene::Field.new(
-          name: "fields",
           arguments: {
             "includeDeprecated" => Graphene::Argument.new(
               name: "includeDeprecated",
@@ -50,7 +46,6 @@ module Graphene
           )
         ),
         "interfaces" => Graphene::Field.new(
-          name: "interfaces",
           type: Graphene::Types::ListType.new(
             of_type: Graphene::Types::NonNullType.new(
               of_type: Graphene::Types::LateBoundType.new("__Type")  # Introspection::Type
@@ -58,7 +53,6 @@ module Graphene
           )
         ),
         "possibleTypes" => Graphene::Field.new(
-          name: "possibleTypes",
           type: Graphene::Types::ListType.new(
             of_type: Graphene::Types::NonNullType.new(
               of_type: Graphene::Types::LateBoundType.new("__Type")
@@ -66,7 +60,6 @@ module Graphene
           )
         ),
         "enumValues" => Graphene::Field.new(
-          name: "enumValues",
           arguments: {
             "includeDeprecated" => Graphene::Argument.new(
               name: "includeDeprecated",
@@ -81,7 +74,6 @@ module Graphene
           )
         ),
         "inputFields" => Graphene::Field.new(
-          name: "inputFields",
           type: Graphene::Types::ListType.new(
             of_type: Graphene::Types::NonNullType.new(
               of_type: Graphene::Types::LateBoundType.new("__InputValue") # Introspection::InputValue
@@ -89,7 +81,6 @@ module Graphene
           )
         ),
         "ofType" => Graphene::Field.new(
-          name: "ofType",
           type: Graphene::Types::LateBoundType.new("__Type")
         )
       }

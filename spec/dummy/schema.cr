@@ -17,11 +17,9 @@ TransactionInterface = Graphene::Types::InterfaceType.new(
   type_resolver: TransactionTypeResolver.new,
   fields: {
     "id" => Graphene::Field.new(
-      name: "id",
       type: Graphene::Types::IdType.new
     ),
     "reference" => Graphene::Field.new(
-      name: "reference",
       type: Graphene::Types::StringType.new
     )
   }
@@ -33,7 +31,6 @@ ChargeType = Graphene::Types::ObjectType.new(
   interfaces: [TransactionInterface],
   fields: {
     "status" => Graphene::Field.new(
-      name: "status",
       type: Graphene::Types::NonNullType.new(
         of_type: Graphene::Types::EnumType.new(
           name: "ChargeStatus",
@@ -45,7 +42,6 @@ ChargeType = Graphene::Types::ObjectType.new(
       )
     ),
     "refund" => Graphene::Field.new(
-      name: "refund",
       type: RefundType
     )
   }
@@ -57,7 +53,6 @@ RefundType = Graphene::Types::ObjectType.new(
   interfaces: [TransactionInterface],
   fields: {
     "status" => Graphene::Field.new(
-      name: "status",
       type: Graphene::Types::EnumType.new(
         name: "RefundStatus",
         values: [
@@ -67,11 +62,9 @@ RefundType = Graphene::Types::ObjectType.new(
       )
     ),
     "partial" => Graphene::Field.new(
-      name: "partial",
       type: Graphene::Types::BooleanType.new
     ),
     "payment_method" => Graphene::Field.new(
-      name: "payment_method",
       type: PaymentMethodType
     )
   }
@@ -82,11 +75,9 @@ CreditCardType = Graphene::Types::ObjectType.new(
   resolver: CreditCardResolver.new,
   fields: {
     "id" => Graphene::Field.new(
-      name: "id",
       type: Graphene::Types::IdType.new
     ),
     "last4" => Graphene::Field.new(
-      name: "last4",
       type: Graphene::Types::StringType.new
     )
   }
@@ -97,11 +88,9 @@ BankAccountType = Graphene::Types::ObjectType.new(
   resolver: BankAccountResolver.new,
   fields: {
     "id" => Graphene::Field.new(
-      name: "id",
       type: Graphene::Types::IdType.new
     ),
     "accountNumber" => Graphene::Field.new(
-      name: "accountNumber",
       type: Graphene::Types::StringType.new
     )
   }
@@ -132,7 +121,6 @@ DummySchema = Graphene::Schema.new(
     resolver: QueryResolver.new,
     fields: {
       "charge" => Graphene::Field.new(
-        name: "charge",
         type: Graphene::Types::NonNullType.new(of_type: ChargeType),
         arguments: {
           "id" => Graphene::Argument.new(
@@ -142,25 +130,21 @@ DummySchema = Graphene::Schema.new(
         }
       ),
       "charges" => Graphene::Field.new(
-        name: "charges",
         type: Graphene::Types::NonNullType.new(
           of_type: Graphene::Types::ListType.new(of_type: ChargeType)
         )
       ),
       "transactions" => Graphene::Field.new(
-        name: "transactions",
         type: Graphene::Types::NonNullType.new(
           of_type: Graphene::Types::ListType.new(of_type: TransactionInterface)
         )
       ),
       "paymentMethods" => Graphene::Field.new(
-        name: "paymentMethods",
         type: Graphene::Types::NonNullType.new(
           of_type: Graphene::Types::ListType.new(of_type: PaymentMethodType)
         )
       ),
       "nullList" => Graphene::Field.new(
-        name: "nullList",
         type: Graphene::Types::ListType.new(
           of_type: Graphene::Types::NonNullType.new(of_type: ChargeType)
         )

@@ -7,7 +7,6 @@ module Graphene
       resolver: QueryResolver.new,
       fields: {
         "__schema" => Graphene::Field.new(
-          name: "__schema",
           type: Graphene::Types::LateBoundType.new("__Schema")
         )
       }
