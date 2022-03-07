@@ -124,7 +124,6 @@ DummySchema = Graphene::Schema.new(
         type: Graphene::Types::NonNullType.new(of_type: ChargeType),
         arguments: {
           "id" => Graphene::Argument.new(
-            name: "id",
             type: Graphene::Types::IdType.new
           )
         }

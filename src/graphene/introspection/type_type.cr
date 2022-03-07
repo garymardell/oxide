@@ -34,7 +34,6 @@ module Graphene
         "fields" => Graphene::Field.new(
           arguments: {
             "includeDeprecated" => Graphene::Argument.new(
-              name: "includeDeprecated",
               type: Graphene::Types::BooleanType.new,
               default_value: false
             )
@@ -62,7 +61,6 @@ module Graphene
         "enumValues" => Graphene::Field.new(
           arguments: {
             "includeDeprecated" => Graphene::Argument.new(
-              name: "includeDeprecated",
               type: Graphene::Types::BooleanType.new,
               default_value: false
             )

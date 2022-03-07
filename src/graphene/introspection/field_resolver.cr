@@ -10,7 +10,7 @@ module Graphene
         when "description"
           nil
         when "args"
-          field.arguments.values
+          field.arguments
         when "type"
           field.type
         when "isDeprecated"

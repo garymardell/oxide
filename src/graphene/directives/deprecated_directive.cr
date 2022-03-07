@@ -10,7 +10,6 @@ module Graphene
       def arguments : Hash(String, Graphene::Argument)
         {
           "reason" => Graphene::Argument.new(
-            name: "reason",
             type: Graphene::Types::StringType.new,
             default_value: "No longer supported"
           )

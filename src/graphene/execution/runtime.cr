@@ -170,9 +170,9 @@ module Graphene
         field_name = field.name
 
         argument_definitions = if schema_field = object_type.fields[field_name]?
-          schema_field.arguments.values
+          schema_field.arguments
         else
-          [] of Graphene::Argument
+          {} of String => Graphene::Argument
         end
 
         argument_values = coerce_argument_values(argument_definitions, field.arguments, variable_values)
@@ -353,7 +353,7 @@ module Graphene
               schema_directive = directives.find(&.name.===(directive.name))
 
               if schema_directive
-                directive_arguments = coerce_argument_values(schema_directive.arguments.values, directive.arguments, variable_values)
+                directive_arguments = coerce_argument_values(schema_directive.arguments, directive.arguments, variable_values)
 
                 !schema_directive.include?(object_type, nil, directive_arguments)
               else
@@ -425,8 +425,8 @@ module Graphene
           memo[argument.name] = argument.value
         end
 
-        argument_definitions.each do |argument_definition|
-          argument_name = argument_definition.name
+        argument_definitions.each do |argument|
+          argument_name, argument_definition = argument
           argument_type = argument_definition.type
 
           has_value = argument_values.has_key?(argument_name)

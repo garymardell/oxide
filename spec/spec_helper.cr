@@ -122,7 +122,6 @@ CatType = Graphene::Types::ObjectType.new(
     "doesKnowCommand" => Graphene::Field.new(
       arguments: {
         "catCommand" => Graphene::Argument.new(
-          name: "catCommand",
           type: Graphene::Types::NonNullType.new(
             of_type: CatCommandEnum
           )
@@ -184,7 +183,6 @@ DogType = Graphene::Types::ObjectType.new(
     "doesKnowCommand" => Graphene::Field.new(
       arguments: {
         "dogCommand" => Graphene::Argument.new(
-          name: "dogCommand",
           type: Graphene::Types::NonNullType.new(
             of_type: DogCommandEnum
           )
@@ -197,7 +195,6 @@ DogType = Graphene::Types::ObjectType.new(
     "isHousetrained" => Graphene::Field.new(
       arguments: {
         "atOtherHomes" => Graphene::Argument.new(
-          name: "atOtherHomes",
           type: Graphene::Types::BooleanType.new
         )
       },

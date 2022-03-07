@@ -150,13 +150,11 @@ module Graphene
 
           memo[argument_definition.name] = if default_value
             Graphene::Argument.new(
-              name: argument_definition.name,
               type: build_type(argument_definition.type),
               default_value: default_value.value.as(Graphene::Argument::DefaultValue)
             )
           else
             Graphene::Argument.new(
-              name: argument_definition.name,
               type: build_type(argument_definition.type)
             )
           end
