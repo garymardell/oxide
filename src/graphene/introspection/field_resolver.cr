@@ -10,7 +10,9 @@ module Graphene
         when "description"
           nil
         when "args"
-          field.arguments
+          field.arguments.map do |name, argument|
+            {name, argument}
+          end
         when "type"
           field.type
         when "isDeprecated"
