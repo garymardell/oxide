@@ -1,5 +1,13 @@
 module Graphene
   module Introspection
+    struct FieldInfo
+      property name : String
+      property field : Graphene::Field
+
+      def initialize(@name, @field)
+      end
+    end
+
     class TypeResolver < Graphene::Resolver
       # [x] kind must return __TypeKind.NON_NULL.
       # [x] ofType must return a type of any kind except Non-Null.
@@ -43,11 +51,11 @@ module Graphene
         when "fields"
           if argument_values["includeDeprecated"]?
             object.fields.map do |name, field|
-              {name, field}
+              FieldInfo.new(name, field)
             end
           else
             object.fields.reject { |_, field| field.deprecated? }.map do |name, field|
-              {name, field}
+              FieldInfo.new(name, field)
             end
           end
         when "interfaces"
@@ -135,11 +143,11 @@ module Graphene
         when "fields"
           if argument_values["includeDeprecated"]?
             object.fields.map do |name, field|
-              {name, field}
+              FieldInfo.new(name, field)
             end
           else
             object.fields.reject { |_, field| field.deprecated? }.map do |name, field|
-              {name, field}
+              FieldInfo.new(name, field)
             end
           end
         when "interfaces"
