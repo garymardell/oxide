@@ -39,8 +39,12 @@ module Graphene
         end
       end
 
-      def execute
+      def execute : Hash(String, Array(Graphene::Error))?
         query.accept(self)
+
+        if errors?
+          { "errors" => context.errors }
+        end
       end
 
       def errors?

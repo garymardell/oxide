@@ -25,6 +25,16 @@ module Graphene
       @directives = DEFAULT_DIRECTIVES + directives
     end
 
+    def validate(query : Graphene::Query)
+      pipeline = Graphene::Validation::Pipeline.new(self, query)
+      pipeline.execute
+    end
+
+    def execute(query : Graphene::Query)
+      runtime = Graphene::Execution::Runtime.new(self, query)
+      runtime.execute
+    end
+
     def type_map
       traversal = TypeMap.new(self)
       traversal.generate
