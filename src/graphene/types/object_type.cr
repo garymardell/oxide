@@ -1,4 +1,3 @@
-require "../resolvable"
 require "../field"
 require "../type"
 require "./interface_type"
@@ -10,7 +9,7 @@ module Graphene
       getter name : String
       getter description : String?
       getter interfaces : Array(Graphene::Types::InterfaceType)
-      getter resolver : Resolvable
+      getter resolver : Resolver
 
       def initialize(
         @name,

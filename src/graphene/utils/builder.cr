@@ -4,10 +4,10 @@ module Graphene
       property input : String
       property type_map : Hash(String, Graphene::Type)
       property interface_map : Hash(String, Graphene::Types::InterfaceType)
-      property resolvers : Hash(String, Resolvable)
+      property resolvers : Hash(String, Resolver)
       property type_resolvers : Hash(String, TypeResolver)
 
-      def initialize(@input : String, @resolvers : Hash(String, Resolvable), @type_resolvers : Hash(String, TypeResolver))
+      def initialize(@input : String, @resolvers : Hash(String, Resolver), @type_resolvers : Hash(String, TypeResolver))
         @type_map = {} of String => Graphene::Type
         @interface_map = {} of String => Graphene::Types::InterfaceType
       end

@@ -61,7 +61,7 @@ describe Graphene::Utils::Builder do
 
     builder = Graphene::Utils::Builder.new(
       input,
-      resolvers: Hash(String, Graphene::Resolvable).new(default_value: BuilderResolver.new),
+      resolvers: Hash(String, Graphene::Resolver).new(default_value: BuilderResolver.new),
       type_resolvers: Hash(String, Graphene::TypeResolver).new(default_value: BuilderTypeResolver.new)
     )
     builder.build
@@ -80,7 +80,7 @@ describe Graphene::Utils::Builder do
 
     builder = Graphene::Utils::Builder.new(
       input,
-      resolvers: Hash(String, Graphene::Resolvable).new(default_value: BuilderResolver.new),
+      resolvers: Hash(String, Graphene::Resolver).new(default_value: BuilderResolver.new),
       type_resolvers: Hash(String, Graphene::TypeResolver).new(default_value: BuilderTypeResolver.new)
     )
 
