@@ -51,6 +51,8 @@ module Graphene
     end
 
     def visit(type : Graphene::Types::UnionType)
+      type_map[type.name] = type
+
       type.possible_types.each do |possible_type|
         possible_type.accept(self)
       end
