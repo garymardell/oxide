@@ -10,7 +10,8 @@ module Graphene
     end
 
     def generate
-      roots = [schema.query, schema.orphan_types].flatten
+      roots = [schema.query, schema.mutation, schema.orphan_types].flatten.compact
+
       roots.each do |type|
         type.accept(self)
       end
@@ -36,6 +37,10 @@ module Graphene
           argument.type.accept(self)
         end
       end
+    end
+
+    def visit(type : Graphene::Types::InputObjectType)
+      type_map[type.name] = type
     end
 
     def visit(type : Graphene::Types::InterfaceType)

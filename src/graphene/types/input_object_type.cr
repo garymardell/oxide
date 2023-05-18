@@ -1,17 +1,26 @@
 require "../type"
-require "../input_value"
 
 module Graphene
   module Types
     class InputObjectType < Type
       getter name : String
       getter description : String?
-      getter input_fields : Array(InputValue)
+      getter input_fields : Hash(String, Argument)
 
-      def initialize(@name, @description = nil, @input_fields = [] of InputValue)
+      def initialize(@name, @description = nil, @input_fields = {} of String => Argument)
       end
 
       def resolve(field_name, argument_values, context, resolution_info) : Result
+        case field_name
+        when "name"
+          name
+        when "kind"
+          kind
+        when "description"
+          description
+        when "inputFields"
+          input_fields.map { |name, argument| Introspection::ArgumentInfo.new(name, argument).as(Resolvable) }
+        end
       end
 
       def kind

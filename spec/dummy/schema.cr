@@ -115,6 +115,15 @@ PaymentMethodType = Graphene::Types::UnionType.new(
   ]
 )
 
+CreateChargeInputObject = Graphene::Types::InputObjectType.new(
+  name: "CreateChargeInput",
+  input_fields: {
+    "reference" => Graphene::Argument.new(
+      type: Graphene::Types::NonNullType.new(of_type: Graphene::Types::StringType.new)
+    )
+  }
+)
+
 DummySchema = Graphene::Schema.new(
   query: Graphene::Types::ObjectType.new(
     name: "Query",
@@ -149,7 +158,19 @@ DummySchema = Graphene::Schema.new(
       )
     }
   ),
-  mutation: nil,
+  mutation: Graphene::Types::ObjectType.new(
+    name: "Mutation",
+    fields: {
+      "createCharge" => Graphene::Field.new(
+        type: ChargeType,
+        arguments: {
+          "input" => Graphene::Argument.new(
+            type: CreateChargeInputObject
+          )
+        }
+      )
+    }
+  ),
   orphan_types: [
     RefundType.as(Graphene::Type)
   ]

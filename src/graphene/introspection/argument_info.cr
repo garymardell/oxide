@@ -13,8 +13,12 @@ module Graphene
         case field_name
         when "name"
           name
+        when "description"
+          argument.description
         when "type"
           argument.type
+        when "defaultValue"
+          argument.default_value.as(Result)
         end
       end
     end
