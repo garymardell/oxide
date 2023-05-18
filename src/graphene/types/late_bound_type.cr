@@ -9,9 +9,8 @@ module Graphene
       end
 
       def resolve(field_name, argument_values, context, resolution_info) : Result
-        # unwrapped_type = get_type(resolution_info.schema, object.typename)
-
-        # resolve(unwrapped_type, field_name, argument_values, context, resolution_info)
+        unwrapped_type = get_type(resolution_info.schema, typename)
+        unwrapped_type.resolve(field_name, argument_values, context, resolution_info)
       end
 
       def description
