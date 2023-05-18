@@ -13,10 +13,15 @@ post "/graphql" do |env|
 
   runtime = Graphene::Execution::Runtime.new(
     DummySchema,
-    query
+    query,
+    initial_value: Query.new
   )
 
   runtime.execute.to_json
+end
+
+get "/graphiql" do
+  render "spec/dummy/index.html"
 end
 
 def extract_variables(params)
