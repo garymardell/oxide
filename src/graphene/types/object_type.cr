@@ -9,11 +9,11 @@ module Graphene
       getter name : String
       getter description : String?
       getter interfaces : Array(Graphene::Types::InterfaceType)
-      getter resolver : Resolver
+      getter resolver : Resolver?
 
       def initialize(
         @name,
-        @resolver,
+        @resolver = nil,
         @description = nil,
         @fields = {} of String => Field,
         @interfaces = [] of Graphene::Types::InterfaceType

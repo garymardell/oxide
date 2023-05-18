@@ -189,7 +189,7 @@ module Graphene
           when "__Schema", "__Type", "__InputValue", "__Directive", "__EnumValue", "__Field"
             Graphene::IntrospectionSystem.resolvers[object_type.name]
           else
-            object_type.resolver
+            object_type.resolver || DefaultResolver.new
           end
         end
 
@@ -199,9 +199,7 @@ module Graphene
           field: schema_field,
         )
 
-        # value = if object_value.is_a?(Resolvable)
-          value = resolver.resolve(object_value.as(Resolvable?), field_name, argument_values, context, resolution_info)
-        # end
+        value = resolver.resolve(object_value.as(Resolvable?), field_name, argument_values, context, resolution_info)
 
         if value.is_a?(Lazy)
           Proc(IntermediateType).new {

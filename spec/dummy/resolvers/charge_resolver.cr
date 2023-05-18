@@ -14,8 +14,6 @@ class ChargeResolver < Graphene::Resolver
   end
 
   def resolve(object : Graphene::Resolvable?, field_name, argument_values, context, resolution_info) : Graphene::Result
-    puts "resolving here"
-    nil
   end
 
   def resolve(object : Charge, field_name, argument_values, context, resolution_info)
