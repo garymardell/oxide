@@ -86,6 +86,33 @@ This library was originally built to experiment with building dynamic schemas on
 - [ ] Subscriptions
 - [x] Lazy execution
 
+### Schema
+
+#### Late Bound Type
+
+Graphene introduces a custom type called `LateBoundType` that allows you to refer to another type in the schema by name. This was introduced to allow recursively/cyclic defined types. As types are defined as objects we cannot use itself during it's own definition. The runtime will automatically look up late bound types from the schema during execution and therefore need to either be already directly referenced or provided when instantiating the schema with the `orphan_types` parameter.
+
+*Example*
+
+This example is taken from the introspection schema. The `_Type` object contains a list of all `possibleTypes` which is a list of `_Type` objects.
+
+```crystal
+  TypeType = Graphene::Types::ObjectType.new(
+    name: "__Type",
+    fields: {
+      ...
+      "possibleTypes" => Graphene::Field.new(
+        type: Graphene::Types::ListType.new(
+          of_type: Graphene::Types::NonNullType.new(
+            of_type: Graphene::Types::LateBoundType.new("__Type")
+          )
+        )
+      ),
+      ...
+    }
+  )
+```
+
 ### Runtime
 
 A goal when building the `Runtime` was to follow the GraphQL Spec on Execution (https://spec.graphql.org/October2021/#sec-Executing-Requests) as closely as possible. Variable names and methods are mostly taken from the spec (albeit converted to snake_case).
