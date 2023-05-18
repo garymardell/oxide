@@ -6,6 +6,41 @@ Graphene is a low level library that implements the core of GraphQL following th
 
 This library was originally built to experiment with building dynamic schemas on a per tenant basis. An early prototype allowed a user to define their models within a UI and a custom GraphQL API would be generated at runtime.
 
+### Features
+
+#### Queries
+
+- [x] Libgraphqlpaser based parser
+
+#### Built-in Types
+
+- [x] Scalars
+  - [x] Int
+  - [x] Float
+  - [x] String
+  - [x] Boolean
+  - [x] ID
+- [x] Object
+- [x] Interface
+- [x] Union
+- [x] Enum
+- [ ] Input Object
+- [x] List
+- [x] Non-Null
+- [x] Directive
+  - [x] @skip
+  - [x] @include
+  - [x] @deprecated
+  - [ ] @specifiedBy
+
+#### Execution
+
+- [x] Queries
+- [ ] Mutations
+- [ ] Subscriptions
+- [x] Lazy execution
+
+
 
 ### Runtime
 
@@ -61,13 +96,36 @@ end
   - [ ] Handle exceptions to generate an errored response
 - Static validation (https://spec.graphql.org/October2021/#sec-Validation)
   - [ ] Documents
+    - [ ] Executable Definitions
   - [ ] Operations
+    - [ ] Named Operation Definitions
+    - [ ] Anonymous Operation Definitions
+    - [ ] Subscription Operation Definitions
   - [ ] Fields
+    - [ ] Field Selections
+    - [ ] Field Selection Merging
+    - [ ] Leaf Field Selections
   - [ ] Arguments
+    - [ ] Argument Names
+    - [ ] Argument Uniqueness
   - [ ] Fragments
+    - [ ] Fragment Declarations
+    - [ ] Fragment Spreads
   - [ ] Values
+    - [ ] Values of Correct Type
+    - [ ] Input Object Field Names
+    - [ ] Input Object Field Uniqeness
+    - [ ] Input Object Required Fields
   - [ ] Directives
+    - [ ] Directives Are Defined
+    - [ ] Directives Are In Valid Locations
+    - [ ] Directives Are Unique Per Location
   - [ ] Variables
+    - [ ] Variable Uniqueness
+    - [ ] Variables are Input Types
+    - [ ] All Variable Uses Defined
+    - [ ] All Variables Used
+    - [ ] All Variable Usages are Allowed
 - [ ] Mutation support
   - [ ] Input objects
 - [ ] Custom directives
