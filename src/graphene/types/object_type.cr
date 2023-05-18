@@ -29,12 +29,16 @@ module Graphene
         when "kind"
           kind
         when "fields"
-          if false #argument_values["includeDeprecated"]?
-            fields.map do |name, field|
+          all_fields = interfaces.reduce(fields) do |fields, interface|
+            fields.merge(interface.fields)
+          end
+
+          if argument_values["includeDeprecated"]?
+            all_fields.map do |name, field|
               Introspection::FieldInfo.new(name, field).as(Resolvable)
             end
           else
-            fields.reject { |_, field| field.deprecated? }.map do |name, field|
+            all_fields.reject { |_, field| field.deprecated? }.map do |name, field|
               Introspection::FieldInfo.new(name, field).as(Resolvable)
             end
           end
