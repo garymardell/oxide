@@ -16,7 +16,7 @@ describe Graphene do
       Graphene::Query.new(query_string)
     )
 
-    result = runtime.execute["data"]
+    result = runtime.execute(initial_value: Query.new)["data"]
 
     result.should eq({ "charges" => [{ "id" => "1", "__typename" => "Charge" }, { "id" => "2", "__typename" => "Charge" }, { "id" => "3", "__typename" => "Charge" }] })
   end

@@ -15,7 +15,7 @@ describe Graphene do
       Graphene::Query.new(query_string)
     )
 
-    result = runtime.execute["data"]
+    result = runtime.execute(initial_value: Query.new)["data"]
 
     result.should eq({ "charges" => [{ "id" => "1" }, { "id" => "2" }, { "id" => "3" }] })
   end
@@ -34,7 +34,7 @@ describe Graphene do
       Graphene::Query.new(query_string)
     )
 
-    result = runtime.execute["data"]
+    result = runtime.execute(initial_value: Query.new)["data"]
 
     result.should eq({ "charges" => [{ "id" => "1" }, { "id" => "2" }, { "id" => "3" }] })
   end
@@ -53,7 +53,7 @@ describe Graphene do
       Graphene::Query.new(query_string)
     )
 
-    result = runtime.execute["data"]
+    result = runtime.execute(initial_value: Query.new)["data"]
 
     result.should eq({ "allCharges" => [{ "id" => "1" }, { "id" => "2" }, { "id" => "3" }] })
   end
@@ -73,7 +73,7 @@ describe Graphene do
       Graphene::Query.new(query_string)
     )
 
-    result = runtime.execute
+    result = runtime.execute(initial_value: Query.new)
 
     expected_errors = [
       {
@@ -118,7 +118,7 @@ describe Graphene do
       Graphene::Query.new(query_string)
     )
 
-    result = runtime.execute["data"]
+    result = runtime.execute(initial_value: Query.new)["data"]
 
     expected_response = {
       "charges" => [
@@ -150,7 +150,7 @@ describe Graphene do
       Graphene::Query.new(query_string)
     )
 
-    result = runtime.execute["data"]
+    result = runtime.execute(initial_value: Query.new)["data"]
 
     result.should eq({
       "transactions" => [
@@ -182,7 +182,7 @@ describe Graphene do
       Graphene::Query.new(query_string)
     )
 
-    result = runtime.execute["data"]
+    result = runtime.execute(initial_value: Query.new)["data"]
 
     result.should eq({
       "paymentMethods" => [
@@ -210,7 +210,7 @@ describe Graphene do
       Graphene::Query.new(query_string)
     )
 
-    result = runtime.execute["data"]
+    result = runtime.execute(initial_value: Query.new)["data"]
 
     result.should eq({ "charge" => { "id" => "1" } })
   end
@@ -238,7 +238,7 @@ describe Graphene do
       )
     )
 
-    result = runtime.execute["data"]
+    result = runtime.execute(initial_value: Query.new)["data"]
 
     result.should eq({ "charge" => { "id" => "10" } })
   end
@@ -262,7 +262,7 @@ describe Graphene do
       )
     )
 
-    result = runtime.execute["data"]
+    result = runtime.execute(initial_value: Query.new)["data"]
 
     result.should eq({ "charge" => { "id" => "1" } })
   end
@@ -297,7 +297,7 @@ describe Graphene do
       Graphene::Query.new(query_string)
     )
 
-    result = runtime.execute["data"]
+    result = runtime.execute(initial_value: Query.new)["data"]
 
     result.should eq({ "foo" => "foo", "bar" => "bar" })
   end
@@ -322,7 +322,7 @@ describe Graphene do
       Graphene::Query.new(query_string, operation_name: "allCharges")
     )
 
-    result = runtime.execute["data"]
+    result = runtime.execute(initial_value: Query.new)["data"]
 
     result.should eq({ "charges" => [{ "id" => "1" }, { "id" => "2" }, { "id" => "3" }] })
   end

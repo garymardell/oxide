@@ -22,7 +22,7 @@ describe Graphene do
       Graphene::Query.new(query_string, variables: variables.as_h)
     )
 
-    result = runtime.execute["data"]
+    result = runtime.execute(initial_value: Query.new)["data"]
 
     result.should eq({
       "transactions" => [
@@ -53,7 +53,7 @@ describe Graphene do
       Graphene::Query.new(query_string, variables: variables.as_h)
     )
 
-    result = runtime.execute["data"]
+    result = runtime.execute(initial_value: Query.new)["data"]
 
     result.should eq({
       "transactions" => [
@@ -84,7 +84,7 @@ describe Graphene do
       Graphene::Query.new(query_string, variables: variables.as_h)
     )
 
-    result = runtime.execute["data"]
+    result = runtime.execute(initial_value: Query.new)["data"]
 
     result.should eq({
       "transactions" => [
@@ -115,7 +115,7 @@ describe Graphene do
       Graphene::Query.new(query_string, variables: variables.as_h)
     )
 
-    result = runtime.execute["data"]
+    result = runtime.execute(initial_value: Query.new)["data"]
 
     result.should eq({
       "transactions" => [

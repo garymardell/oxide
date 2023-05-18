@@ -20,7 +20,7 @@ describe Graphene::Execution::Runtime do
       Graphene::Query.new(query_string)
     )
 
-    result = runtime.execute
+    result = runtime.execute(initial_value: Query.new)
 
     expected_transactions = [
       { "id" => "1", "reference" => "ch_1234" },

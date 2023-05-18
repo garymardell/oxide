@@ -118,7 +118,6 @@ PaymentMethodType = Graphene::Types::UnionType.new(
 DummySchema = Graphene::Schema.new(
   query: Graphene::Types::ObjectType.new(
     name: "Query",
-    resolver: QueryResolver.new,
     fields: {
       "charge" => Graphene::Field.new(
         type: Graphene::Types::NonNullType.new(of_type: ChargeType),

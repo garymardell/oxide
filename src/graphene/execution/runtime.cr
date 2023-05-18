@@ -38,7 +38,7 @@ module Graphene
         @errors = Set(String).new
       end
 
-      def execute
+      def execute(initial_value : Resolvable? = nil)
         definitions = document.definitions.select(type: Graphene::Language::Nodes::OperationDefinition)
 
         operation = get_operation(definitions, query.operation_name)
@@ -47,7 +47,7 @@ module Graphene
 
         data = case operation.operation_type
         when "query"
-          execute_query(operation, schema, coerced_variable_values)
+          execute_query(operation, schema, coerced_variable_values, initial_value)
         when "mutation"
           execute_mutation(operation, schema, coerced_variable_values)
         end
@@ -77,11 +77,11 @@ module Graphene
         end
       end
 
-      private def execute_query(query, schema, coerced_variable_values) : ReturnType
+      private def execute_query(query, schema, coerced_variable_values, initial_value) : ReturnType
         if query_type = schema.query
 
           begin
-            result = execute_selection_set(query.selection_set.not_nil!.selections, query_type, nil, coerced_variable_values)
+            result = execute_selection_set(query.selection_set.not_nil!.selections, query_type, initial_value, coerced_variable_values)
 
             serialize(result)
           rescue FieldError
