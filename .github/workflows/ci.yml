@@ -16,13 +16,17 @@ jobs:
         uses: crystal-lang/install-crystal@v1
         with:
           crystal: ${{ matrix.crystal }}
+      - uses: actions/setup-python@v4
+        id: py2
+        with:
+          python-version: '2.7'
       - name: Install packages
         run: sudo apt-get -qy install cmake
       - name: Install libgraphqlparser
         run: |
           wget https://github.com/graphql/libgraphqlparser/archive/v0.7.0.tar.gz
           tar -xzvf v0.7.0.tar.gz
-          cd libgraphqlparser-0.7.0/ && sudo cmake . && sudo make && sudo make install
+          cd libgraphqlparser-0.7.0/ && sudo cmake -DPYTHON_EXECUTABLE=${{ steps.py2.outputs.python-path }} . && sudo make && sudo make install
       - name: Run tests
         run: crystal spec --order=random --error-on-warnings
         env:
