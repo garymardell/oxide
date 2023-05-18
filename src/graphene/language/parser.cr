@@ -181,7 +181,6 @@ module Graphene
           when Nodes::InlineFragment
             stack.peek.as(Nodes::InlineFragment).selection_set = selection_set
           else
-            pp stack.peek
           end
         }
 
@@ -251,7 +250,6 @@ module Graphene
           when Nodes::Directive
             stack.peek.as(Nodes::Directive).arguments << argument
           else
-            pp "Not a field"
           end
         }
 

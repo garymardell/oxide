@@ -13,6 +13,11 @@ class ChargeResolver < Graphene::Resolver
     @loader = RefundLoader.new
   end
 
+  def resolve(object : Graphene::Resolvable?, field_name, argument_values, context, resolution_info) : Graphene::Result
+    puts "resolving here"
+    nil
+  end
+
   def resolve(object : Charge, field_name, argument_values, context, resolution_info)
     case field_name
     when "id"

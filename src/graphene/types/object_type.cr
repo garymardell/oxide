@@ -20,6 +20,29 @@ module Graphene
       )
       end
 
+      def resolve(field_name, argument_values, context, resolution_info) : Result
+        case field_name
+        when "name"
+          name
+        when "description"
+          description
+        when "kind"
+          kind
+        when "fields"
+          if false #argument_values["includeDeprecated"]?
+            fields.map do |name, field|
+              Introspection::FieldInfo.new(name, field).as(Resolvable)
+            end
+          else
+            fields.reject { |_, field| field.deprecated? }.map do |name, field|
+              Introspection::FieldInfo.new(name, field).as(Resolvable)
+            end
+          end
+        when "interfaces"
+          interfaces.map { |interface| interface.as(Resolvable) }
+        end
+      end
+
       def kind
         "OBJECT"
       end

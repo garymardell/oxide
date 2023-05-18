@@ -11,6 +11,9 @@ module Graphene
       def initialize(@name, @description = nil, @input_fields = [] of InputValue)
       end
 
+      def resolve(field_name, argument_values, context, resolution_info) : Result
+      end
+
       def kind
         "INPUT_OBJECT"
       end

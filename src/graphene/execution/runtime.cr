@@ -199,7 +199,9 @@ module Graphene
           field: schema_field,
         )
 
-        value = resolver.resolve(object_value, field_name, argument_values, context, resolution_info)
+        # value = if object_value.is_a?(Resolvable)
+          value = resolver.resolve(object_value.as(Resolvable?), field_name, argument_values, context, resolution_info)
+        # end
 
         if value.is_a?(Lazy)
           Proc(IntermediateType).new {

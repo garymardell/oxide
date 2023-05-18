@@ -20,7 +20,7 @@ module Graphene
 
     TypeType = Graphene::Types::ObjectType.new(
       name: "__Type",
-      resolver: TypeResolver.new,
+      resolver: DefaultResolver.new,
       fields: {
         "kind" => Graphene::Field.new(
           type: Graphene::Types::NonNullType.new(of_type: TypeKindType)

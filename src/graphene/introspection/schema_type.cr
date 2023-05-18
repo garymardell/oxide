@@ -5,7 +5,7 @@ module Graphene
   module Introspection
     SchemaType = Graphene::Types::ObjectType.new(
       name: "__Schema",
-      resolver: SchemaResolver.new,
+      resolver: DefaultResolver.new,
       fields: {
         "types" => Graphene::Field.new(
           type: Graphene::Types::NonNullType.new(

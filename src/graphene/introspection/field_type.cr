@@ -5,7 +5,7 @@ module Graphene
   module Introspection
     FieldType = Graphene::Types::ObjectType.new(
       name: "__Field",
-      resolver: FieldResolver.new,
+      resolver: DefaultResolver.new,
       fields: {
         "name" => Graphene::Field.new(
           type: Graphene::Types::NonNullType.new(

@@ -8,6 +8,12 @@ module Graphene
       def initialize(@typename)
       end
 
+      def resolve(field_name, argument_values, context, resolution_info) : Result
+        # unwrapped_type = get_type(resolution_info.schema, object.typename)
+
+        # resolve(unwrapped_type, field_name, argument_values, context, resolution_info)
+      end
+
       def description
       end
 
@@ -16,6 +22,15 @@ module Graphene
       end
 
       def serialize(value)
+      end
+
+      private def get_type(schema, typename)
+        case typename
+        when "__Schema", "__Type", "__InputValue", "__Directive", "__EnumValue", "__Field"
+          IntrospectionSystem.types[typename]
+        else
+          schema.get_type(typename)
+        end
       end
     end
   end

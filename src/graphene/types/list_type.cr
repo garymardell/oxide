@@ -9,6 +9,15 @@ module Graphene
       def initialize(@of_type, @description = nil)
       end
 
+      def resolve(field_name, argument_values, context, resolution_info) : Result
+        case field_name
+        when "kind"
+          kind
+        when "ofType"
+          of_type
+        end
+      end
+
       def kind
         "LIST"
       end

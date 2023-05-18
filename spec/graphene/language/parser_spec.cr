@@ -13,9 +13,6 @@ describe Graphene::Language::Parser do
     parser = Graphene::Language::Parser.new
 
     document = parser.parse(schema)
-
-    pp document
-
   end
 
   it "supports list values" do
@@ -30,8 +27,5 @@ describe Graphene::Language::Parser do
     parser = Graphene::Language::Parser.new
 
     document = parser.parse(schema)
-
-    pp document
-
   end
 end

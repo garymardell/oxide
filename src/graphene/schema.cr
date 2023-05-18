@@ -10,6 +10,8 @@ require "./error"
 
 module Graphene
   class Schema
+    include Resolvable
+
     DEFAULT_DIRECTIVES = [
       Graphene::Directives::SkipDirective.new,
       Graphene::Directives::IncludeDirective.new
@@ -23,6 +25,21 @@ module Graphene
 
     def initialize(@query, @mutation = nil, @orphan_types = [] of Graphene::Type, directives = [] of Directive)
       @directives = DEFAULT_DIRECTIVES + directives
+    end
+
+    def resolve(field_name, argument_values, context, resolution_info) : Result
+      case field_name
+      when "queryType"
+        query
+      when "mutationType"
+        mutation
+      when "subscriptionType"
+        nil
+      when "types"
+        types.map { |type| type.as(Resolvable) }
+      when "directives"
+        directives.map { |type| type.as(Resolvable) }
+      end
     end
 
     def validate(query : Graphene::Query)

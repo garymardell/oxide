@@ -1,6 +1,8 @@
 require "../../spec_helper"
 
 class BuilderResolver < Graphene::Resolver
+  def resolve(object : Graphene::Resolvable?, field_name, argument_values, context, resolution_info) : Graphene::Result
+  end
 end
 
 class BuilderTypeResolver < Graphene::TypeResolver

@@ -39,6 +39,8 @@ describe Graphene do
     )
 
     result = runtime.execute["data"]
+
+    pp result
   end
 
   it "supports full introspection" do
@@ -139,5 +141,7 @@ describe Graphene do
     )
 
     result = runtime.execute["data"]
+
+    pp result
   end
 end

@@ -6,9 +6,6 @@
   - [ ] Runtime / Response errors
   - [ ] Validation errors
 - [ ] Static validation
-- [x] Simplify Value nodes
-- [x] ListValue
-- [x] ObjectValue
 - [ ] Input objects
   - [ ] Runtime support
   - [ ] Validations
@@ -22,6 +19,8 @@
   - [x] LibGraphqlParser to use specific types
   - [ ] Reduce duplication with macros
   - [ ] Merge Parser and SchemaParser
+- [ ] Test framework for generating schemas, mocking resolvers and validating results
+- [ ] Separate coerce input from output
 
 ## Missing features
 

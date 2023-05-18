@@ -6,6 +6,21 @@ module Graphene
       def kind
         "SCALAR"
       end
+
+      def resolve(field_name, argument_values, context, resolution_info) : Result
+        case field_name
+        when "name"
+          name
+        when "description"
+          description
+        when "kind"
+          kind
+        when "specifiedByURL"
+          if self.responds_to?(:specified_by_url)
+            self.specified_by_url
+          end
+        end
+      end
     end
 
     class IdType < ScalarType
