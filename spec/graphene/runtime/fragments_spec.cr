@@ -17,10 +17,11 @@ describe Graphene::Execution::Runtime do
 
     runtime = Graphene::Execution::Runtime.new(
       DummySchema,
-      Graphene::Query.new(query_string)
+      Graphene::Query.new(query_string),
+      initial_value: Query.new
     )
 
-    result = runtime.execute(initial_value: Query.new)
+    result = runtime.execute
 
     expected_transactions = [
       { "id" => "1", "reference" => "ch_1234" },

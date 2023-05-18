@@ -22,6 +22,7 @@ module Graphene
 
       getter schema : Graphene::Schema
       getter query : Graphene::Query
+      getter initial_value : Resolvable?
 
       delegate document, to: query
       delegate context, to: query
@@ -33,12 +34,12 @@ module Graphene
 
       private property errors : Set(String)
 
-      def initialize(@schema : Graphene::Schema, @query : Graphene::Query)
+      def initialize(@schema : Graphene::Schema, @query : Graphene::Query, @initial_value : Resolvable? = nil)
         @current_path = [] of String
         @errors = Set(String).new
       end
 
-      def execute(initial_value : Resolvable? = nil)
+      def execute
         definitions = document.definitions.select(type: Graphene::Language::Nodes::OperationDefinition)
 
         operation = get_operation(definitions, query.operation_name)

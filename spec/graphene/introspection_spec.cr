@@ -13,10 +13,11 @@ describe Graphene do
 
     runtime = Graphene::Execution::Runtime.new(
       DummySchema,
-      Graphene::Query.new(query_string)
+      Graphene::Query.new(query_string),
+      initial_value: Query.new
     )
 
-    result = runtime.execute(initial_value: Query.new)["data"]
+    result = runtime.execute["data"]
 
     result.should eq({ "charges" => [{ "id" => "1", "__typename" => "Charge" }, { "id" => "2", "__typename" => "Charge" }, { "id" => "3", "__typename" => "Charge" }] })
   end

@@ -19,10 +19,11 @@ describe Graphene do
 
     runtime = Graphene::Execution::Runtime.new(
       DummySchema,
-      Graphene::Query.new(query_string, variables: variables.as_h)
+      Graphene::Query.new(query_string, variables: variables.as_h),
+      initial_value: Query.new
     )
 
-    result = runtime.execute(initial_value: Query.new)["data"]
+    result = runtime.execute["data"]
 
     result.should eq({
       "transactions" => [
@@ -50,10 +51,11 @@ describe Graphene do
 
     runtime = Graphene::Execution::Runtime.new(
       DummySchema,
-      Graphene::Query.new(query_string, variables: variables.as_h)
+      Graphene::Query.new(query_string, variables: variables.as_h),
+      initial_value: Query.new
     )
 
-    result = runtime.execute(initial_value: Query.new)["data"]
+    result = runtime.execute["data"]
 
     result.should eq({
       "transactions" => [
@@ -81,10 +83,11 @@ describe Graphene do
 
     runtime = Graphene::Execution::Runtime.new(
       DummySchema,
-      Graphene::Query.new(query_string, variables: variables.as_h)
+      Graphene::Query.new(query_string, variables: variables.as_h),
+      initial_value: Query.new
     )
 
-    result = runtime.execute(initial_value: Query.new)["data"]
+    result = runtime.execute["data"]
 
     result.should eq({
       "transactions" => [
@@ -112,10 +115,11 @@ describe Graphene do
 
     runtime = Graphene::Execution::Runtime.new(
       DummySchema,
-      Graphene::Query.new(query_string, variables: variables.as_h)
+      Graphene::Query.new(query_string, variables: variables.as_h),
+      initial_value: Query.new
     )
 
-    result = runtime.execute(initial_value: Query.new)["data"]
+    result = runtime.execute["data"]
 
     result.should eq({
       "transactions" => [
