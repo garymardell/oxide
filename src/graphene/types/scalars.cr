@@ -58,6 +58,10 @@ module Graphene
         "Represents textual data as UTF-8 character sequences. This type is most often used by GraphQL to represent free-form human-readable text."
       end
 
+      def coerce(value : JSON::Any)
+        value.as_s
+      end
+
       def coerce(value : String)
         value
       end

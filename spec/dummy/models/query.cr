@@ -3,6 +3,16 @@ class Query
 
   def resolve(field_name, argument_values, context, resolution_info) : Graphene::Result
     case field_name
+    when "createCharge"
+      input = argument_values["input"]
+
+      reference = if input.is_a?(Hash)
+        input["reference"].to_s
+      else
+        raise "Reference was not in the input"
+      end
+
+      Charge.new(id: 34353, status: "pending", reference: reference).as(Graphene::Resolvable)
     when "charge"
       # TODO: Had to add `to_s` as value comes bakc as int64 due to missing variable coercion
       Charge.new(id: argument_values["id"].to_s.to_i32, status: "pending", reference: "ch_1234").as(Graphene::Resolvable)

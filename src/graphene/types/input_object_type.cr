@@ -27,8 +27,30 @@ module Graphene
         "INPUT_OBJECT"
       end
 
+      def coerce(value : JSON::Any)
+        coerce(value.as_h)
+      end
+
+      def coerce(value : Hash)
+        cooerced_values = Hash(String, Execution::Runtime::VariableType).new
+
+        input_fields.each do |name, argument|
+          has_value = value.has_key?(name)
+
+          if has_value
+            cooerced_values[name] = argument.type.coerce(value[name]).as(Execution::Runtime::VariableType)
+          else
+            if argument.has_default_value?
+              cooerced_values[name] = argument.type.coerce(argument.default_value).as(Execution::Runtime::VariableType)
+            end
+          end
+        end
+
+        cooerced_values
+      end
+
       def coerce(value)
-        value
+        raise Execution::Runtime::InputCoercionError.new("INPUT_OBJECT did not receive a hash")
       end
 
       def serialize(value)

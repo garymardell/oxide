@@ -9,13 +9,16 @@ require "./resolution_info"
 module Graphene
   module Execution
     class Runtime
+      class InputCoercionError < Exception
+      end
+
       class FieldError < Exception
       end
 
       class NullError < FieldError
       end
 
-      alias VariableType = String | Int32 | Float32 | Bool | Nil
+      alias VariableType = String | Int32 | Float32 | Bool | Nil | Array(VariableType) | Hash(String, VariableType)
       alias ReturnType = String | Int32 | Float32 | Bool | Nil | Array(ReturnType) | Hash(String, ReturnType)
 
       alias IntermediateType = ReturnType | Proc(IntermediateType) | Array(IntermediateType) | Hash(String, IntermediateType)
@@ -50,7 +53,7 @@ module Graphene
         when "query"
           execute_query(operation, schema, coerced_variable_values, initial_value)
         when "mutation"
-          execute_mutation(operation, schema, coerced_variable_values)
+          execute_mutation(operation, schema, coerced_variable_values, initial_value)
         end
 
         if errors.any?
@@ -114,10 +117,10 @@ module Graphene
         end
       end
 
-      private def execute_mutation(mutation, schema, coerced_variable_values)
+      private def execute_mutation(mutation, schema, coerced_variable_values, initial_value)
         if mutation_type = schema.mutation
           begin
-            result = execute_selection_set(mutation.selection_set.not_nil!.selections, mutation_type, nil, coerced_variable_values)
+            result = execute_selection_set(mutation.selection_set.not_nil!.selections, mutation_type, initial_value, coerced_variable_values)
 
             serialize(result)
           rescue FieldError
@@ -460,7 +463,11 @@ module Graphene
             if value.nil?
               coerced_values[argument_name] = nil
             elsif argument_value.is_a?(Graphene::Language::Nodes::Variable)
-              coerced_values[argument_name] = value.as(ReturnType)
+              coerced_values[argument_name] = if value.is_a?(Hash)
+                value.as(Hash(String, VariableType)).transform_values { |value| value.as(ReturnType) }
+              else
+                coerced_values[argument_name] = value.as(ReturnType)
+              end
             else
               coerced_value = argument_type.coerce(value)
               coerced_values[argument_name] = coerced_value.as(ReturnType)

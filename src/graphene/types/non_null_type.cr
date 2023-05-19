@@ -25,7 +25,11 @@ module Graphene
       end
 
       def coerce(value)
-        value
+        if value.nil?
+          raise Execution::Runtime::InputCoercionError.new("NON_NULL received null value")
+        else
+          of_type.coerce(value)
+        end
       end
 
       def serialize(value)
