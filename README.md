@@ -8,6 +8,8 @@ This library was originally built to experiment with building dynamic schemas on
 
 ### TODO
 
+- [ ] Proper input coercion handling
+- [ ] Explore using JSON::Any for arguments to avoid typing issues
 - [ ] Error handling
   - [ ] Raise appropriate classes of exceptions within runtime
   - [ ] Raise errors during validation phase
