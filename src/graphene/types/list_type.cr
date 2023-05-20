@@ -22,8 +22,15 @@ module Graphene
         "LIST"
       end
 
-      def coerce(value)
-        value
+      def coerce(value : Array) : Execution::Runtime::VariableType
+        value.map do |item|
+          of_type.coerce(item).as(Execution::Runtime::VariableType)
+        end
+      end
+
+      def coerce(value) : Execution::Runtime::VariableType
+        # value
+        raise "Invalid"
       end
 
       def serialize(value)

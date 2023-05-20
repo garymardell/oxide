@@ -32,7 +32,7 @@ module Graphene
         "Represents a unique identifier that is Base64 obfuscated. It is often used to refetch an object or as key for a cache. The ID type appears in a JSON response as a String; however, it is not intended to be human-readable. When expected as an input type, any string (such as `\"VXNlci0xMA==\"`) or integer (such as `4`) input value will be accepted as an ID."
       end
 
-      def coerce(value)
+      def coerce(value) : Execution::Runtime::VariableType
         return value if value.nil?
 
         if value.responds_to?(:to_s)
@@ -58,15 +58,15 @@ module Graphene
         "Represents textual data as UTF-8 character sequences. This type is most often used by GraphQL to represent free-form human-readable text."
       end
 
-      def coerce(value : JSON::Any)
+      def coerce(value : JSON::Any) : Execution::Runtime::VariableType
         value.as_s
       end
 
-      def coerce(value : String)
+      def coerce(value : String) : Execution::Runtime::VariableType
         value
       end
 
-      def coerce(value)
+      def coerce(value) : Execution::Runtime::VariableType
         raise "String cannot represent a non-string value"
       end
 
@@ -92,11 +92,11 @@ module Graphene
         "Represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1."
       end
 
-      def coerce(value : Int32)
+      def coerce(value : Int32) : Execution::Runtime::VariableType
         value
       end
 
-      def coerce(value)
+      def coerce(value) : Execution::Runtime::VariableType
         raise "Int cannot represent a non-interger value"
       end
 
@@ -122,7 +122,7 @@ module Graphene
         "Represents signed double-precision fractional values as specified by [IEEE 754](https://en.wikipedia.org/wiki/IEEE_floating_point)."
       end
 
-      def coerce(value)
+      def coerce(value) : Execution::Runtime::VariableType
         return value if value.nil?
 
         if value.responds_to?(:to_f32)
@@ -134,7 +134,7 @@ module Graphene
         end
       end
 
-      def serialize(value)
+      def serialize(value) : Execution::Runtime::VariableType
         coerce(value)
       end
     end
@@ -148,7 +148,7 @@ module Graphene
         "Represents `true` or `false` values."
       end
 
-      def coerce(value)
+      def coerce(value) : Execution::Runtime::VariableType
         return value if value.nil?
 
         if value.responds_to?(:as_bool)
@@ -171,7 +171,7 @@ module Graphene
       def initialize(@name : String, @description : String? = nil, @specified_by_url : String? = nil)
       end
 
-      def coerce(value)
+      def coerce(value) : Execution::Runtime::VariableType
       end
 
       def serialize(value)

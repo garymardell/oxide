@@ -18,7 +18,7 @@ module Graphene
       class NullError < FieldError
       end
 
-      alias VariableType = String | Int32 | Float32 | Bool | Nil | Array(VariableType) | Hash(String, VariableType)
+      alias VariableType = String | Int32 | Int64 | Float32 | Float64 | Bool | Nil | Array(VariableType) | Hash(String, VariableType)
       alias ReturnType = String | Int32 | Float32 | Bool | Nil | Array(ReturnType) | Hash(String, ReturnType)
 
       alias IntermediateType = ReturnType | Proc(IntermediateType) | Array(IntermediateType) | Hash(String, IntermediateType)

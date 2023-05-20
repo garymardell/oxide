@@ -27,7 +27,7 @@ module Graphene
         end
       end
 
-      def coerce(value : String)
+      def coerce(value : String) : Execution::Runtime::VariableType
         enum_value = values.find { |ev| ev.value == value }
 
         if enum_value
@@ -37,7 +37,7 @@ module Graphene
         end
       end
 
-      def coerce(value)
+      def coerce(value) : Execution::Runtime::VariableType
         raise "Value could not be coerced"
       end
 

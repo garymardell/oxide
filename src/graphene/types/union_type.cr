@@ -29,7 +29,7 @@ module Graphene
         "UNION"
       end
 
-      def coerce(value)
+      def coerce(value) : Execution::Runtime::VariableType
         raise "Invalid input type"
       end
 
