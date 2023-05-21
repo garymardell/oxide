@@ -23,9 +23,9 @@ This library was originally built to experiment with building dynamic schemas on
     - [ ] Field Selections
     - [ ] Field Selection Merging
     - [ ] Leaf Field Selections
-  - [ ] Arguments
-    - [ ] Argument Names
-    - [ ] Argument Uniqueness
+  - [x] Arguments
+    - [x] Argument Names
+    - [x] Argument Uniqueness
   - [ ] Fragments
     - [ ] Fragment Declarations
     - [ ] Fragment Spreads
