@@ -96,6 +96,12 @@ module Graphene
         value
       end
 
+      def coerce(value : Int64) : Execution::Runtime::VariableType
+        value.to_i32
+      rescue e : OverflowError
+        raise "Cannot be converted to Int32"
+      end
+
       def coerce(value) : Execution::Runtime::VariableType
         raise "Int cannot represent a non-interger value"
       end
