@@ -8,8 +8,6 @@ This library was originally built to experiment with building dynamic schemas on
 
 ### TODO
 
-- [ ] Proper input coercion handling
-- [ ] Explore using JSON::Any for arguments to avoid typing issues
 - [ ] Error handling
   - [ ] Raise appropriate classes of exceptions within runtime
   - [ ] Raise errors during validation phase
@@ -46,8 +44,6 @@ This library was originally built to experiment with building dynamic schemas on
     - [ ] All Variable Uses Defined
     - [ ] All Variables Used
     - [ ] All Variable Usages are Allowed
-- [ ] Mutation support
-  - [ ] Input objects
 - [ ] Custom directives
 - [ ] Test framework
   - [ ] Validating responses
