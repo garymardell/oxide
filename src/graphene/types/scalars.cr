@@ -32,16 +32,20 @@ module Graphene
         "Represents a unique identifier that is Base64 obfuscated. It is often used to refetch an object or as key for a cache. The ID type appears in a JSON response as a String; however, it is not intended to be human-readable. When expected as an input type, any string (such as `\"VXNlci0xMA==\"`) or integer (such as `4`) input value will be accepted as an ID."
       end
 
-      def coerce(value) : Execution::Runtime::VariableType
-        return value if value.nil?
+      def coerce(value : String)  : Execution::Runtime::VariableType
+        value
+      end
 
-        if value.responds_to?(:to_s)
-          value.to_s
-        elsif value.responds_to?(:as_s)
-          value.as_s
-        else
-          raise "Could not coerce value to Id"
-        end
+      def coerce(value : Int32)  : Execution::Runtime::VariableType
+        value.to_s
+      end
+
+      def coerce(value : JSON::Any)  : Execution::Runtime::VariableType
+        value.as_s
+      end
+
+      def coerce(value)  : Execution::Runtime::VariableType
+        raise "Could not coerce id"
       end
 
       def serialize(value)
@@ -102,6 +106,10 @@ module Graphene
         raise "Cannot be converted to Int32"
       end
 
+      def coerce(value : JSON::Any) : Execution::Runtime::VariableType
+        value.as_i
+      end
+
       def coerce(value) : Execution::Runtime::VariableType
         raise "Int cannot represent a non-interger value"
       end
@@ -128,16 +136,24 @@ module Graphene
         "Represents signed double-precision fractional values as specified by [IEEE 754](https://en.wikipedia.org/wiki/IEEE_floating_point)."
       end
 
-      def coerce(value) : Execution::Runtime::VariableType
-        return value if value.nil?
+      def coerce(value : Float32)  : Execution::Runtime::VariableType
+        value.to_f64
+      end
 
-        if value.responds_to?(:to_f32)
-          value.to_f32
-        elsif value.responds_to?(:as_f)
-          value.as_f
-        else
-          raise "Could not coerce value to Float"
-        end
+      def coerce(value : Float64)  : Execution::Runtime::VariableType
+        value
+      end
+
+      def coerce(value : Int32)  : Execution::Runtime::VariableType
+        value.to_f64
+      end
+
+      def coerce(value : JSON::Any) : Execution::Runtime::VariableType
+        value.as_f
+      end
+
+      def coerce(value) : Execution::Runtime::VariableType
+        raise "Could not coerce value to Float"
       end
 
       def serialize(value) : Execution::Runtime::VariableType
@@ -154,14 +170,16 @@ module Graphene
         "Represents `true` or `false` values."
       end
 
-      def coerce(value) : Execution::Runtime::VariableType
-        return value if value.nil?
+      def coerce(value : Bool) : Execution::Runtime::VariableType
+        value
+      end
 
-        if value.responds_to?(:as_bool)
-          value.as_bool
-        else
-          !!value
-        end
+      def coerce(value : JSON::Any)  : Execution::Runtime::VariableType
+        value.as_bool
+      end
+
+      def coerce(value) : Execution::Runtime::VariableType
+        raise "Can't coerce non boolean value from #{value.class.name}"
       end
 
       def serialize(value)
