@@ -28,9 +28,12 @@ module Graphene
         end
       end
 
+      def coerce(value : Nil) : Execution::Runtime::VariableType
+        value
+      end
+
       def coerce(value) : Execution::Runtime::VariableType
-        # value
-        raise "Invalid"
+        Array(Execution::Runtime::VariableType).new(1, of_type.coerce(value))
       end
 
       def serialize(value)

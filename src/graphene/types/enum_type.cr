@@ -33,12 +33,12 @@ module Graphene
         if enum_value
           enum_value.value
         else
-          raise "Value could be coerced into enum"
+          raise Execution::Runtime::InputCoercionError.new("Value could be coerced into enum")
         end
       end
 
       def coerce(value) : Execution::Runtime::VariableType
-        raise "Value could not be coerced"
+        raise Execution::Runtime::InputCoercionError.new("Value could not be coerced")
       end
 
       def serialize(value)

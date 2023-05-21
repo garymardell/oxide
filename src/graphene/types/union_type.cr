@@ -30,7 +30,7 @@ module Graphene
       end
 
       def coerce(value) : Execution::Runtime::VariableType
-        raise "Invalid input type"
+        raise Execution::Runtime::InputCoercionError.new("Invalid input type")
       end
 
       def serialize(value)

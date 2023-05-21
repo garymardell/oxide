@@ -45,7 +45,7 @@ module Graphene
       end
 
       def coerce(value)  : Execution::Runtime::VariableType
-        raise "Could not coerce id"
+        raise Execution::Runtime::InputCoercionError.new("Could not coerce id")
       end
 
       def serialize(value)
@@ -71,7 +71,7 @@ module Graphene
       end
 
       def coerce(value) : Execution::Runtime::VariableType
-        raise "String cannot represent a non-string value"
+        raise Execution::Runtime::InputCoercionError.new("String cannot represent a non-string value")
       end
 
       def serialize(value)
@@ -103,7 +103,7 @@ module Graphene
       def coerce(value : Int64) : Execution::Runtime::VariableType
         value.to_i32
       rescue e : OverflowError
-        raise "Cannot be converted to Int32"
+        raise Execution::Runtime::InputCoercionError.new("Cannot be converted to Int32")
       end
 
       def coerce(value : JSON::Any) : Execution::Runtime::VariableType
@@ -111,7 +111,7 @@ module Graphene
       end
 
       def coerce(value) : Execution::Runtime::VariableType
-        raise "Int cannot represent a non-interger value"
+        raise Execution::Runtime::InputCoercionError.new("Int cannot represent a non-interger value")
       end
 
       def serialize(value)
@@ -153,7 +153,7 @@ module Graphene
       end
 
       def coerce(value) : Execution::Runtime::VariableType
-        raise "Could not coerce value to Float"
+        raise Execution::Runtime::InputCoercionError.new("Could not coerce value to Float")
       end
 
       def serialize(value) : Execution::Runtime::VariableType
@@ -179,7 +179,7 @@ module Graphene
       end
 
       def coerce(value) : Execution::Runtime::VariableType
-        raise "Can't coerce non boolean value from #{value.class.name}"
+        raise Execution::Runtime::InputCoercionError.new("Can't coerce non boolean value from #{value.class.name}")
       end
 
       def serialize(value)
