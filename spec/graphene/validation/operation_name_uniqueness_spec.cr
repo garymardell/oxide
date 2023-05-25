@@ -6,7 +6,7 @@
 
 require "../../spec_helper"
 
-describe Graphene::Validation::NamedOperationDefinitions do
+describe Graphene::Validation::OperationNameUniqueness do
   it "gives an error if multiple operation definitions have the same name" do
     query_string = <<-QUERY
       query GetDog {
@@ -27,7 +27,7 @@ describe Graphene::Validation::NamedOperationDefinitions do
     pipeline = Graphene::Validation::Pipeline.new(
       ValidationsSchema,
       query,
-      [Graphene::Validation::NamedOperationDefinitions.new.as(Graphene::Validation::Rule)]
+      [Graphene::Validation::OperationNameUniqueness.new.as(Graphene::Validation::Rule)]
     )
 
     pipeline.execute

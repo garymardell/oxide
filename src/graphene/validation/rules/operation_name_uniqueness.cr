@@ -1,6 +1,6 @@
 module Graphene
   module Validation
-    class NamedOperationDefinitions < Rule
+    class OperationNameUniqueness < Rule
       def initialize
         @operation_names = [] of String
       end
