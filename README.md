@@ -16,7 +16,7 @@ This library was originally built to experiment with building dynamic schemas on
   - [ ] Documents
     - [ ] Executable Definitions
   - [ ] Operations
-    - [ ] Named Operation Definitions
+    - [x] Named Operation Definitions
     - [ ] Anonymous Operation Definitions
     - [ ] Subscription Operation Definitions
   - [ ] Fields
