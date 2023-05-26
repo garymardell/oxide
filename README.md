@@ -68,7 +68,7 @@ This library was originally built to experiment with building dynamic schemas on
 - [x] Interface
 - [x] Union
 - [x] Enum
-- [ ] Input Object
+- [x] Input Object
 - [x] List
 - [x] Non-Null
 - [x] Directive
