@@ -20,7 +20,7 @@ This library was originally built to experiment with building dynamic schemas on
     - [x] Anonymous Operation Definitions
     - [ ] Subscription Operation Definitions
   - [ ] Fields
-    - [ ] Field Selections
+    - [x] Field Selections
     - [ ] Field Selection Merging
     - [ ] Leaf Field Selections
   - [x] Arguments
