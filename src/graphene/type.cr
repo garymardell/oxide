@@ -7,7 +7,7 @@ module Graphene
     include Resolvable
 
     abstract def description
-    abstract def coerce(value) : Execution::Runtime::VariableType
+    abstract def coerce(value) : CoercedInput
     abstract def serialize(value)
   end
 end

@@ -32,19 +32,19 @@ module Graphene
         "Represents a unique identifier that is Base64 obfuscated. It is often used to refetch an object or as key for a cache. The ID type appears in a JSON response as a String; however, it is not intended to be human-readable. When expected as an input type, any string (such as `\"VXNlci0xMA==\"`) or integer (such as `4`) input value will be accepted as an ID."
       end
 
-      def coerce(value : String)  : Execution::Runtime::VariableType
+      def coerce(value : String)  : CoercedInput
         value
       end
 
-      def coerce(value : Int32)  : Execution::Runtime::VariableType
+      def coerce(value : Int32)  : CoercedInput
         value.to_s
       end
 
-      def coerce(value : JSON::Any)  : Execution::Runtime::VariableType
+      def coerce(value : JSON::Any)  : CoercedInput
         value.as_s
       end
 
-      def coerce(value)  : Execution::Runtime::VariableType
+      def coerce(value)  : CoercedInput
         raise Execution::Runtime::InputCoercionError.new("Could not coerce id")
       end
 
@@ -62,15 +62,15 @@ module Graphene
         "Represents textual data as UTF-8 character sequences. This type is most often used by GraphQL to represent free-form human-readable text."
       end
 
-      def coerce(value : JSON::Any) : Execution::Runtime::VariableType
+      def coerce(value : JSON::Any) : CoercedInput
         value.as_s
       end
 
-      def coerce(value : String) : Execution::Runtime::VariableType
+      def coerce(value : String) : CoercedInput
         value
       end
 
-      def coerce(value) : Execution::Runtime::VariableType
+      def coerce(value) : CoercedInput
         raise Execution::Runtime::InputCoercionError.new("String cannot represent a non-string value")
       end
 
@@ -96,21 +96,21 @@ module Graphene
         "Represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1."
       end
 
-      def coerce(value : Int32) : Execution::Runtime::VariableType
+      def coerce(value : Int32) : CoercedInput
         value
       end
 
-      def coerce(value : Int64) : Execution::Runtime::VariableType
+      def coerce(value : Int64) : CoercedInput
         value.to_i32
       rescue e : OverflowError
         raise Execution::Runtime::InputCoercionError.new("Cannot be converted to Int32")
       end
 
-      def coerce(value : JSON::Any) : Execution::Runtime::VariableType
+      def coerce(value : JSON::Any) : CoercedInput
         value.as_i
       end
 
-      def coerce(value) : Execution::Runtime::VariableType
+      def coerce(value) : CoercedInput
         raise Execution::Runtime::InputCoercionError.new("Int cannot represent a non-interger value")
       end
 
@@ -136,27 +136,27 @@ module Graphene
         "Represents signed double-precision fractional values as specified by [IEEE 754](https://en.wikipedia.org/wiki/IEEE_floating_point)."
       end
 
-      def coerce(value : Float32)  : Execution::Runtime::VariableType
+      def coerce(value : Float32)  : CoercedInput
         value.to_f64
       end
 
-      def coerce(value : Float64)  : Execution::Runtime::VariableType
+      def coerce(value : Float64)  : CoercedInput
         value
       end
 
-      def coerce(value : Int32)  : Execution::Runtime::VariableType
+      def coerce(value : Int32)  : CoercedInput
         value.to_f64
       end
 
-      def coerce(value : JSON::Any) : Execution::Runtime::VariableType
+      def coerce(value : JSON::Any) : CoercedInput
         value.as_f
       end
 
-      def coerce(value) : Execution::Runtime::VariableType
+      def coerce(value) : CoercedInput
         raise Execution::Runtime::InputCoercionError.new("Could not coerce value to Float")
       end
 
-      def serialize(value) : Execution::Runtime::VariableType
+      def serialize(value) : CoercedInput
         coerce(value)
       end
     end
@@ -170,15 +170,15 @@ module Graphene
         "Represents `true` or `false` values."
       end
 
-      def coerce(value : Bool) : Execution::Runtime::VariableType
+      def coerce(value : Bool) : CoercedInput
         value
       end
 
-      def coerce(value : JSON::Any)  : Execution::Runtime::VariableType
+      def coerce(value : JSON::Any)  : CoercedInput
         value.as_bool
       end
 
-      def coerce(value) : Execution::Runtime::VariableType
+      def coerce(value) : CoercedInput
         raise Execution::Runtime::InputCoercionError.new("Can't coerce non boolean value from #{value.class.name}")
       end
 
@@ -195,7 +195,7 @@ module Graphene
       def initialize(@name : String, @description : String? = nil, @specified_by_url : String? = nil)
       end
 
-      def coerce(value) : Execution::Runtime::VariableType
+      def coerce(value) : CoercedInput
       end
 
       def serialize(value)

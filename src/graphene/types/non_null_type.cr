@@ -24,7 +24,7 @@ module Graphene
         "NON_NULL"
       end
 
-      def coerce(value) : Execution::Runtime::VariableType
+      def coerce(value) : CoercedInput
         if value.nil?
           raise Execution::Runtime::InputCoercionError.new("NON_NULL received null value")
         else

@@ -16,7 +16,7 @@ module Graphene
       def description
       end
 
-      def coerce(value) : Execution::Runtime::VariableType
+      def coerce(value) : CoercedInput
         raise Execution::Runtime::InputCoercionError.new("Invalid input type")
       end
 

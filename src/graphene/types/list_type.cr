@@ -22,18 +22,18 @@ module Graphene
         "LIST"
       end
 
-      def coerce(value : Array) : Execution::Runtime::VariableType
+      def coerce(value : Array) : CoercedInput
         value.map do |item|
-          of_type.coerce(item).as(Execution::Runtime::VariableType)
+          of_type.coerce(item).as(CoercedInput)
         end
       end
 
-      def coerce(value : Nil) : Execution::Runtime::VariableType
+      def coerce(value : Nil) : CoercedInput
         value
       end
 
-      def coerce(value) : Execution::Runtime::VariableType
-        Array(Execution::Runtime::VariableType).new(1, of_type.coerce(value))
+      def coerce(value) : CoercedInput
+        Array(CoercedInput).new(1, of_type.coerce(value))
       end
 
       def serialize(value)
