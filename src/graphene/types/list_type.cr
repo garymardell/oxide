@@ -39,6 +39,14 @@ module Graphene
       def serialize(value)
         value
       end
+
+      def input_type? : Bool
+        of_type.input_type?
+      end
+
+      def output_type? : Bool
+        of_type.output_type?
+      end
     end
   end
 end

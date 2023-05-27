@@ -23,6 +23,14 @@ module Graphene
       def serialize(value)
       end
 
+      def input_type? : Bool
+        false
+      end
+
+      def output_type? : Bool
+        false
+      end
+
       private def get_type(schema, typename)
         case typename
         when "__Schema", "__Type", "__InputValue", "__Directive", "__EnumValue", "__Field"

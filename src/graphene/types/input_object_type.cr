@@ -56,6 +56,14 @@ module Graphene
       def serialize(value)
         coerce(value)
       end
+
+      def input_type? : Bool
+        true
+      end
+
+      def output_type? : Bool
+        false
+      end
     end
   end
 end

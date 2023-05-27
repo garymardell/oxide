@@ -21,6 +21,14 @@ module Graphene
           end
         end
       end
+
+      def input_type? : Bool
+        true
+      end
+
+      def output_type? : Bool
+        true
+      end
     end
 
     class IdType < ScalarType

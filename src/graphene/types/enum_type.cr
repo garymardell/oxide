@@ -54,6 +54,14 @@ module Graphene
       def kind
         "ENUM"
       end
+
+      def input_type? : Bool
+        true
+      end
+
+      def output_type? : Bool
+        true
+      end
     end
 
     class EnumValue
