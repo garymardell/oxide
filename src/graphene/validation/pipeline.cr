@@ -54,9 +54,11 @@ module Graphene
       private def all_rules
         [
           # Operations
-          # OperationNameUniqueness.new.as(Rule),
-          # LoneAnonymousOperation.new.as(Rule),
+          OperationNameUniqueness.new.as(Rule),
+          LoneAnonymousOperation.new.as(Rule),
           # Fields
+          FieldSelections.new.as(Rule),
+          LeafFieldSelections.new.as(Rule),
           # Arguments
           ArgumentNames.new.as(Rule),
           ArgumentUniqueness.new.as(Rule),
