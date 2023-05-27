@@ -218,6 +218,16 @@ ValidationsSchema = Graphene::Schema.new(
     fields: {
       "dog" => Graphene::Field.new(
         type: DogType
+      ),
+      # Extended for LeafFieldSelections test
+      "human" => Graphene::Field.new(
+        type: HumanType
+      ),
+      "pet" => Graphene::Field.new(
+        type: PetInterface
+      ),
+      "catOrDog" => Graphene::Field.new(
+        type: CatOrDogUnion
       )
     }
   ),
