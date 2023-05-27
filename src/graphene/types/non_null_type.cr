@@ -32,7 +32,7 @@ module Graphene
         end
       end
 
-      def serialize(value)
+      def serialize(value) : SerializedOutput
         coerce(value)
       end
 

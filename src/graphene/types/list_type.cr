@@ -36,7 +36,7 @@ module Graphene
         Array(CoercedInput).new(1, of_type.coerce(value))
       end
 
-      def serialize(value)
+      def serialize(value) : SerializedOutput
         value
       end
 

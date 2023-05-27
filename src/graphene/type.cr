@@ -8,7 +8,7 @@ module Graphene
 
     abstract def description
     abstract def coerce(value) : CoercedInput
-    abstract def serialize(value)
+    abstract def serialize(value) : SerializedOutput
 
     abstract def input_type? : Bool
     abstract def output_type? : Bool

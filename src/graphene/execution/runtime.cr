@@ -18,9 +18,7 @@ module Graphene
       class NullError < FieldError
       end
 
-      alias ReturnType = String | Int32 | Float32 | Bool | Nil | Array(ReturnType) | Hash(String, ReturnType)
-
-      alias IntermediateType = ReturnType | Proc(IntermediateType) | Array(IntermediateType) | Hash(String, IntermediateType)
+      alias IntermediateType = SerializedOutput | Proc(IntermediateType) | Array(IntermediateType) | Hash(String, IntermediateType)
 
       getter schema : Graphene::Schema
       getter query : Graphene::Query
@@ -80,7 +78,7 @@ module Graphene
         end
       end
 
-      private def execute_query(query, schema, coerced_variable_values, initial_value) : ReturnType
+      private def execute_query(query, schema, coerced_variable_values, initial_value) : SerializedOutput
         if query_type = schema.query
 
           begin
@@ -93,17 +91,17 @@ module Graphene
         end
       end
 
-      def serialize(result : IntermediateType) : ReturnType
+      def serialize(result : IntermediateType) : SerializedOutput
         case result
         when Proc
           serialize(result.call)
         when Hash
           result.transform_values do |value|
-            serialize(value).as(ReturnType)
+            serialize(value).as(SerializedOutput)
           end
         when Array
           result.map do |value|
-            serialize(value).as(ReturnType)
+            serialize(value).as(SerializedOutput)
           end
         else
           result
@@ -422,7 +420,7 @@ module Graphene
       end
 
       private def coerce_argument_values(argument_definitions, arguments, variable_values)
-        coerced_values = {} of String => ReturnType
+        coerced_values = {} of String => SerializedOutput
 
         argument_values = arguments.each_with_object({} of String => Graphene::Language::Nodes::Value?) do |argument, memo|
           memo[argument.name] = argument.value
@@ -455,7 +453,7 @@ module Graphene
 
           if !has_value && argument_definition.has_default_value?
             # TODO: Something wrong with this conversion?
-            coerced_values[argument_name] = argument_definition.default_value.not_nil!.as(ReturnType)
+            coerced_values[argument_name] = argument_definition.default_value.not_nil!.as(SerializedOutput)
           elsif argument_type.is_a?(Graphene::Types::NonNullType) && (!has_value || value.nil?)
             raise "non nullable argument has null value"
           elsif has_value
@@ -463,13 +461,13 @@ module Graphene
               coerced_values[argument_name] = nil
             elsif argument_value.is_a?(Graphene::Language::Nodes::Variable)
               coerced_values[argument_name] = if value.is_a?(Hash)
-                value.as(Hash(String, CoercedInput)).transform_values { |value| value.as(ReturnType) }
+                value.as(Hash(String, CoercedInput)).transform_values { |value| value.as(SerializedOutput) }
               else
-                coerced_values[argument_name] = value.as(ReturnType)
+                coerced_values[argument_name] = value.as(SerializedOutput)
               end
             else
               coerced_value = argument_type.coerce(value)
-              coerced_values[argument_name] = coerced_value.as(ReturnType)
+              coerced_values[argument_name] = coerced_value.as(SerializedOutput)
             end
           end
         end

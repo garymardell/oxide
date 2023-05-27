@@ -56,7 +56,7 @@ module Graphene
         raise Execution::Runtime::InputCoercionError.new("Could not coerce id")
       end
 
-      def serialize(value)
+      def serialize(value) : SerializedOutput
         coerce(value)
       end
     end
@@ -82,7 +82,7 @@ module Graphene
         raise Execution::Runtime::InputCoercionError.new("String cannot represent a non-string value")
       end
 
-      def serialize(value)
+      def serialize(value) : SerializedOutput
         return value if value.nil?
 
         if value.responds_to?(:to_s)
@@ -122,7 +122,7 @@ module Graphene
         raise Execution::Runtime::InputCoercionError.new("Int cannot represent a non-interger value")
       end
 
-      def serialize(value)
+      def serialize(value) : SerializedOutput
         return value if value.nil?
 
         if value.responds_to?(:to_i32)
@@ -164,8 +164,12 @@ module Graphene
         raise Execution::Runtime::InputCoercionError.new("Could not coerce value to Float")
       end
 
-      def serialize(value) : CoercedInput
-        coerce(value)
+      def serialize(value) : SerializedOutput
+        if value.responds_to?(:to_f32)
+          value.to_f32
+        else
+          raise "Cannot serialize value to float"
+        end
       end
     end
 
@@ -190,7 +194,7 @@ module Graphene
         raise Execution::Runtime::InputCoercionError.new("Can't coerce non boolean value from #{value.class.name}")
       end
 
-      def serialize(value)
+      def serialize(value) : SerializedOutput
         coerce(value)
       end
     end
@@ -206,8 +210,7 @@ module Graphene
       def coerce(value) : CoercedInput
       end
 
-      def serialize(value)
-        value
+      def serialize(value) : SerializedOutput
       end
     end
   end

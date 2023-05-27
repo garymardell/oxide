@@ -41,7 +41,7 @@ module Graphene
         raise Execution::Runtime::InputCoercionError.new("Value could not be coerced")
       end
 
-      def serialize(value)
+      def serialize(value) : SerializedOutput
         enum_value = values.find { |ev| ev.value == value.to_s }
 
         if enum_value
