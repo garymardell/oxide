@@ -22,7 +22,7 @@ This library was originally built to experiment with building dynamic schemas on
   - [ ] Fields
     - [x] Field Selections
     - [ ] Field Selection Merging
-    - [ ] Leaf Field Selections
+    - [x] Leaf Field Selections
   - [x] Arguments
     - [x] Argument Names
     - [x] Argument Uniqueness
