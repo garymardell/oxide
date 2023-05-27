@@ -153,7 +153,7 @@ module Graphene
 
         context.argument = definition
         # context.default_value_stack
-        context.input_type_stack << (input_type?(type) ? type : nil)
+        context.input_type_stack << (type.try &.input_type? ? type : nil)
       end
 
       # case Kind.LIST: {
@@ -256,17 +256,6 @@ module Graphene
           true
         when Types::ListType, Types::NonNullType
           output_type?(type.of_type)
-        else
-          false
-        end
-      end
-
-      private def input_type?(type)
-        case type
-        when Types::ScalarType, Types::EnumType, Types::ObjectType
-          true
-        when Types::ListType, Types::NonNullType
-          input_type?(type.of_type)
         else
           false
         end
