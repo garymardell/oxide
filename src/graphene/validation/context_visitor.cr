@@ -108,18 +108,11 @@ module Graphene
       #   this._typeStack.push(isOutputType(outputType) ? outputType : undefined);
       #   break;
       # }
-      # case Kind.VARIABLE_DEFINITION: {
-      #   const inputType: unknown = typeFromAST(schema, node.type);
-      #   this._inputTypeStack.push(
-      #     isInputType(inputType) ? inputType : undefined,
-      #   );
-      #   break;
-      # }
 
       def enter(node : Graphene::Language::Nodes::VariableDefinition)
-        # unknown = context.schema.get_type_from_ast(node.type)
+        unknown = context.schema.get_type_from_ast(node.type)
 
-        # context.input_type_stack << (input_type?(unknown) ? unknown : nil)
+        context.input_type_stack << (unknown && unknown.input_type? ? unknown : nil)
       end
 
       # case Kind.ARGUMENT: {
@@ -224,6 +217,10 @@ module Graphene
 
       def leave(node : Graphene::Language::Nodes::Argument)
         context.argument = nil
+        context.input_type_stack.pop
+      end
+
+      def leave(node : Graphene::Language::Nodes::VariableDefinition)
         context.input_type_stack.pop
       end
 

@@ -68,7 +68,8 @@ module Graphene
           # Values
           # Directives
           # Variables
-          VariableUniqueness.new.as(Rule)
+          VariableUniqueness.new.as(Rule),
+          VariablesAreInputTypes.new.as(Rule)
         ]
       end
     end
