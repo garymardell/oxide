@@ -39,7 +39,7 @@ This library was originally built to experiment with building dynamic schemas on
     - [ ] Directives Are In Valid Locations
     - [ ] Directives Are Unique Per Location
   - [ ] Variables
-    - [ ] Variable Uniqueness
+    - [x] Variable Uniqueness
     - [ ] Variables are Input Types
     - [ ] All Variable Uses Defined
     - [ ] All Variables Used
