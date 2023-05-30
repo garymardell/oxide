@@ -11,13 +11,12 @@ describe Graphene do
       }
     QUERY
 
-    runtime = Graphene::Execution::Runtime.new(
-      DummySchema,
-      Graphene::Query.new(query_string),
-      initial_value: Query.new
-    )
+    runtime = Graphene::Execution::Runtime.new(DummySchema)
 
-    result = runtime.execute["data"]
+    result = runtime.execute(
+      query: Graphene::Query.new(query_string),
+      initial_value: Query.new
+    )["data"]
 
     result.should eq({ "charges" => [{ "id" => "1", "__typename" => "Charge" }, { "id" => "2", "__typename" => "Charge" }, { "id" => "3", "__typename" => "Charge" }] })
   end
@@ -34,12 +33,9 @@ describe Graphene do
       }
     QUERY
 
-    runtime = Graphene::Execution::Runtime.new(
-      DummySchema,
-      Graphene::Query.new(query_string)
-    )
+    runtime = Graphene::Execution::Runtime.new(DummySchema)
 
-    result = runtime.execute["data"]
+    result = runtime.execute(query: Graphene::Query.new(query_string))["data"]
 
     pp result
   end
@@ -136,12 +132,9 @@ describe Graphene do
       }
     QUERY
 
-    runtime = Graphene::Execution::Runtime.new(
-      DummySchema,
-      Graphene::Query.new(query_string)
-    )
+    runtime = Graphene::Execution::Runtime.new(DummySchema)
 
-    result = runtime.execute["data"]
+    result = runtime.execute(query: Graphene::Query.new(query_string))["data"]
 
     pp result
   end

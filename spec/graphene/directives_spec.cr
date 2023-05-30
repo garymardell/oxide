@@ -17,13 +17,12 @@ describe Graphene do
       }
     STRING
 
-    runtime = Graphene::Execution::Runtime.new(
-      DummySchema,
-      Graphene::Query.new(query_string, variables: variables.as_h),
-      initial_value: Query.new
-    )
+    runtime = Graphene::Execution::Runtime.new(DummySchema)
 
-    result = runtime.execute["data"]
+    result = runtime.execute(
+      query: Graphene::Query.new(query_string, variables: variables.as_h),
+      initial_value: Query.new
+    )["data"]
 
     result.should eq({
       "transactions" => [
@@ -49,13 +48,12 @@ describe Graphene do
       }
     STRING
 
-    runtime = Graphene::Execution::Runtime.new(
-      DummySchema,
-      Graphene::Query.new(query_string, variables: variables.as_h),
-      initial_value: Query.new
-    )
+    runtime = Graphene::Execution::Runtime.new(DummySchema)
 
-    result = runtime.execute["data"]
+    result = runtime.execute(
+      query: Graphene::Query.new(query_string, variables: variables.as_h),
+      initial_value: Query.new
+    )["data"]
 
     result.should eq({
       "transactions" => [
@@ -81,13 +79,12 @@ describe Graphene do
       }
     STRING
 
-    runtime = Graphene::Execution::Runtime.new(
-      DummySchema,
-      Graphene::Query.new(query_string, variables: variables.as_h),
-      initial_value: Query.new
-    )
+    runtime = Graphene::Execution::Runtime.new(DummySchema)
 
-    result = runtime.execute["data"]
+    result = runtime.execute(
+      query: Graphene::Query.new(query_string, variables: variables.as_h),
+      initial_value: Query.new
+    )["data"]
 
     result.should eq({
       "transactions" => [
@@ -113,13 +110,12 @@ describe Graphene do
       }
     STRING
 
-    runtime = Graphene::Execution::Runtime.new(
-      DummySchema,
-      Graphene::Query.new(query_string, variables: variables.as_h),
-      initial_value: Query.new
-    )
+    runtime = Graphene::Execution::Runtime.new(DummySchema)
 
-    result = runtime.execute["data"]
+    result = runtime.execute(
+      query: Graphene::Query.new(query_string, variables: variables.as_h),
+      initial_value: Query.new
+    )["data"]
 
     result.should eq({
       "transactions" => [

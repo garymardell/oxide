@@ -10,13 +10,9 @@ describe Graphene do
       }
     QUERY
 
-    runtime = Graphene::Execution::Runtime.new(
-      DummySchema,
-      Graphene::Query.new(query_string),
-      initial_value: Query.new
-    )
+    runtime = Graphene::Execution::Runtime.new(DummySchema)
 
-    result = runtime.execute["data"]
+    result = runtime.execute(query: Graphene::Query.new(query_string), initial_value: Query.new)["data"]
 
     result.should eq({ "charges" => [{ "id" => "1" }, { "id" => "2" }, { "id" => "3" }] })
   end
@@ -30,13 +26,9 @@ describe Graphene do
       }
     QUERY
 
-    runtime = Graphene::Execution::Runtime.new(
-      DummySchema,
-      Graphene::Query.new(query_string),
-      initial_value: Query.new
-    )
+    runtime = Graphene::Execution::Runtime.new(DummySchema)
 
-    result = runtime.execute["data"]
+    result = runtime.execute(query: Graphene::Query.new(query_string), initial_value: Query.new)["data"]
 
     result.should eq({ "charges" => [{ "id" => "1" }, { "id" => "2" }, { "id" => "3" }] })
   end
@@ -50,13 +42,9 @@ describe Graphene do
       }
     QUERY
 
-    runtime = Graphene::Execution::Runtime.new(
-      DummySchema,
-      Graphene::Query.new(query_string),
-      initial_value: Query.new
-    )
+    runtime = Graphene::Execution::Runtime.new(DummySchema)
 
-    result = runtime.execute["data"]
+    result = runtime.execute(query: Graphene::Query.new(query_string), initial_value: Query.new)["data"]
 
     result.should eq({ "allCharges" => [{ "id" => "1" }, { "id" => "2" }, { "id" => "3" }] })
   end
@@ -71,21 +59,15 @@ describe Graphene do
       }
     QUERY
 
-    runtime = Graphene::Execution::Runtime.new(
-      DummySchema,
-      Graphene::Query.new(query_string),
-      initial_value: Query.new
-    )
+    runtime = Graphene::Execution::Runtime.new(DummySchema)
 
-    result = runtime.execute
+    result = runtime.execute(query: Graphene::Query.new(query_string), initial_value: Query.new)
 
     expected_errors = [
       {
         "message" => "Cannot return null for non-nullable field Charge.status"
       }
     ]
-
-    # expected_data = nil
 
     expected_data = {
       "charges" => [
@@ -117,13 +99,9 @@ describe Graphene do
       }
     QUERY
 
-    runtime = Graphene::Execution::Runtime.new(
-      DummySchema,
-      Graphene::Query.new(query_string),
-      initial_value: Query.new
-    )
+    runtime = Graphene::Execution::Runtime.new(DummySchema)
 
-    result = runtime.execute["data"]
+    result = runtime.execute(query: Graphene::Query.new(query_string), initial_value: Query.new)["data"]
 
     expected_response = {
       "charges" => [
@@ -150,13 +128,9 @@ describe Graphene do
       }
     QUERY
 
-    runtime = Graphene::Execution::Runtime.new(
-      DummySchema,
-      Graphene::Query.new(query_string),
-      initial_value: Query.new
-    )
+    runtime = Graphene::Execution::Runtime.new(DummySchema)
 
-    result = runtime.execute["data"]
+    result = runtime.execute(query: Graphene::Query.new(query_string), initial_value: Query.new)["data"]
 
     result.should eq({
       "transactions" => [
@@ -183,13 +157,9 @@ describe Graphene do
       }
     QUERY
 
-    runtime = Graphene::Execution::Runtime.new(
-      DummySchema,
-      Graphene::Query.new(query_string),
-      initial_value: Query.new
-    )
+    runtime = Graphene::Execution::Runtime.new(DummySchema)
 
-    result = runtime.execute["data"]
+    result = runtime.execute(query: Graphene::Query.new(query_string), initial_value: Query.new)["data"]
 
     result.should eq({
       "paymentMethods" => [
@@ -212,13 +182,9 @@ describe Graphene do
       }
     QUERY
 
-    runtime = Graphene::Execution::Runtime.new(
-      DummySchema,
-      Graphene::Query.new(query_string),
-      initial_value: Query.new
-    )
+    runtime = Graphene::Execution::Runtime.new(DummySchema)
 
-    result = runtime.execute["data"]
+    result = runtime.execute(query: Graphene::Query.new(query_string), initial_value: Query.new)["data"]
 
     result.should eq({ "charge" => { "id" => "1" } })
   end
@@ -238,16 +204,9 @@ describe Graphene do
       }
     STRING
 
-    runtime = Graphene::Execution::Runtime.new(
-      DummySchema,
-      Graphene::Query.new(
-        query_string,
-        variables: variables.as_h
-      ),
-      initial_value: Query.new
-    )
+    runtime = Graphene::Execution::Runtime.new(DummySchema)
 
-    result = runtime.execute["data"]
+    result = runtime.execute(query: Graphene::Query.new(query_string, variables: variables.as_h), initial_value: Query.new)["data"]
 
     result.should eq({ "charge" => { "id" => "10" } })
   end
@@ -263,16 +222,15 @@ describe Graphene do
 
     variables = {} of String => JSON::Any
 
-    runtime = Graphene::Execution::Runtime.new(
-      DummySchema,
-      Graphene::Query.new(
+    runtime = Graphene::Execution::Runtime.new(DummySchema)
+
+    result = runtime.execute(
+      query: Graphene::Query.new(
         query_string,
         variables: variables
       ),
       initial_value: Query.new
-    )
-
-    result = runtime.execute["data"]
+    )["data"]
 
     result.should eq({ "charge" => { "id" => "1" } })
   end
@@ -302,13 +260,12 @@ describe Graphene do
       }
     QUERY
 
-    runtime = Graphene::Execution::Runtime.new(
-      schema,
-      Graphene::Query.new(query_string),
-      initial_value: Query.new
-    )
+    runtime = Graphene::Execution::Runtime.new(schema)
 
-    result = runtime.execute["data"]
+    result = runtime.execute(
+      query: Graphene::Query.new(query_string),
+      initial_value: Query.new
+    )["data"]
 
     result.should eq({ "foo" => "foo", "bar" => "bar" })
   end
@@ -328,13 +285,12 @@ describe Graphene do
       }
     QUERY
 
-    runtime = Graphene::Execution::Runtime.new(
-      DummySchema,
-      Graphene::Query.new(query_string, operation_name: "allCharges"),
-      initial_value: Query.new
-    )
+    runtime = Graphene::Execution::Runtime.new(DummySchema)
 
-    result = runtime.execute["data"]
+    result = runtime.execute(
+      query: Graphene::Query.new(query_string, operation_name: "allCharges"),
+      initial_value: Query.new
+    )["data"]
 
     result.should eq({ "charges" => [{ "id" => "1" }, { "id" => "2" }, { "id" => "3" }] })
   end

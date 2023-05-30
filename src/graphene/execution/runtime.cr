@@ -5,6 +5,7 @@ require "../schema"
 require "../introspection_system"
 require "../introspection/*"
 require "./resolution_info"
+require "./context"
 
 module Graphene
   module Execution
@@ -21,40 +22,30 @@ module Graphene
       alias IntermediateType = SerializedOutput | Proc(IntermediateType) | Array(IntermediateType) | Hash(String, IntermediateType)
 
       getter schema : Graphene::Schema
-      getter query : Graphene::Query
-      getter initial_value : Resolvable?
 
-      delegate document, to: query
-      delegate context, to: query
       delegate directives, to: schema
 
-      private property current_path : Array(String)
-      private property current_object : Graphene::Types::ObjectType?
-      private property current_field : Graphene::Language::Nodes::Field?
-
-      private property errors : Set(String)
-
-      def initialize(@schema : Graphene::Schema, @query : Graphene::Query, @initial_value : Resolvable? = nil)
-        @current_path = [] of String
-        @errors = Set(String).new
+      def initialize(@schema : Graphene::Schema)
       end
 
-      def execute
-        definitions = document.definitions.select(type: Graphene::Language::Nodes::OperationDefinition)
+      def execute(query : Graphene::Query, initial_value : Resolvable? = nil)
+        definitions = query.document.definitions.select(type: Graphene::Language::Nodes::OperationDefinition)
 
         operation = get_operation(definitions, query.operation_name)
 
-        coerced_variable_values = coerce_variable_values(schema, operation, @query.variables)
+        coerced_variable_values = coerce_variable_values(schema, operation, query.variables)
+
+        context = Execution::Context.new(query)
 
         data = case operation.operation_type
         when "query"
-          execute_query(operation, schema, coerced_variable_values, initial_value)
+          execute_query(context, operation, schema, coerced_variable_values, initial_value)
         when "mutation"
-          execute_mutation(operation, schema, coerced_variable_values, initial_value)
+          execute_mutation(context, operation, schema, coerced_variable_values, initial_value)
         end
 
-        if errors.any?
-          { "data" => data, "errors" => serialize_errors(errors) }
+        if context.errors.any?
+          { "data" => data, "errors" => serialize_errors(context.errors) }
         else
           { "data" => data }
         end
@@ -78,11 +69,11 @@ module Graphene
         end
       end
 
-      private def execute_query(query, schema, coerced_variable_values, initial_value) : SerializedOutput
+      private def execute_query(context, query, schema, coerced_variable_values, initial_value) : SerializedOutput
         if query_type = schema.query
 
           begin
-            result = execute_selection_set(query.selection_set.not_nil!.selections, query_type, initial_value, coerced_variable_values)
+            result = execute_selection_set(context, query.selection_set.not_nil!.selections, query_type, initial_value, coerced_variable_values)
 
             serialize(result)
           rescue FieldError
@@ -114,10 +105,10 @@ module Graphene
         end
       end
 
-      private def execute_mutation(mutation, schema, coerced_variable_values, initial_value)
+      private def execute_mutation(context, mutation, schema, coerced_variable_values, initial_value)
         if mutation_type = schema.mutation
           begin
-            result = execute_selection_set(mutation.selection_set.not_nil!.selections, mutation_type, initial_value, coerced_variable_values)
+            result = execute_selection_set(context, mutation.selection_set.not_nil!.selections, mutation_type, initial_value, coerced_variable_values)
 
             serialize(result)
           rescue FieldError
@@ -126,8 +117,8 @@ module Graphene
         end
       end
 
-      private def execute_selection_set(selection_set, object_type, object_value, variable_values) : Hash(String, IntermediateType)
-        grouped_field_set = collect_fields(object_type, selection_set, variable_values, nil)
+      private def execute_selection_set(context : Execution::Context, selection_set, object_type, object_value, variable_values) : Hash(String, IntermediateType)
+        grouped_field_set = collect_fields(context, object_type, selection_set, variable_values, nil)
 
         partial_results = grouped_field_set.each_with_object({} of String => IntermediateType) do |(key, fields), memo|
           field_name = fields.first.name
@@ -135,7 +126,7 @@ module Graphene
           if field = get_field(object_type, field_name)
             field_type = field.type
 
-            memo[key] = execute_field(object_type, object_value, field.type, fields, variable_values).as(IntermediateType)
+            memo[key] = execute_field(context, object_type, object_value, field.type, fields, variable_values).as(IntermediateType)
           else
             raise "error getting field #{field_name}"
           end
@@ -166,7 +157,7 @@ module Graphene
         nil
       end
 
-      private def execute_field(object_type, object_value, field_type, fields, variable_values) : IntermediateType
+      private def execute_field(context : Execution::Context, object_type, object_value, field_type, fields, variable_values) : IntermediateType
         field = fields.first
         field_name = field.name
 
@@ -196,7 +187,7 @@ module Graphene
 
         resolution_info = ResolutionInfo.new(
           schema: schema,
-          query: query,
+          context: context,
           field: schema_field,
         )
 
@@ -206,21 +197,21 @@ module Graphene
           Proc(IntermediateType).new {
             value.resolve
 
-            @current_object = object_type
-            @current_field = field
+            context.current_object = object_type
+            context.current_field = field
 
-            complete_value(@current_path, field_type, fields, value.value, variable_values).as(IntermediateType)
+            complete_value(context, field_type, fields, value.value, variable_values).as(IntermediateType)
           }
         else
-          @current_object = object_type
-          @current_field = field
+          context.current_object = object_type
+          context.current_field = field
 
-          complete_value(@current_path, field_type, fields, value, variable_values).as(IntermediateType)
+          complete_value(context, field_type, fields, value, variable_values).as(IntermediateType)
         end
       end
 
 
-      private def complete_value(path : Array(String), field_type : Graphene::Types::ObjectType, fields, result, variable_values) : IntermediateType
+      private def complete_value(context : Execution::Context, field_type : Graphene::Types::ObjectType, fields, result, variable_values) : IntermediateType
         return nil if result.nil?
 
         object_type = field_type
@@ -228,34 +219,34 @@ module Graphene
         sub_selection_set = merge_selection_sets(fields)
 
         begin
-          execute_selection_set(sub_selection_set, object_type, result, variable_values).as(IntermediateType)
+          execute_selection_set(context, sub_selection_set, object_type, result, variable_values).as(IntermediateType)
         rescue FieldError
           nil
         end
       end
 
       # TODO: Merge into object above?
-      private def complete_value(path : Array(String), field_type : Graphene::Types::UnionType, fields, result, variable_values)
+      private def complete_value(context : Execution::Context, field_type : Graphene::Types::UnionType, fields, result, variable_values)
         return nil if result.nil?
 
-        object_type = resolve_abstract_type(field_type, result)
+        object_type = resolve_abstract_type(context, field_type, result)
 
         sub_selection_set = merge_selection_sets(fields)
 
-        execute_selection_set(sub_selection_set, object_type, result, variable_values)
+        execute_selection_set(context, sub_selection_set, object_type, result, variable_values)
       end
 
-      private def complete_value(path : Array(String), field_type : Graphene::Types::InterfaceType, fields, result, variable_values)
+      private def complete_value(context : Execution::Context, field_type : Graphene::Types::InterfaceType, fields, result, variable_values)
         return nil if result.nil?
 
-        object_type = resolve_abstract_type(field_type, result)
+        object_type = resolve_abstract_type(context, field_type, result)
 
         sub_selection_set = merge_selection_sets(fields)
 
-        execute_selection_set(sub_selection_set, object_type, result, variable_values)
+        execute_selection_set(context, sub_selection_set, object_type, result, variable_values)
       end
 
-      private def complete_value(path : Array(String), field_type : Graphene::Types::ScalarType, fields, result, variable_values) : IntermediateType
+      private def complete_value(context : Execution::Context, field_type : Graphene::Types::ScalarType, fields, result, variable_values) : IntermediateType
         return nil if result.nil?
 
         field_type.serialize(result).as(IntermediateType)
@@ -265,7 +256,7 @@ module Graphene
       # If a List type wraps a Non-Null type, and one of the elements of that list resolves to null,
       # then the entire list must resolve to null. If the List type is also wrapped in a Non-Null,
       # the field error continues to propagate upwards.
-      private def complete_value(path : Array(String), field_type : Graphene::Types::ListType, fields, result, variable_values) : IntermediateType
+      private def complete_value(context : Execution::Context, field_type : Graphene::Types::ListType, fields, result, variable_values) : IntermediateType
         return nil if result.nil?
 
         if result.is_a?(Array)
@@ -273,9 +264,9 @@ module Graphene
 
           partial_results = result.map do |result_item|
             if result_item.is_a?(Proc(IntermediateType))
-              complete_value(path, inner_type, fields, result_item.call, variable_values).as(IntermediateType)
+              complete_value(context, inner_type, fields, result_item.call, variable_values).as(IntermediateType)
             else
-              complete_value(path, inner_type, fields, result_item, variable_values).as(IntermediateType)
+              complete_value(context, inner_type, fields, result_item, variable_values).as(IntermediateType)
             end
           end
 
@@ -297,23 +288,23 @@ module Graphene
         end
       end
 
-      private def complete_value(path : Array(String), field_type : Graphene::Types::EnumType, fields, result, variable_values) : IntermediateType
+      private def complete_value(context : Execution::Context, field_type : Graphene::Types::EnumType, fields, result, variable_values) : IntermediateType
         return nil if result.nil?
 
         if enum_value = field_type.values.find(&.value.==(result))
           enum_value.name.as(IntermediateType)
         else
-          raise FieldError.new("`#{current_object.try(&.name)}.#{current_field.try(&.name)}` returned \"#{result}\" at ``, but this isn't a valid value for `#{field_type.name}`. Update the field or resolver to return one of the `#{field_type.name}`'s values instead.")
+          raise FieldError.new("`#{context.current_object.try(&.name)}.#{context.current_field.try(&.name)}` returned \"#{result}\" at ``, but this isn't a valid value for `#{field_type.name}`. Update the field or resolver to return one of the `#{field_type.name}`'s values instead.")
         end
       end
 
-      private def complete_value(path : Array(String), field_type : Graphene::Types::NonNullType, fields, result, variable_values) : IntermediateType
-        completed_result = complete_value(path, field_type.of_type, fields, result, variable_values)
+      private def complete_value(context : Execution::Context, field_type : Graphene::Types::NonNullType, fields, result, variable_values) : IntermediateType
+        completed_result = complete_value(context, field_type.of_type, fields, result, variable_values)
 
         if completed_result.nil?
           field = fields.first
 
-          errors << "Cannot return null for non-nullable field #{current_object.try(&.name)}.#{current_field.try(&.name)}"
+          context.errors << "Cannot return null for non-nullable field #{context.current_object.try(&.name)}.#{context.current_field.try(&.name)}"
 
           raise FieldError.new
         else
@@ -321,13 +312,13 @@ module Graphene
         end
       end
 
-      private def complete_value(path : Array(String), field_type : Graphene::Types::LateBoundType, fields, result, variable_values) : IntermediateType
+      private def complete_value(context : Execution::Context, field_type : Graphene::Types::LateBoundType, fields, result, variable_values) : IntermediateType
         unwrapped_type = get_type(field_type.typename)
 
-        complete_value(path, unwrapped_type, fields, result, variable_values)
+        complete_value(context, unwrapped_type, fields, result, variable_values)
       end
 
-      private def complete_value(path : Array(String), field_type, fields, result, variable_values) : IntermediateType
+      private def complete_value(context : Execution::Context, field_type, fields, result, variable_values) : IntermediateType
         raise "should not be reached"
       end
 
@@ -344,7 +335,7 @@ module Graphene
         schema.get_type_from_ast(ast)
       end
 
-      private def collect_fields(object_type, selection_set, variable_values, visited_fragments)
+      private def collect_fields(context : Execution::Context, object_type, selection_set, variable_values, visited_fragments)
         grouped_fields = {} of String => Array(Graphene::Language::Nodes::Field)
         visited_fragments ||= [] of String
 
@@ -376,7 +367,7 @@ module Graphene
 
             visited_fragments << fragment_spread_name
 
-            fragments = document.definitions.select(type: Graphene::Language::Nodes::FragmentDefinition)
+            fragments = context.document.definitions.select(type: Graphene::Language::Nodes::FragmentDefinition)
 
             next unless fragment = fragments.find(&.name.===(fragment_spread_name))
 
@@ -385,7 +376,7 @@ module Graphene
             next unless does_fragment_type_apply(object_type, fragment_type)
 
             fragment_selection_set = fragment.selection_set.not_nil!.selections
-            fragment_grouped_field_set = collect_fields(object_type, fragment_selection_set, variable_values, visited_fragments)
+            fragment_grouped_field_set = collect_fields(context, object_type, fragment_selection_set, variable_values, visited_fragments)
             fragment_grouped_field_set.each do |response_key, fields|
               grouped_fields[response_key] ||= [] of Graphene::Language::Nodes::Field
               grouped_fields[response_key].concat(fields)
@@ -396,7 +387,7 @@ module Graphene
             next if !fragment_type.nil? && !does_fragment_type_apply(object_type, fragment_type)
 
             fragment_selection_set = selection.selection_set.not_nil!.selections
-            fragment_grouped_field_set = collect_fields(object_type, fragment_selection_set, variable_values, visited_fragments)
+            fragment_grouped_field_set = collect_fields(context, object_type, fragment_selection_set, variable_values, visited_fragments)
             fragment_grouped_field_set.each do |response_key, fields|
               grouped_fields[response_key] ||= [] of Graphene::Language::Nodes::Field
               grouped_fields[response_key].concat(fields)
@@ -529,9 +520,9 @@ module Graphene
         end
       end
 
-      private def resolve_abstract_type(field_type, result)
+      private def resolve_abstract_type(context, field_type, result)
         # if resolved_type = type_resolvers[field_type.name].resolve_type(result, context)
-        if resolved_type = field_type.type_resolver.resolve_type(result, context)
+        if resolved_type = field_type.type_resolver.resolve_type(result, context.query.context)
           resolved_type
         else
           raise "abstract type could not be resolved"

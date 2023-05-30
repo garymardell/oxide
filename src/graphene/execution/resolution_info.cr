@@ -2,10 +2,12 @@ module Graphene
   module Execution
     struct ResolutionInfo
       getter schema : Graphene::Schema
-      getter query : Graphene::Query
+      getter context : Execution::Context
       getter field : Graphene::Field?
 
-      def initialize(@schema, @query, @field = nil)
+      delegate query, to: context
+
+      def initialize(@schema, @context, @field = nil)
       end
     end
   end
