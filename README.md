@@ -49,7 +49,6 @@ This library was originally built to experiment with building dynamic schemas on
   - [ ] Validating responses
   - [ ] Generating schema + resolvers
 - [ ] Validate scalar coercion and serialization is compliant
-- [ ] Ensure runtime and validation pipeline can be reused across queries for the same schema. Move stored state into `ExecutionContext` and `ValidationContext`?
 
 ### Features
 
