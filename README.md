@@ -41,7 +41,7 @@ This library was originally built to experiment with building dynamic schemas on
   - [ ] Variables
     - [x] Variable Uniqueness
     - [x] Variables are Input Types
-    - [ ] All Variable Uses Defined
+    - [x] All Variable Uses Defined
     - [ ] All Variables Used
     - [ ] All Variable Usages are Allowed
 - [ ] Custom directives
