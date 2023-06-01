@@ -32,7 +32,7 @@ module Graphene
       end
 
       def leave(node)
-        context_visitor.enter(node)
+        context_visitor.leave(node)
 
         rules.each do |rule|
           rule.leave(node, context)

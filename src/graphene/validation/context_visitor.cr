@@ -52,6 +52,7 @@ module Graphene
       #   break;
 
       def enter(node : Graphene::Language::Nodes::Directive)
+        context.directive = context.schema.directives.find { |directive| directive.name == node.name }
       end
 
       # case Kind.OPERATION_DEFINITION: {
@@ -135,17 +136,18 @@ module Graphene
 
       def enter(node : Graphene::Language::Nodes::Argument)
         definition = nil
-        type = nil
 
-        if field_tuple = context.field_definition
+        if directive = context.directive
+          definition = directive.arguments[node.name]?
+        elsif field_tuple = context.field_definition
           name, field = field_tuple
-
           definition = field.arguments[node.name]?
-          type = definition.try &.type
         end
 
+        type = definition.try &.type
+
         context.argument = definition
-        # context.default_value_stack
+        # context.default_value_stack <<
         context.input_type_stack << (type.try &.input_type? ? type : nil)
       end
 
@@ -223,6 +225,11 @@ module Graphene
       def leave(node : Graphene::Language::Nodes::VariableDefinition)
         context.input_type_stack.pop
       end
+
+      def leave(node : Graphene::Language::Nodes::Directive)
+        context.directive = nil
+      end
+
 
       # default:
       # // Ignore other nodes
