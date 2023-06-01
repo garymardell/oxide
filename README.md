@@ -15,7 +15,7 @@ This library was originally built to experiment with building dynamic schemas on
 - Static validation (https://spec.graphql.org/October2021/#sec-Validation)
   - [x] Documents
     - [ ] ~~Executable Definitions~~ _Currently all definitions are executable so enforced by the type system_
-  - [ ] Operations
+  - [x] Operations
     - [x] Named Operation Definitions
     - [x] Anonymous Operation Definitions
     - [ ] ~~Subscription Operation Definitions~~ _Subscriptions are not supported at this time_
