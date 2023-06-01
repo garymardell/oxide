@@ -207,6 +207,18 @@ DogType = Graphene::Types::ObjectType.new(
     ),
     "owner" => Graphene::Field.new(
       type: HumanType
+    ),
+  }
+)
+
+FindDogInputType = Graphene::Types::InputObjectType.new(
+  name: "FindDogInput",
+  input_fields: {
+    "name" => Graphene::Argument.new(
+      type: Graphene::Types::StringType.new
+    ),
+    "owner" => Graphene::Argument.new(
+      type: Graphene::Types::StringType.new
     )
   }
 )
@@ -219,6 +231,14 @@ ValidationsSchema = Graphene::Schema.new(
       "dog" => Graphene::Field.new(
         type: DogType
       ),
+      "findDog" => Graphene::Field.new(
+        arguments: {
+          "searchBy" => Graphene::Argument.new(
+            type: FindDogInputType
+          )
+        },
+        type: DogType
+      ),
       # Extended for LeafFieldSelections test
       "human" => Graphene::Field.new(
         type: HumanType
@@ -228,6 +248,16 @@ ValidationsSchema = Graphene::Schema.new(
       ),
       "catOrDog" => Graphene::Field.new(
         type: CatOrDogUnion
+      ),
+      "booleanList" => Graphene::Field.new(
+        arguments: {
+          "booleanListArg" => Graphene::Argument.new(
+            type: Graphene::Types::ListType.new(
+              of_type: Graphene::Types::NonNullType.new(of_type: Graphene::Types::BooleanType.new)
+            )
+          )
+        },
+        type: Graphene::Types::BooleanType.new
       )
     }
   ),

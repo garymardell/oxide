@@ -36,7 +36,7 @@ module Graphene
         when "__Schema", "__Type", "__InputValue", "__Directive", "__EnumValue", "__Field"
           IntrospectionSystem.types[typename]
         else
-          schema.get_type(typename)
+          schema.get_type!(typename)
         end
       end
     end

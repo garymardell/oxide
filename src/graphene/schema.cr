@@ -62,6 +62,10 @@ module Graphene
     end
 
     def get_type(name)
+      type_map[name]?
+    end
+
+    def get_type!(name)
       type_map[name]
     end
 
@@ -72,11 +76,11 @@ module Graphene
       when Graphene::Language::Nodes::NonNullType
         inner_type = get_type_from_ast(ast_node.of_type)
 
-        Graphene::Types::NonNullType.new(of_type: inner_type)
+        inner_type && Graphene::Types::NonNullType.new(of_type: inner_type)
       when Graphene::Language::Nodes::ListType
         inner_type = get_type_from_ast(ast_node.of_type)
 
-        Graphene::Types::ListType.new(of_type: inner_type)
+        inner_type && Graphene::Types::ListType.new(of_type: inner_type)
       else
         raise "Couldn't get type #{ast_node}"
       end

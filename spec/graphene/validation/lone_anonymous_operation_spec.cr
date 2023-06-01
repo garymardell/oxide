@@ -1,17 +1,41 @@
 require "../../spec_helper"
 
 describe Graphene::Validation::LoneAnonymousOperation do
-  it "gives an error if an anonymous and named operations are both provided" do
+  it "example #108" do
     query_string = <<-QUERY
       {
-        dog(name: "George") {
-          nickname
+        dog {
+          name
+        }
+      }
+    QUERY
+
+    query = Graphene::Query.new(query_string)
+
+    pipeline = Graphene::Validation::Pipeline.new(
+      ValidationsSchema,
+      query,
+      [Graphene::Validation::LoneAnonymousOperation.new.as(Graphene::Validation::Rule)]
+    )
+
+    pipeline.execute
+
+    pipeline.errors.size.should eq(0)
+  end
+
+  it "counter example #109" do
+    query_string = <<-QUERY
+      {
+        dog {
+          name
         }
       }
 
-      query GetDog {
-        dog(name: "Dave") {
-          nickname
+      query getName {
+        dog {
+          owner {
+            name
+          }
         }
       }
     QUERY

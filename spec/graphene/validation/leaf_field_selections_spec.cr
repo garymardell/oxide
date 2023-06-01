@@ -1,7 +1,27 @@
 require "../../spec_helper"
 
 describe Graphene::Validation::LeafFieldSelections do
-  it "gives an error if subselecting on leaf field" do
+  it "counter example #126" do
+    query_string = <<-QUERY
+      fragment scalarSelection on Dog {
+        barkVolume
+      }
+    QUERY
+
+    query = Graphene::Query.new(query_string)
+
+    pipeline = Graphene::Validation::Pipeline.new(
+      ValidationsSchema,
+      query,
+      [Graphene::Validation::LeafFieldSelections.new.as(Graphene::Validation::Rule)]
+    )
+
+    pipeline.execute
+
+    pipeline.errors.size.should eq(0)
+  end
+
+  it "counter example #127" do
     query_string = <<-QUERY
       fragment scalarSelectionsNotAllowedOnInt on Dog {
         barkVolume {
@@ -24,50 +44,16 @@ describe Graphene::Validation::LeafFieldSelections do
     pipeline.errors.should contain(Graphene::Error.new("Cannot select fields on leaf field \"barkVolume\""))
   end
 
-  it "gives an error if no subselection on object" do
+  it "counter example #129" do
     query_string = <<-QUERY
       query directQueryOnObjectWithoutSubFields {
         human
       }
-    QUERY
 
-    query = Graphene::Query.new(query_string)
-
-    pipeline = Graphene::Validation::Pipeline.new(
-      ValidationsSchema,
-      query,
-      [Graphene::Validation::LeafFieldSelections.new.as(Graphene::Validation::Rule)]
-    )
-
-    pipeline.execute
-
-    pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Graphene::Error.new("Non leaf fields must have a field subselection"))
-  end
-
-  it "gives an error if no subselection on interface" do
-    query_string = <<-QUERY
       query directQueryOnInterfaceWithoutSubFields {
         pet
       }
-    QUERY
 
-    query = Graphene::Query.new(query_string)
-
-    pipeline = Graphene::Validation::Pipeline.new(
-      ValidationsSchema,
-      query,
-      [Graphene::Validation::LeafFieldSelections.new.as(Graphene::Validation::Rule)]
-    )
-
-    pipeline.execute
-
-    pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Graphene::Error.new("Non leaf fields must have a field subselection"))
-  end
-
-  it "gives an error if no subselection on union" do
-    query_string = <<-QUERY
       query directQueryOnUnionWithoutSubFields {
         catOrDog
       }
@@ -83,7 +69,29 @@ describe Graphene::Validation::LeafFieldSelections do
 
     pipeline.execute
 
-    pipeline.errors.size.should eq(1)
+    pipeline.errors.size.should eq(3)
     pipeline.errors.should contain(Graphene::Error.new("Non leaf fields must have a field subselection"))
+  end
+
+  it "example #130" do
+    query_string = <<-QUERY
+      query directQueryOnObjectWithSubFields {
+        human {
+          name
+        }
+      }
+    QUERY
+
+    query = Graphene::Query.new(query_string)
+
+    pipeline = Graphene::Validation::Pipeline.new(
+      ValidationsSchema,
+      query,
+      [Graphene::Validation::LeafFieldSelections.new.as(Graphene::Validation::Rule)]
+    )
+
+    pipeline.execute
+
+    pipeline.errors.size.should eq(0)
   end
 end

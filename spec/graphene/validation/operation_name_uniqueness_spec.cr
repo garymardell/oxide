@@ -1,23 +1,78 @@
-# For each operation definition operation in the document:
-#   -Let operationName be the name of operation.
-#   - If operationName exists:
-#     - Let operations be all operation definitions in the document named operationName.
-#     - operations must be a set of one.
-
 require "../../spec_helper"
 
 describe Graphene::Validation::OperationNameUniqueness do
-  it "gives an error if multiple operation definitions have the same name" do
+  it "example #105" do
     query_string = <<-QUERY
-      query GetDog {
-        dog(name: "George") {
-          nickname
+      query getDogName {
+        dog {
+          name
         }
       }
 
-      query GetDog {
-        dog(name: "Dave") {
-          nickname
+      query getOwnerName {
+        dog {
+          owner {
+            name
+          }
+        }
+      }
+    QUERY
+
+    query = Graphene::Query.new(query_string)
+
+    pipeline = Graphene::Validation::Pipeline.new(
+      ValidationsSchema,
+      query,
+      [Graphene::Validation::OperationNameUniqueness.new.as(Graphene::Validation::Rule)]
+    )
+
+    pipeline.execute
+
+    pipeline.errors.size.should eq(0)
+  end
+
+  it "counter example #106" do
+    query_string = <<-QUERY
+      query getName {
+        dog {
+          name
+        }
+      }
+
+      query getName {
+        dog {
+          owner {
+            name
+          }
+        }
+      }
+    QUERY
+
+    query = Graphene::Query.new(query_string)
+
+    pipeline = Graphene::Validation::Pipeline.new(
+      ValidationsSchema,
+      query,
+      [Graphene::Validation::OperationNameUniqueness.new.as(Graphene::Validation::Rule)]
+    )
+
+    pipeline.execute
+
+    pipeline.errors.size.should eq(1)
+    pipeline.errors.should contain(Graphene::Error.new("Multiple operations with the same name"))
+  end
+
+  it "counter example #107" do
+    query_string = <<-QUERY
+      query dogOperation {
+        dog {
+          name
+        }
+      }
+
+      mutation dogOperation {
+        mutateDog {
+          id
         }
       }
     QUERY
