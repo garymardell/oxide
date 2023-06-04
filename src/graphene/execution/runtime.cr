@@ -4,18 +4,13 @@ require "../query"
 require "../schema"
 require "../introspection_system"
 require "../introspection/*"
+require "../error"
 require "./resolution_info"
 require "./context"
 
 module Graphene
   module Execution
     class Runtime
-      class FieldError < Exception
-      end
-
-      class NullError < FieldError
-      end
-
       alias IntermediateType = SerializedOutput | Proc(IntermediateType) | Array(IntermediateType) | Hash(String, IntermediateType)
 
       getter schema : Graphene::Schema
@@ -26,19 +21,23 @@ module Graphene
       end
 
       def execute(query : Graphene::Query, initial_value : Resolvable? = nil)
-        definitions = query.document.definitions.select(type: Graphene::Language::Nodes::OperationDefinition)
-
-        operation = get_operation(definitions, query.operation_name)
-
-        coerced_variable_values = coerce_variable_values(schema, operation, query.variables)
-
         context = Execution::Context.new(query)
 
-        data = case operation.operation_type
-        when "query"
-          execute_query(context, operation, schema, coerced_variable_values, initial_value)
-        when "mutation"
-          execute_mutation(context, operation, schema, coerced_variable_values, initial_value)
+        begin
+          definitions = query.document.definitions.select(type: Graphene::Language::Nodes::OperationDefinition)
+
+          operation = get_operation(definitions, query.operation_name)
+
+          coerced_variable_values = coerce_variable_values(schema, operation, query.variables)
+
+          data = case operation.operation_type
+          when "query"
+            execute_query(context, operation, schema, coerced_variable_values, initial_value)
+          when "mutation"
+            execute_mutation(context, operation, schema, coerced_variable_values, initial_value)
+          end
+        rescue e : Error
+          context.errors << e
         end
 
         if context.errors.any?
@@ -52,7 +51,7 @@ module Graphene
         if definitions.one?
           definitions.first
         else
-          raise "operation definition not found"
+          raise InvalidOperationError.new("operation definition not found")
         end
       end
 
@@ -62,7 +61,7 @@ module Graphene
         if definition
           definition
         else
-          raise "operation definition not found"
+          raise InvalidOperationError.new("operation definition not found")
         end
       end
 
@@ -73,7 +72,8 @@ module Graphene
             result = execute_selection_set(context, query.selection_set.not_nil!.selections, query_type, initial_value, coerced_variable_values)
 
             serialize(result)
-          rescue FieldError
+          rescue e : FieldError
+            context.errors << e
             nil
           end
         end
@@ -96,10 +96,8 @@ module Graphene
         end
       end
 
-      def serialize_errors(errors : Set(String))
-        errors.map do |error|
-          { "message" => error }
-        end
+      def serialize_errors(errors : Set(Error))
+        errors.map &.to_h
       end
 
       private def execute_mutation(context, mutation, schema, coerced_variable_values, initial_value)
@@ -108,7 +106,8 @@ module Graphene
             result = execute_selection_set(context, mutation.selection_set.not_nil!.selections, mutation_type, initial_value, coerced_variable_values)
 
             serialize(result)
-          rescue FieldError
+          rescue e : FieldError
+            context.errors << e
             nil
           end
         end
@@ -217,7 +216,8 @@ module Graphene
 
         begin
           execute_selection_set(context, sub_selection_set, object_type, result, variable_values).as(IntermediateType)
-        rescue FieldError
+        rescue e : FieldError
+          context.errors << e
           nil
         end
       end
@@ -301,9 +301,7 @@ module Graphene
         if completed_result.nil?
           field = fields.first
 
-          context.errors << "Cannot return null for non-nullable field #{context.current_object.try(&.name)}.#{context.current_field.try(&.name)}"
-
-          raise FieldError.new
+          raise FieldError.new("Cannot return null for non-nullable field #{context.current_object.try(&.name)}.#{context.current_field.try(&.name)}")
         else
           completed_result.as(IntermediateType)
         end

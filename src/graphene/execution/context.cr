@@ -9,11 +9,11 @@ module Graphene
       property current_object : Graphene::Types::ObjectType?
       property current_field : Graphene::Language::Nodes::Field?
 
-      property errors : Set(String)
+      property errors : Set(Error)
 
       def initialize(@query : Graphene::Query)
         @current_path = [] of String
-        @errors = Set(String).new
+        @errors = Set(Error).new
       end
     end
   end
