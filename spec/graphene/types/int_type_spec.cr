@@ -15,21 +15,21 @@ describe Graphene::Types::IntType do
     end
 
     it "raises if Int64 value is out of Int32 bounds" do
-      expect_raises(Graphene::Execution::Runtime::InputCoercionError) do
+      expect_raises(Graphene::InputCoercionError) do
         build_int_type.coerce(Int32::MAX.to_i64 + 1)
       end
 
-      expect_raises(Graphene::Execution::Runtime::InputCoercionError) do
+      expect_raises(Graphene::InputCoercionError) do
         build_int_type.coerce(Int32::MIN.to_i64 - 1)
       end
     end
 
     it "raises exception on non integer type" do
-      expect_raises(Graphene::Execution::Runtime::InputCoercionError) do
+      expect_raises(Graphene::InputCoercionError) do
         build_int_type.coerce("2134543")
       end
 
-      expect_raises(Graphene::Execution::Runtime::InputCoercionError) do
+      expect_raises(Graphene::InputCoercionError) do
         build_int_type.coerce(23.4)
       end
     end

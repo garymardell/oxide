@@ -50,7 +50,7 @@ module Graphene
       end
 
       def coerce(value) : CoercedInput
-        raise Execution::Runtime::InputCoercionError.new("INPUT_OBJECT did not receive a hash")
+        raise InputCoercionError.new("INPUT_OBJECT did not receive a hash")
       end
 
       def serialize(value) : SerializedOutput

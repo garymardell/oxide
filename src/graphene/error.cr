@@ -1,10 +1,5 @@
 module Graphene
-  class Error
-    property message : String?
-
-    def initialize(@message = nil)
-    end
-
+  class Error < Exception
     def to_json(builder : JSON::Builder)
       builder.object do
         builder.field "message", message
@@ -12,5 +7,8 @@ module Graphene
     end
 
     def_equals_and_hash @message
+  end
+
+  class InputCoercionError < Error
   end
 end

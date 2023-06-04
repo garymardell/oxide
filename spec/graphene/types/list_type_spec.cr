@@ -15,7 +15,7 @@ describe Graphene::Types::ListType do
 
       int_list.coerce([1, 2, 3]).should eq([1, 2, 3])
 
-      expect_raises(Graphene::Execution::Runtime::InputCoercionError) do
+      expect_raises(Graphene::InputCoercionError) do
         int_list.coerce([1, "b", true])
       end
 

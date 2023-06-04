@@ -10,9 +10,6 @@ require "./context"
 module Graphene
   module Execution
     class Runtime
-      class InputCoercionError < Exception
-      end
-
       class FieldError < Exception
       end
 
