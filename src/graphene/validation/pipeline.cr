@@ -69,6 +69,7 @@ module Graphene
           # Directives
           DirectivesAreDefined.new.as(Rule),
           DirectivesAreInValidLocations.new.as(Rule),
+          DirectivesAreUniquePerLocation.new.as(Rule),
           # Variables
           VariableUniqueness.new.as(Rule),
           VariablesAreInputTypes.new.as(Rule),

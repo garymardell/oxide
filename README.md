@@ -34,10 +34,10 @@ This library was originally built to experiment with building dynamic schemas on
     - [ ] Input Object Field Names
     - [ ] Input Object Field Uniqeness
     - [ ] Input Object Required Fields
-  - [ ] Directives
+  - [x] Directives
     - [x] Directives Are Defined
     - [x] Directives Are In Valid Locations
-    - [ ] Directives Are Unique Per Location
+    - [x] Directives Are Unique Per Location
   - [ ] Variables
     - [x] Variable Uniqueness
     - [x] Variables are Input Types
