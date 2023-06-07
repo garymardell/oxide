@@ -24,6 +24,25 @@ module Graphene
       ENUM_VALUE
       INPUT_OBJECT
       INPUT_FIELD_DEFINITION
+
+      def to_human
+        case self
+        when QUERY
+          "queries"
+        when MUTATION
+          "mutations"
+        when SUBSCRIPTION
+          "subscriptions"
+        when FIELD
+          "fields"
+        when FRAGMENT_SPREAD
+          "fragment spreads"
+        when INLINE_FRAGMENT
+          "inline fragments"
+        else
+          to_s
+        end
+      end
     end
 
     abstract def name : String
