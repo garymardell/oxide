@@ -10,6 +10,10 @@ class TransactionTypeResolver < Graphene::TypeResolver
   def resolve_type(object : Refund, context)
     RefundType
   end
+
+  def resolve_type(object, context)
+    raise "Could not resolve transaction type"
+  end
 end
 
 TransactionInterface = Graphene::Types::InterfaceType.new(
@@ -103,6 +107,10 @@ class PaymentMethodTypeResolver < Graphene::TypeResolver
 
   def resolve_type(object : BankAccount, context)
     BankAccountType
+  end
+
+  def resolve_type(object, context)
+    raise "Could not resolve payment method type"
   end
 end
 

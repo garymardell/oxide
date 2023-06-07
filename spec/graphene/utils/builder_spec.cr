@@ -6,6 +6,9 @@ class BuilderResolver < Graphene::Resolver
 end
 
 class BuilderTypeResolver < Graphene::TypeResolver
+  def resolve_type(object, context)
+    nil
+  end
 end
 
 describe Graphene::Utils::Builder do
