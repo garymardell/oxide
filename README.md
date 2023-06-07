@@ -75,7 +75,7 @@ This library was originally built to experiment with building dynamic schemas on
   - [x] @skip
   - [x] @include
   - [x] @deprecated
-  - [ ] @specifiedBy
+  - [x] @specifiedBy
 
 #### Execution
 
