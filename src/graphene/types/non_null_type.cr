@@ -17,6 +17,10 @@ module Graphene
         end
       end
 
+      def name
+        of_type.name
+      end
+
       def description
       end
 

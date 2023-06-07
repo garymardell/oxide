@@ -59,7 +59,7 @@ describe Graphene::Validation::OperationNameUniqueness do
     pipeline.execute
 
     pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Graphene::Error.new("Multiple operations with the same name"))
+    pipeline.errors.should contain(Graphene::Error.new("Operation name \"getName\" must be unique"))
   end
 
   it "counter example #107" do
@@ -88,6 +88,6 @@ describe Graphene::Validation::OperationNameUniqueness do
     pipeline.execute
 
     pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Graphene::Error.new("Multiple operations with the same name"))
+    pipeline.errors.should contain(Graphene::Error.new("Operation name \"dogOperation\" must be unique"))
   end
 end

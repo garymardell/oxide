@@ -21,7 +21,7 @@ describe Graphene::Validation::VariableUniqueness do
     pipeline.execute
 
     pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Graphene::Error.new("Multiple variables with the same name \"atOtherHomes\""))
+    pipeline.errors.should contain(Graphene::Error.new("There can only be one variable named \"atOtherHomes\""))
   end
 
   it "example #169" do

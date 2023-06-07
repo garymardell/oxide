@@ -42,7 +42,7 @@ describe Graphene::Validation::ArgumentNames do
     pipeline.execute
 
     pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Graphene::Error.new("Unknown argument \"command\" on field \"Dog.doesKnowCommand\""))
+    pipeline.errors.should contain(Graphene::Error.new("Field 'doesKnowCommand' doesn't accept argument 'command'"))
   end
 
   it "counter example #133" do
@@ -63,7 +63,7 @@ describe Graphene::Validation::ArgumentNames do
     pipeline.execute
 
     pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Graphene::Error.new("Unknown argument \"unless\" on directive \"include\""))
+    pipeline.errors.should contain(Graphene::Error.new("Directive 'include' doesn't accept argument 'unless'"))
   end
 
   # TODO: example #135

@@ -63,9 +63,9 @@ describe Graphene::Validation::VariablesAreInputTypes do
     pipeline.execute
 
     pipeline.errors.size.should eq(4)
-    pipeline.errors.should contain(Graphene::Error.new("Variable \"cat\" must be an input type"))
-    pipeline.errors.should contain(Graphene::Error.new("Variable \"dog\" must be an input type"))
-    pipeline.errors.should contain(Graphene::Error.new("Variable \"pets\" must be an input type"))
-    pipeline.errors.should contain(Graphene::Error.new("Variable \"catOrDog\" must be an input type"))
+    pipeline.errors.should contain(Graphene::Error.new("Cat isn't a valid input type (on $cat)"))
+    pipeline.errors.should contain(Graphene::Error.new("Dog isn't a valid input type (on $dog)"))
+    pipeline.errors.should contain(Graphene::Error.new("Pet isn't a valid input type (on $pets)"))
+    pipeline.errors.should contain(Graphene::Error.new("CatOrDog isn't a valid input type (on $catOrDog)"))
   end
 end

@@ -23,8 +23,8 @@ describe Graphene::Validation::FieldSelections do
     pipeline.execute
 
     pipeline.errors.size.should eq(2)
-    pipeline.errors.should contain(Graphene::Error.new("Field \"meowVolume\" does not exist on \"Dog\""))
-    pipeline.errors.should contain(Graphene::Error.new("Field \"kawVolume\" does not exist on \"Dog\""))
+    pipeline.errors.should contain(Graphene::Error.new("Field 'meowVolume' doesn't exist on type 'Dog'"))
+    pipeline.errors.should contain(Graphene::Error.new("Field 'kawVolume' doesn't exist on type 'Dog'"))
   end
 
   it "example #116" do
@@ -65,7 +65,7 @@ describe Graphene::Validation::FieldSelections do
     pipeline.execute
 
     pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Graphene::Error.new("Field \"nickname\" does not exist on \"Pet\""))
+    pipeline.errors.should contain(Graphene::Error.new("Field 'nickname' doesn't exist on type 'Pet'"))
   end
 
   it "example #118" do
@@ -113,6 +113,6 @@ describe Graphene::Validation::FieldSelections do
     pipeline.execute
 
     pipeline.errors.size.should eq(2)
-    pipeline.errors.should contain(Graphene::Error.new("Field \"name\" can not be selected on union type \"CatOrDog\""))
+    pipeline.errors.should contain(Graphene::Error.new("Selections can't be made directly on unions (see selections on CatOrDog)"))
   end
 end

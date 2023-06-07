@@ -16,7 +16,7 @@ module Graphene
 
       def leave(node : Graphene::Language::Nodes::Document, context)
         if @operations.size > 0 && @anonymous_operations.size > 0
-          context.errors << Error.new("Cannot provide both anonymous and named operations")
+          context.errors << Error.new("Operation name is required when multiple operations are present")
         end
       end
     end

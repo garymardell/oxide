@@ -18,6 +18,10 @@ module Graphene
         end
       end
 
+      def name
+        "[#{of_type.name}]"
+      end
+
       def kind
         "LIST"
       end

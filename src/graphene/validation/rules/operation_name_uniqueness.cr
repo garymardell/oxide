@@ -8,7 +8,7 @@ module Graphene
       def enter(node : Graphene::Language::Nodes::OperationDefinition, context)
         if name = node.name
           if @operation_names.includes?(name)
-            context.errors << Error.new("Multiple operations with the same name")
+            context.errors << Error.new("Operation name \"#{name}\" must be unique")
           else
             @operation_names << name
           end

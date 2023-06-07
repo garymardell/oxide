@@ -10,13 +10,14 @@ module Graphene
             selection_set = node.selection_set
 
             unless selection_set.nil? || selection_set.selections.empty?
-              context.errors << Error.new("Cannot select fields on leaf field \"#{node.name}\"")
+              selection_names = selection_set.selections.select(Graphene::Language::Nodes::Field).map(&.name)
+              context.errors << Error.new("Selections can't be made on scalars (field '#{node.name}' returns #{selection_type.name} but has selections [#{selection_names.join(",")}])")
             end
           when Types::ObjectType, Types::InterfaceType, Types::UnionType
             selection_set = node.selection_set
 
             if selection_set.nil? || selection_set.selections.empty?
-              context.errors << Error.new("Non leaf fields must have a field subselection")
+              context.errors << Error.new("Field must have selections (field '#{node.name}' returns #{selection_type.name} but has no selections. Did you mean '#{node.name} { ... }'?)")
             end
           end
         end

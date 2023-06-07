@@ -12,7 +12,7 @@ module Graphene
 
         unless definition
           if directive = context.directive
-            context.errors << Error.new("Unknown argument \"#{node.name}\" on directive \"#{directive.name}\"")
+            context.errors << Error.new("Directive '#{directive.name}' doesn't accept argument '#{node.name}'")
           elsif field_definition && parent_type
             field_name, field = field_definition
 
@@ -20,7 +20,7 @@ module Graphene
               parent_type.name
             end
 
-            context.errors << Error.new("Unknown argument \"#{node.name}\" on field \"#{type_name}.#{field_name}\"")
+            context.errors << Error.new("Field '#{field_name}' doesn't accept argument '#{node.name}'")
           end
         end
       end

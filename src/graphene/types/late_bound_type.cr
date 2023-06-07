@@ -13,6 +13,10 @@ module Graphene
         unwrapped_type.resolve(field_name, argument_values, context, resolution_info)
       end
 
+      def name
+        "LateBound"
+      end
+
       def description
       end
 

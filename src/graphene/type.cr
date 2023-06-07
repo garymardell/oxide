@@ -6,6 +6,7 @@ module Graphene
     include Visitable
     include Resolvable
 
+    abstract def name
     abstract def description
     abstract def coerce(value) : CoercedInput
     abstract def serialize(value) : SerializedOutput

@@ -1,7 +1,7 @@
 require "../../spec_helper"
 
 describe Graphene::Validation::LeafFieldSelections do
-  it "counter example #126" do
+  it "example #126" do
     query_string = <<-QUERY
       fragment scalarSelection on Dog {
         barkVolume
@@ -41,7 +41,7 @@ describe Graphene::Validation::LeafFieldSelections do
     pipeline.execute
 
     pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Graphene::Error.new("Cannot select fields on leaf field \"barkVolume\""))
+    pipeline.errors.should contain(Graphene::Error.new("Selections can't be made on scalars (field 'barkVolume' returns Int but has selections [sinceWhen])"))
   end
 
   it "counter example #129" do
@@ -70,7 +70,9 @@ describe Graphene::Validation::LeafFieldSelections do
     pipeline.execute
 
     pipeline.errors.size.should eq(3)
-    pipeline.errors.should contain(Graphene::Error.new("Non leaf fields must have a field subselection"))
+    pipeline.errors.should contain(Graphene::Error.new("Field must have selections (field 'human' returns Human but has no selections. Did you mean 'human { ... }'?)"))
+    pipeline.errors.should contain(Graphene::Error.new("Field must have selections (field 'pet' returns Pet but has no selections. Did you mean 'pet { ... }'?)"))
+    pipeline.errors.should contain(Graphene::Error.new("Field must have selections (field 'catOrDog' returns CatOrDog but has no selections. Did you mean 'catOrDog { ... }'?)"))
   end
 
   it "example #130" do
