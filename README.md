@@ -80,7 +80,7 @@ This library was originally built to experiment with building dynamic schemas on
 #### Execution
 
 - [x] Queries
-- [ ] Mutations
+- [x] Mutations
 - [ ] Subscriptions
 - [x] Lazy execution
 
