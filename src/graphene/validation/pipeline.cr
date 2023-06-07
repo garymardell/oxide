@@ -67,6 +67,7 @@ module Graphene
           # FragmentsMustBeUsed.new.as(Rule),
           # Values
           # Directives
+          DirectivesAreDefined.new.as(Rule),
           # Variables
           VariableUniqueness.new.as(Rule),
           VariablesAreInputTypes.new.as(Rule),

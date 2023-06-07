@@ -35,7 +35,7 @@ This library was originally built to experiment with building dynamic schemas on
     - [ ] Input Object Field Uniqeness
     - [ ] Input Object Required Fields
   - [ ] Directives
-    - [ ] Directives Are Defined
+    - [x] Directives Are Defined
     - [ ] Directives Are In Valid Locations
     - [ ] Directives Are Unique Per Location
   - [ ] Variables
