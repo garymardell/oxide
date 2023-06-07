@@ -80,7 +80,7 @@ module Graphene
 
           variables_used.each do |variable|
             unless variables_defined.includes?(variable)
-              context.errors << Error.new("Variable \"#{variable}\" has not been defined")
+              context.errors << Error.new("Variable $#{variable} is used by #{operation.name} but not declared")
             end
           end
 
@@ -89,7 +89,7 @@ module Graphene
             fragment_variables_used = @fragment_variables_used[fragment]
             fragment_variables_used.each do |variable|
               unless variables_defined.includes?(variable)
-                context.errors << Error.new("Variable \"#{variable}\" has not been defined")
+                context.errors << Error.new("Variable $#{variable} is used by #{fragment} but not declared")
               end
             end
           end
