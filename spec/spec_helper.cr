@@ -223,6 +223,66 @@ FindDogInputType = Oxide::Types::InputObjectType.new(
   }
 )
 
+ArgumentsType = Oxide::Types::ObjectType.new(
+  name: "Arguments",
+  fields: {
+    "multipleRequirements" => Oxide::Field.new(
+      arguments: {
+        "x" => Oxide::Argument.new(
+          type: Oxide::Types::NonNullType.new(of_type: Oxide::Types::IntType.new)
+        ),
+        "y" => Oxide::Argument.new(
+          type: Oxide::Types::NonNullType.new(of_type: Oxide::Types::IntType.new)
+        )
+      },
+      type: Oxide::Types::NonNullType.new(of_type: Oxide::Types::IntType.new)
+    ),
+    "booleanArgField" => Oxide::Field.new(
+      arguments: {
+        "booleanArg" => Oxide::Argument.new(type: Oxide::Types::BooleanType.new)
+      },
+      type: Oxide::Types::BooleanType.new
+    ),
+    "floatArgField" => Oxide::Field.new(
+      arguments: {
+        "floatArg" => Oxide::Argument.new(type: Oxide::Types::FloatType.new)
+      },
+      type: Oxide::Types::FloatType.new
+    ),
+    "intArgField" => Oxide::Field.new(
+      arguments: {
+        "intArg" => Oxide::Argument.new(type: Oxide::Types::IntType.new)
+      },
+      type: Oxide::Types::IntType.new
+    ),
+    "nonNullBooleanArgField" => Oxide::Field.new(
+      arguments: {
+        "nonNullBooleanArg" => Oxide::Argument.new(
+          type: Oxide::Types::NonNullType.new(of_type: Oxide::Types::BooleanType.new)
+        )
+      },
+      type: Oxide::Types::NonNullType.new(of_type: Oxide::Types::BooleanType.new)
+    ),
+    "booleanListArgField" => Oxide::Field.new(
+      arguments: {
+        "booleanListArg" => Oxide::Argument.new(
+          type: Oxide::Types::NonNullType.new(of_type: Oxide::Types::ListType.new(of_type: Oxide::Types::BooleanType.new))
+        )
+      },
+      type: Oxide::Types::ListType.new(of_type: Oxide::Types::BooleanType.new)
+    ),
+    "optionalNonNullBooleanArgField" => Oxide::Field.new(
+      arguments: {
+        "optionalBooleanArg" => Oxide::Argument.new(
+          type: Oxide::Types::NonNullType.new(of_type: Oxide::Types::BooleanType.new),
+          default_value: false
+        )
+      },
+      type: Oxide::Types::NonNullType.new(of_type: Oxide::Types::BooleanType.new)
+    )
+  }
+)
+
 ValidationsSchema = Oxide::Schema.new(
   query: Oxide::Types::ObjectType.new(
     name: "Query",
@@ -258,6 +318,10 @@ ValidationsSchema = Oxide::Schema.new(
           )
         },
         type: Oxide::Types::BooleanType.new
+      ),
+      # Extended for Argument Names
+      "arguments" => Oxide::Field.new(
+        type: ArgumentsType
       )
     }
   ),

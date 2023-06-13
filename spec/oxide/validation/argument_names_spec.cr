@@ -66,5 +66,27 @@ describe Oxide::Validation::ArgumentNames do
     pipeline.errors.should contain(Oxide::Error.new("Directive 'include' doesn't accept argument 'unless'"))
   end
 
-  # TODO: example #135
+  it "example #135" do
+    query_string = <<-QUERY
+      fragment multipleArgs on Arguments {
+        multipleRequirements(x: 1, y: 2)
+      }
+
+      fragment multipleArgsReverseOrder on Arguments {
+        multipleRequirements(y: 2, x: 1)
+      }
+    QUERY
+
+    query = Oxide::Query.new(query_string)
+
+    pipeline = Oxide::Validation::Pipeline.new(
+      ValidationsSchema,
+      query,
+      [Oxide::Validation::ArgumentNames.new.as(Oxide::Validation::Rule)]
+    )
+
+    pipeline.execute
+
+    pipeline.errors.size.should eq(0)
+  end
 end
