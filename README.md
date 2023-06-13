@@ -32,7 +32,7 @@ This library was originally built to experiment with building dynamic schemas on
   - [ ] Values
     - [ ] Values of Correct Type
     - [ ] Input Object Field Names
-    - [ ] Input Object Field Uniqeness
+    - [x] Input Object Field Uniqueness
     - [ ] Input Object Required Fields
   - [x] Directives
     - [x] Directives Are Defined

@@ -222,6 +222,11 @@ module Oxide
 
         def accept(visitor : Visitor)
           visitor.enter(self)
+
+          unless value.nil?
+            value.not_nil!.accept(visitor)
+          end
+
           visitor.leave(self)
         end
       end
@@ -438,6 +443,8 @@ module Oxide
 
         def accept(visitor : Visitor)
           visitor.enter(self)
+
+          value.accept(visitor)
 
           visitor.leave(self)
         end
