@@ -1,6 +1,6 @@
 require "../../spec_helper"
 
-describe Graphene::Validation::AllVariableUsesDefined do
+describe Oxide::Validation::AllVariableUsesDefined do
   it "example #173" do
     query_string = <<-QUERY
       query variableIsDefined($atOtherHomes: Boolean) {
@@ -10,12 +10,12 @@ describe Graphene::Validation::AllVariableUsesDefined do
       }
     QUERY
 
-    query = Graphene::Query.new(query_string)
+    query = Oxide::Query.new(query_string)
 
-    pipeline = Graphene::Validation::Pipeline.new(
+    pipeline = Oxide::Validation::Pipeline.new(
       ValidationsSchema,
       query,
-      [Graphene::Validation::AllVariableUsesDefined.new.as(Graphene::Validation::Rule)]
+      [Oxide::Validation::AllVariableUsesDefined.new.as(Oxide::Validation::Rule)]
     )
 
     pipeline.execute
@@ -32,18 +32,18 @@ describe Graphene::Validation::AllVariableUsesDefined do
       }
     QUERY
 
-    query = Graphene::Query.new(query_string)
+    query = Oxide::Query.new(query_string)
 
-    pipeline = Graphene::Validation::Pipeline.new(
+    pipeline = Oxide::Validation::Pipeline.new(
       ValidationsSchema,
       query,
-      [Graphene::Validation::AllVariableUsesDefined.new.as(Graphene::Validation::Rule)]
+      [Oxide::Validation::AllVariableUsesDefined.new.as(Oxide::Validation::Rule)]
     )
 
     pipeline.execute
 
     pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Graphene::Error.new("Variable $atOtherHomes is used by variableIsNotDefined but not declared"))
+    pipeline.errors.should contain(Oxide::Error.new("Variable $atOtherHomes is used by variableIsNotDefined but not declared"))
   end
 
   it "example #175" do
@@ -59,12 +59,12 @@ describe Graphene::Validation::AllVariableUsesDefined do
       }
     QUERY
 
-    query = Graphene::Query.new(query_string)
+    query = Oxide::Query.new(query_string)
 
-    pipeline = Graphene::Validation::Pipeline.new(
+    pipeline = Oxide::Validation::Pipeline.new(
       ValidationsSchema,
       query,
-      [Graphene::Validation::AllVariableUsesDefined.new.as(Graphene::Validation::Rule)]
+      [Oxide::Validation::AllVariableUsesDefined.new.as(Oxide::Validation::Rule)]
     )
 
     pipeline.execute
@@ -85,18 +85,18 @@ describe Graphene::Validation::AllVariableUsesDefined do
       }
     QUERY
 
-    query = Graphene::Query.new(query_string)
+    query = Oxide::Query.new(query_string)
 
-    pipeline = Graphene::Validation::Pipeline.new(
+    pipeline = Oxide::Validation::Pipeline.new(
       ValidationsSchema,
       query,
-      [Graphene::Validation::AllVariableUsesDefined.new.as(Graphene::Validation::Rule)]
+      [Oxide::Validation::AllVariableUsesDefined.new.as(Oxide::Validation::Rule)]
     )
 
     pipeline.execute
 
     pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Graphene::Error.new("Variable $atOtherHomes is used by isHouseTrainedFragment but not declared"))
+    pipeline.errors.should contain(Oxide::Error.new("Variable $atOtherHomes is used by isHouseTrainedFragment but not declared"))
   end
 
   it "counter example #177" do
@@ -116,18 +116,18 @@ describe Graphene::Validation::AllVariableUsesDefined do
       }
     QUERY
 
-    query = Graphene::Query.new(query_string)
+    query = Oxide::Query.new(query_string)
 
-    pipeline = Graphene::Validation::Pipeline.new(
+    pipeline = Oxide::Validation::Pipeline.new(
       ValidationsSchema,
       query,
-      [Graphene::Validation::AllVariableUsesDefined.new.as(Graphene::Validation::Rule)]
+      [Oxide::Validation::AllVariableUsesDefined.new.as(Oxide::Validation::Rule)]
     )
 
     pipeline.execute
 
     pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Graphene::Error.new("Variable $atOtherHomes is used by isHouseTrainedFragment but not declared"))
+    pipeline.errors.should contain(Oxide::Error.new("Variable $atOtherHomes is used by isHouseTrainedFragment but not declared"))
   end
 
   it "example #178" do
@@ -149,12 +149,12 @@ describe Graphene::Validation::AllVariableUsesDefined do
       }
     QUERY
 
-    query = Graphene::Query.new(query_string)
+    query = Oxide::Query.new(query_string)
 
-    pipeline = Graphene::Validation::Pipeline.new(
+    pipeline = Oxide::Validation::Pipeline.new(
       ValidationsSchema,
       query,
-      [Graphene::Validation::AllVariableUsesDefined.new.as(Graphene::Validation::Rule)]
+      [Oxide::Validation::AllVariableUsesDefined.new.as(Oxide::Validation::Rule)]
     )
 
     pipeline.execute
@@ -181,17 +181,17 @@ describe Graphene::Validation::AllVariableUsesDefined do
       }
     QUERY
 
-    query = Graphene::Query.new(query_string)
+    query = Oxide::Query.new(query_string)
 
-    pipeline = Graphene::Validation::Pipeline.new(
+    pipeline = Oxide::Validation::Pipeline.new(
       ValidationsSchema,
       query,
-      [Graphene::Validation::AllVariableUsesDefined.new.as(Graphene::Validation::Rule)]
+      [Oxide::Validation::AllVariableUsesDefined.new.as(Oxide::Validation::Rule)]
     )
 
     pipeline.execute
 
     pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Graphene::Error.new("Variable $atOtherHomes is used by isHouseTrainedFragment but not declared"))
+    pipeline.errors.should contain(Oxide::Error.new("Variable $atOtherHomes is used by isHouseTrainedFragment but not declared"))
   end
 end

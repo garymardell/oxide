@@ -1,6 +1,6 @@
 require "../../spec_helper"
 
-describe Graphene::Validation::DirectivesAreUniquePerLocation do
+describe Oxide::Validation::DirectivesAreUniquePerLocation do
   it "counter example #166" do
     query_string = <<-QUERY
       query ($foo: Boolean = true, $bar: Boolean = false) {
@@ -8,18 +8,18 @@ describe Graphene::Validation::DirectivesAreUniquePerLocation do
       }
     QUERY
 
-    query = Graphene::Query.new(query_string)
+    query = Oxide::Query.new(query_string)
 
-    pipeline = Graphene::Validation::Pipeline.new(
+    pipeline = Oxide::Validation::Pipeline.new(
       ValidationsSchema,
       query,
-      [Graphene::Validation::DirectivesAreUniquePerLocation.new.as(Graphene::Validation::Rule)]
+      [Oxide::Validation::DirectivesAreUniquePerLocation.new.as(Oxide::Validation::Rule)]
     )
 
     pipeline.execute
 
     pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Graphene::Error.new("The directive \"skip\" can only be used once at this location."))
+    pipeline.errors.should contain(Oxide::Error.new("The directive \"skip\" can only be used once at this location."))
   end
 
   it "example #167" do
@@ -34,12 +34,12 @@ describe Graphene::Validation::DirectivesAreUniquePerLocation do
       }
     QUERY
 
-    query = Graphene::Query.new(query_string)
+    query = Oxide::Query.new(query_string)
 
-    pipeline = Graphene::Validation::Pipeline.new(
+    pipeline = Oxide::Validation::Pipeline.new(
       ValidationsSchema,
       query,
-      [Graphene::Validation::DirectivesAreUniquePerLocation.new.as(Graphene::Validation::Rule)]
+      [Oxide::Validation::DirectivesAreUniquePerLocation.new.as(Oxide::Validation::Rule)]
     )
 
     pipeline.execute

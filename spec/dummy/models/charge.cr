@@ -1,5 +1,5 @@
 class Charge
-  include Graphene::Resolvable
+  include Oxide::Resolvable
 
   property id : Int32
   property status : String?
@@ -8,7 +8,7 @@ class Charge
   def initialize(@id, @reference, @status = nil)
   end
 
-  def resolve(field_name, argument_values, context, resolution_info) : Graphene::Result
+  def resolve(field_name, argument_values, context, resolution_info) : Oxide::Result
     case field_name
     when "id"
       id

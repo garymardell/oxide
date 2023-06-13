@@ -1,6 +1,6 @@
 require "../../spec_helper"
 
-describe Graphene::Language::Parser do
+describe Oxide::Language::Parser do
   it "supports object values" do
     schema = <<-QUERY
       query {
@@ -10,7 +10,7 @@ describe Graphene::Language::Parser do
       }
     QUERY
 
-    parser = Graphene::Language::Parser.new
+    parser = Oxide::Language::Parser.new
 
     document = parser.parse(schema)
   end
@@ -24,7 +24,7 @@ describe Graphene::Language::Parser do
       }
     QUERY
 
-    parser = Graphene::Language::Parser.new
+    parser = Oxide::Language::Parser.new
 
     document = parser.parse(schema)
   end

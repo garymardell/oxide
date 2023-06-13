@@ -1,6 +1,6 @@
 require "../../spec_helper"
 
-describe Graphene::Execution::Runtime do
+describe Oxide::Execution::Runtime do
   it "handles fragments on Interface" do
     query_string = <<-QUERY
       query {
@@ -15,10 +15,10 @@ describe Graphene::Execution::Runtime do
       }
     QUERY
 
-    runtime = Graphene::Execution::Runtime.new(DummySchema)
+    runtime = Oxide::Execution::Runtime.new(DummySchema)
 
     result = runtime.execute(
-      query: Graphene::Query.new(query_string),
+      query: Oxide::Query.new(query_string),
       initial_value: Query.new
     )
 

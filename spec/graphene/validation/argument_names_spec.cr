@@ -1,6 +1,6 @@
 require "../../spec_helper"
 
-describe Graphene::Validation::ArgumentNames do
+describe Oxide::Validation::ArgumentNames do
   it "example #131" do
     query_string = <<-QUERY
       fragment argOnRequiredArg on Dog {
@@ -12,12 +12,12 @@ describe Graphene::Validation::ArgumentNames do
       }
     QUERY
 
-    query = Graphene::Query.new(query_string)
+    query = Oxide::Query.new(query_string)
 
-    pipeline = Graphene::Validation::Pipeline.new(
+    pipeline = Oxide::Validation::Pipeline.new(
       ValidationsSchema,
       query,
-      [Graphene::Validation::ArgumentNames.new.as(Graphene::Validation::Rule)]
+      [Oxide::Validation::ArgumentNames.new.as(Oxide::Validation::Rule)]
     )
 
     pipeline.execute
@@ -31,18 +31,18 @@ describe Graphene::Validation::ArgumentNames do
       }
     QUERY
 
-    query = Graphene::Query.new(query_string)
+    query = Oxide::Query.new(query_string)
 
-    pipeline = Graphene::Validation::Pipeline.new(
+    pipeline = Oxide::Validation::Pipeline.new(
       ValidationsSchema,
       query,
-      [Graphene::Validation::ArgumentNames.new.as(Graphene::Validation::Rule)]
+      [Oxide::Validation::ArgumentNames.new.as(Oxide::Validation::Rule)]
     )
 
     pipeline.execute
 
     pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Graphene::Error.new("Field 'doesKnowCommand' doesn't accept argument 'command'"))
+    pipeline.errors.should contain(Oxide::Error.new("Field 'doesKnowCommand' doesn't accept argument 'command'"))
   end
 
   it "counter example #133" do
@@ -52,18 +52,18 @@ describe Graphene::Validation::ArgumentNames do
       }
     QUERY
 
-    query = Graphene::Query.new(query_string)
+    query = Oxide::Query.new(query_string)
 
-    pipeline = Graphene::Validation::Pipeline.new(
+    pipeline = Oxide::Validation::Pipeline.new(
       ValidationsSchema,
       query,
-      [Graphene::Validation::ArgumentNames.new.as(Graphene::Validation::Rule)]
+      [Oxide::Validation::ArgumentNames.new.as(Oxide::Validation::Rule)]
     )
 
     pipeline.execute
 
     pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Graphene::Error.new("Directive 'include' doesn't accept argument 'unless'"))
+    pipeline.errors.should contain(Oxide::Error.new("Directive 'include' doesn't accept argument 'unless'"))
   end
 
   # TODO: example #135

@@ -1,5 +1,5 @@
-class CreditCardResolver < Graphene::Resolver
-  def resolve(object : Graphene::Resolvable?, field_name, argument_values, context, resolution_info) : Graphene::Result
+class CreditCardResolver < Oxide::Resolver
+  def resolve(object : Oxide::Resolvable?, field_name, argument_values, context, resolution_info) : Oxide::Result
   end
 
   def resolve(object : CreditCard, field_name, argument_values, context, resolution_info)

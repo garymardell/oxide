@@ -1,5 +1,5 @@
-class BankAccountResolver < Graphene::Resolver
-  def resolve(object : Graphene::Resolvable?, field_name, argument_values, context, resolution_info) : Graphene::Result
+class BankAccountResolver < Oxide::Resolver
+  def resolve(object : Oxide::Resolvable?, field_name, argument_values, context, resolution_info) : Oxide::Result
   end
 
   def resolve(object : BankAccount, field_name, context, argument_values, resolution_info)

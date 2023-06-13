@@ -1,6 +1,6 @@
 require "../../spec_helper"
 
-describe Graphene::Validation::ArgumentUniqueness do
+describe Oxide::Validation::ArgumentUniqueness do
   it "gives an error if when selecting multiple arguments with the same name" do
     query_string = <<-QUERY
       query {
@@ -10,17 +10,17 @@ describe Graphene::Validation::ArgumentUniqueness do
       }
     QUERY
 
-    query = Graphene::Query.new(query_string)
+    query = Oxide::Query.new(query_string)
 
-    pipeline = Graphene::Validation::Pipeline.new(
+    pipeline = Oxide::Validation::Pipeline.new(
       ValidationsSchema,
       query,
-      [Graphene::Validation::ArgumentUniqueness.new.as(Graphene::Validation::Rule)]
+      [Oxide::Validation::ArgumentUniqueness.new.as(Oxide::Validation::Rule)]
     )
 
     pipeline.execute
 
     pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Graphene::Error.new("There can be only one argument named \"name\""))
+    pipeline.errors.should contain(Oxide::Error.new("There can be only one argument named \"name\""))
   end
 end

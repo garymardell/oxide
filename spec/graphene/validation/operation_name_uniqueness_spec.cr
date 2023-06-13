@@ -1,6 +1,6 @@
 require "../../spec_helper"
 
-describe Graphene::Validation::OperationNameUniqueness do
+describe Oxide::Validation::OperationNameUniqueness do
   it "example #105" do
     query_string = <<-QUERY
       query getDogName {
@@ -18,12 +18,12 @@ describe Graphene::Validation::OperationNameUniqueness do
       }
     QUERY
 
-    query = Graphene::Query.new(query_string)
+    query = Oxide::Query.new(query_string)
 
-    pipeline = Graphene::Validation::Pipeline.new(
+    pipeline = Oxide::Validation::Pipeline.new(
       ValidationsSchema,
       query,
-      [Graphene::Validation::OperationNameUniqueness.new.as(Graphene::Validation::Rule)]
+      [Oxide::Validation::OperationNameUniqueness.new.as(Oxide::Validation::Rule)]
     )
 
     pipeline.execute
@@ -48,18 +48,18 @@ describe Graphene::Validation::OperationNameUniqueness do
       }
     QUERY
 
-    query = Graphene::Query.new(query_string)
+    query = Oxide::Query.new(query_string)
 
-    pipeline = Graphene::Validation::Pipeline.new(
+    pipeline = Oxide::Validation::Pipeline.new(
       ValidationsSchema,
       query,
-      [Graphene::Validation::OperationNameUniqueness.new.as(Graphene::Validation::Rule)]
+      [Oxide::Validation::OperationNameUniqueness.new.as(Oxide::Validation::Rule)]
     )
 
     pipeline.execute
 
     pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Graphene::Error.new("Operation name \"getName\" must be unique"))
+    pipeline.errors.should contain(Oxide::Error.new("Operation name \"getName\" must be unique"))
   end
 
   it "counter example #107" do
@@ -77,17 +77,17 @@ describe Graphene::Validation::OperationNameUniqueness do
       }
     QUERY
 
-    query = Graphene::Query.new(query_string)
+    query = Oxide::Query.new(query_string)
 
-    pipeline = Graphene::Validation::Pipeline.new(
+    pipeline = Oxide::Validation::Pipeline.new(
       ValidationsSchema,
       query,
-      [Graphene::Validation::OperationNameUniqueness.new.as(Graphene::Validation::Rule)]
+      [Oxide::Validation::OperationNameUniqueness.new.as(Oxide::Validation::Rule)]
     )
 
     pipeline.execute
 
     pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Graphene::Error.new("Operation name \"dogOperation\" must be unique"))
+    pipeline.errors.should contain(Oxide::Error.new("Operation name \"dogOperation\" must be unique"))
   end
 end

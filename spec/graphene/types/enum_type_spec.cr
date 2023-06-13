@@ -1,7 +1,7 @@
 require "../../spec_helper"
 
 def build_enum_value(name = "paid", description = "Item is paid", value = nil, deprecation_reason = nil)
-  Graphene::Types::EnumValue.new(
+  Oxide::Types::EnumValue.new(
     name: name,
     description: description,
     value: value,
@@ -9,12 +9,12 @@ def build_enum_value(name = "paid", description = "Item is paid", value = nil, d
   )
 end
 
-describe Graphene::Types::EnumType do
+describe Oxide::Types::EnumType do
   describe "#new" do
     it "accepts an array of EnumValues" do
       values = [build_enum_value]
 
-      e = Graphene::Types::EnumType.new(
+      e = Oxide::Types::EnumType.new(
         name: "Test",
         values: values
       )
@@ -23,7 +23,7 @@ describe Graphene::Types::EnumType do
     end
   end
 
-  describe Graphene::Types::EnumValue do
+  describe Oxide::Types::EnumValue do
     describe "#new" do
       it "defaults value to name if not specified" do
         enum_value = build_enum_value(name: "paid", value: nil)

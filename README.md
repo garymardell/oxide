@@ -1,8 +1,8 @@
 # Graphql in Crystal
 
-## Graphene
+## Oxide
 
-Graphene is a low level library that implements the core of GraphQL following the spec as closely as possible. The schema is defined by creating instances of core types (`Schema`, `Field`, `Type`, `Argument`...). This provides an AST which is used in both the execution and validation phases.
+Oxide is a low level library that implements the core of GraphQL following the spec as closely as possible. The schema is defined by creating instances of core types (`Schema`, `Field`, `Type`, `Argument`...). This provides an AST which is used in both the execution and validation phases.
 
 This library was originally built to experiment with building dynamic schemas on a per tenant basis. An early prototype allowed a user to define their models within a UI and a custom GraphQL API would be generated at runtime.
 
@@ -88,21 +88,21 @@ This library was originally built to experiment with building dynamic schemas on
 
 #### Late Bound Type
 
-Graphene introduces a custom type called `LateBoundType` that allows you to refer to another type in the schema by name. This was introduced to allow recursively/cyclic defined types. As types are defined as objects we cannot use itself during it's own definition. The runtime will automatically look up late bound types from the schema during execution and therefore need to either be already directly referenced or provided when instantiating the schema with the `orphan_types` parameter.
+Oxide introduces a custom type called `LateBoundType` that allows you to refer to another type in the schema by name. This was introduced to allow recursively/cyclic defined types. As types are defined as objects we cannot use itself during it's own definition. The runtime will automatically look up late bound types from the schema during execution and therefore need to either be already directly referenced or provided when instantiating the schema with the `orphan_types` parameter.
 
 *Example*
 
 This example is taken from the introspection schema. The `_Type` object contains a list of all `possibleTypes` which is a list of `_Type` objects.
 
 ```crystal
-  TypeType = Graphene::Types::ObjectType.new(
+  TypeType = Oxide::Types::ObjectType.new(
     name: "__Type",
     fields: {
       ...
-      "possibleTypes" => Graphene::Field.new(
-        type: Graphene::Types::ListType.new(
-          of_type: Graphene::Types::NonNullType.new(
-            of_type: Graphene::Types::LateBoundType.new("__Type")
+      "possibleTypes" => Oxide::Field.new(
+        type: Oxide::Types::ListType.new(
+          of_type: Oxide::Types::NonNullType.new(
+            of_type: Oxide::Types::LateBoundType.new("__Type")
           )
         )
       ),
@@ -138,12 +138,12 @@ By default GraphQL will execute depth first. For each charge it will resolve its
 
 Instead we can store the identifier of the charge into a list and return a `Lazy` future object that tells the runtime we will eventually provide the payment method but for now to pause the depth first implementation and instead move on to the next charge. When we have iterated through all charges the runtime knows that we still need to complete the payment method field. The runtime asks the `Lazy` object for it's value which will trigger it's callback. Now we have all the charge identifiers in a list we can fetch them all at once in a single query and provide each `Lazy` object with it's value.
 
-Graphene comes with a built in `Loader` abstract class that can be extended to provide simple batch loading. It automatically generates the `Lazy` objects and provides a callback that will fulfill each `Lazy` with it's value. A `perform` method must be implemented that receives an array of identifiers and for each identifier `fulfill` must be called.
+Oxide comes with a built in `Loader` abstract class that can be extended to provide simple batch loading. It automatically generates the `Lazy` objects and provides a callback that will fulfill each `Lazy` with it's value. A `perform` method must be implemented that receives an array of identifiers and for each identifier `fulfill` must be called.
 
 ##### Example
 
 ```crystal
-class PaymentMethodLoader < Graphene::Loader(Int32, PaymentMethod)
+class PaymentMethodLoader < Oxide::Loader(Int32, PaymentMethod)
   def perform(load_keys)
     payment_methods = PaymentMethod.where(charge_id: load_keys).to_a
 

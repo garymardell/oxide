@@ -1,4 +1,4 @@
-class PaymentMethodLoader < Graphene::Loader(Int32, BankAccount | CreditCard | Nil)
+class PaymentMethodLoader < Oxide::Loader(Int32, BankAccount | CreditCard | Nil)
   def perform(load_keys)
     load_keys.each do |key|
       fulfill(key, BankAccount.new(1, "1234578"))
@@ -7,14 +7,14 @@ class PaymentMethodLoader < Graphene::Loader(Int32, BankAccount | CreditCard | N
 end
 
 
-class RefundResolver < Graphene::Resolver
+class RefundResolver < Oxide::Resolver
   property loader : PaymentMethodLoader
 
   def initialize
     @loader = PaymentMethodLoader.new
   end
 
-  def resolve(object : Graphene::Resolvable?, field_name, argument_values, context, resolution_info) : Graphene::Result
+  def resolve(object : Oxide::Resolvable?, field_name, argument_values, context, resolution_info) : Oxide::Result
   end
 
   def resolve(object : Refund, field_name, context, argument_values, resolution_info)

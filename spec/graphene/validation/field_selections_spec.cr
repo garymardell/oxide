@@ -1,6 +1,6 @@
 require "../../spec_helper"
 
-describe Graphene::Validation::FieldSelections do
+describe Oxide::Validation::FieldSelections do
   it "counter example #115" do
     query_string = <<-QUERY
       fragment fieldNotDefined on Dog {
@@ -12,19 +12,19 @@ describe Graphene::Validation::FieldSelections do
       }
     QUERY
 
-    query = Graphene::Query.new(query_string)
+    query = Oxide::Query.new(query_string)
 
-    pipeline = Graphene::Validation::Pipeline.new(
+    pipeline = Oxide::Validation::Pipeline.new(
       ValidationsSchema,
       query,
-      [Graphene::Validation::FieldSelections.new.as(Graphene::Validation::Rule)]
+      [Oxide::Validation::FieldSelections.new.as(Oxide::Validation::Rule)]
     )
 
     pipeline.execute
 
     pipeline.errors.size.should eq(2)
-    pipeline.errors.should contain(Graphene::Error.new("Field 'meowVolume' doesn't exist on type 'Dog'"))
-    pipeline.errors.should contain(Graphene::Error.new("Field 'kawVolume' doesn't exist on type 'Dog'"))
+    pipeline.errors.should contain(Oxide::Error.new("Field 'meowVolume' doesn't exist on type 'Dog'"))
+    pipeline.errors.should contain(Oxide::Error.new("Field 'kawVolume' doesn't exist on type 'Dog'"))
   end
 
   it "example #116" do
@@ -34,12 +34,12 @@ describe Graphene::Validation::FieldSelections do
       }
     QUERY
 
-    query = Graphene::Query.new(query_string)
+    query = Oxide::Query.new(query_string)
 
-    pipeline = Graphene::Validation::Pipeline.new(
+    pipeline = Oxide::Validation::Pipeline.new(
       ValidationsSchema,
       query,
-      [Graphene::Validation::FieldSelections.new.as(Graphene::Validation::Rule)]
+      [Oxide::Validation::FieldSelections.new.as(Oxide::Validation::Rule)]
     )
 
     pipeline.execute
@@ -54,18 +54,18 @@ describe Graphene::Validation::FieldSelections do
       }
     QUERY
 
-    query = Graphene::Query.new(query_string)
+    query = Oxide::Query.new(query_string)
 
-    pipeline = Graphene::Validation::Pipeline.new(
+    pipeline = Oxide::Validation::Pipeline.new(
       ValidationsSchema,
       query,
-      [Graphene::Validation::FieldSelections.new.as(Graphene::Validation::Rule)]
+      [Oxide::Validation::FieldSelections.new.as(Oxide::Validation::Rule)]
     )
 
     pipeline.execute
 
     pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Graphene::Error.new("Field 'nickname' doesn't exist on type 'Pet'"))
+    pipeline.errors.should contain(Oxide::Error.new("Field 'nickname' doesn't exist on type 'Pet'"))
   end
 
   it "example #118" do
@@ -81,12 +81,12 @@ describe Graphene::Validation::FieldSelections do
       }
     QUERY
 
-    query = Graphene::Query.new(query_string)
+    query = Oxide::Query.new(query_string)
 
-    pipeline = Graphene::Validation::Pipeline.new(
+    pipeline = Oxide::Validation::Pipeline.new(
       ValidationsSchema,
       query,
-      [Graphene::Validation::FieldSelections.new.as(Graphene::Validation::Rule)]
+      [Oxide::Validation::FieldSelections.new.as(Oxide::Validation::Rule)]
     )
 
     pipeline.execute
@@ -102,17 +102,17 @@ describe Graphene::Validation::FieldSelections do
       }
     QUERY
 
-    query = Graphene::Query.new(query_string)
+    query = Oxide::Query.new(query_string)
 
-    pipeline = Graphene::Validation::Pipeline.new(
+    pipeline = Oxide::Validation::Pipeline.new(
       ValidationsSchema,
       query,
-      [Graphene::Validation::FieldSelections.new.as(Graphene::Validation::Rule)]
+      [Oxide::Validation::FieldSelections.new.as(Oxide::Validation::Rule)]
     )
 
     pipeline.execute
 
     pipeline.errors.size.should eq(2)
-    pipeline.errors.should contain(Graphene::Error.new("Selections can't be made directly on unions (see selections on CatOrDog)"))
+    pipeline.errors.should contain(Oxide::Error.new("Selections can't be made directly on unions (see selections on CatOrDog)"))
   end
 end

@@ -1,5 +1,5 @@
 class CreditCard
-  include Graphene::Resolvable
+  include Oxide::Resolvable
 
   property id : Int32
   property last4 : String
@@ -7,7 +7,7 @@ class CreditCard
   def initialize(@id, @last4)
   end
 
-  def resolve(field_name, argument_values, context, resolution_info) : Graphene::Result
+  def resolve(field_name, argument_values, context, resolution_info) : Oxide::Result
     case field_name
     when "id"
       id

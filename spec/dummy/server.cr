@@ -6,12 +6,12 @@ post "/graphql" do |env|
 
   variables = extract_variables(env.params)
 
-  query = Graphene::Query.new(
+  query = Oxide::Query.new(
     env.params.json["query"].as(String),
     variables: variables
   )
 
-  runtime = Graphene::Execution::Runtime.new(
+  runtime = Oxide::Execution::Runtime.new(
     DummySchema,
     query,
     initial_value: Query.new

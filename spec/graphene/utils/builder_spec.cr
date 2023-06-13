@@ -1,17 +1,17 @@
 require "../../spec_helper"
 
-class BuilderResolver < Graphene::Resolver
-  def resolve(object : Graphene::Resolvable?, field_name, argument_values, context, resolution_info) : Graphene::Result
+class BuilderResolver < Oxide::Resolver
+  def resolve(object : Oxide::Resolvable?, field_name, argument_values, context, resolution_info) : Oxide::Result
   end
 end
 
-class BuilderTypeResolver < Graphene::TypeResolver
+class BuilderTypeResolver < Oxide::TypeResolver
   def resolve_type(object, context)
     nil
   end
 end
 
-describe Graphene::Utils::Builder do
+describe Oxide::Utils::Builder do
   it "parses schema and builds schema object" do
     input = <<-INPUT
       schema {
@@ -64,10 +64,10 @@ describe Graphene::Utils::Builder do
       union HumanOrAlien = Human | Alien
     INPUT
 
-    builder = Graphene::Utils::Builder.new(
+    builder = Oxide::Utils::Builder.new(
       input,
-      resolvers: Hash(String, Graphene::Resolver).new(default_value: BuilderResolver.new),
-      type_resolvers: Hash(String, Graphene::TypeResolver).new(default_value: BuilderTypeResolver.new)
+      resolvers: Hash(String, Oxide::Resolver).new(default_value: BuilderResolver.new),
+      type_resolvers: Hash(String, Oxide::TypeResolver).new(default_value: BuilderTypeResolver.new)
     )
     builder.build
   end
@@ -83,10 +83,10 @@ describe Graphene::Utils::Builder do
       }
     INPUT
 
-    builder = Graphene::Utils::Builder.new(
+    builder = Oxide::Utils::Builder.new(
       input,
-      resolvers: Hash(String, Graphene::Resolver).new(default_value: BuilderResolver.new),
-      type_resolvers: Hash(String, Graphene::TypeResolver).new(default_value: BuilderTypeResolver.new)
+      resolvers: Hash(String, Oxide::Resolver).new(default_value: BuilderResolver.new),
+      type_resolvers: Hash(String, Oxide::TypeResolver).new(default_value: BuilderTypeResolver.new)
     )
 
     schema = builder.build

@@ -1,5 +1,5 @@
-class DynamicResolver < Graphene::Resolver
-  def resolve(object : Graphene::Resolvable?, field_name, argument_values, context, resolution_info) : Graphene::Result
+class DynamicResolver < Oxide::Resolver
+  def resolve(object : Oxide::Resolvable?, field_name, argument_values, context, resolution_info) : Oxide::Result
     field_name
   end
 

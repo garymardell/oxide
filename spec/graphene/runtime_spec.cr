@@ -1,6 +1,6 @@
 require "../spec_helper"
 
-describe Graphene do
+describe Oxide do
   it "executes" do
     query_string = <<-QUERY
       query {
@@ -10,9 +10,9 @@ describe Graphene do
       }
     QUERY
 
-    runtime = Graphene::Execution::Runtime.new(DummySchema)
+    runtime = Oxide::Execution::Runtime.new(DummySchema)
 
-    result = runtime.execute(query: Graphene::Query.new(query_string), initial_value: Query.new)["data"]
+    result = runtime.execute(query: Oxide::Query.new(query_string), initial_value: Query.new)["data"]
 
     result.should eq({ "charges" => [{ "id" => "1" }, { "id" => "2" }, { "id" => "3" }] })
   end
@@ -26,9 +26,9 @@ describe Graphene do
       }
     QUERY
 
-    runtime = Graphene::Execution::Runtime.new(DummySchema)
+    runtime = Oxide::Execution::Runtime.new(DummySchema)
 
-    result = runtime.execute(query: Graphene::Query.new(query_string), initial_value: Query.new)["data"]
+    result = runtime.execute(query: Oxide::Query.new(query_string), initial_value: Query.new)["data"]
 
     result.should eq({ "charges" => [{ "id" => "1" }, { "id" => "2" }, { "id" => "3" }] })
   end
@@ -42,9 +42,9 @@ describe Graphene do
       }
     QUERY
 
-    runtime = Graphene::Execution::Runtime.new(DummySchema)
+    runtime = Oxide::Execution::Runtime.new(DummySchema)
 
-    result = runtime.execute(query: Graphene::Query.new(query_string), initial_value: Query.new)["data"]
+    result = runtime.execute(query: Oxide::Query.new(query_string), initial_value: Query.new)["data"]
 
     result.should eq({ "allCharges" => [{ "id" => "1" }, { "id" => "2" }, { "id" => "3" }] })
   end
@@ -59,9 +59,9 @@ describe Graphene do
       }
     QUERY
 
-    runtime = Graphene::Execution::Runtime.new(DummySchema)
+    runtime = Oxide::Execution::Runtime.new(DummySchema)
 
-    result = runtime.execute(query: Graphene::Query.new(query_string), initial_value: Query.new)
+    result = runtime.execute(query: Oxide::Query.new(query_string), initial_value: Query.new)
 
     expected_errors = [
       {
@@ -99,9 +99,9 @@ describe Graphene do
       }
     QUERY
 
-    runtime = Graphene::Execution::Runtime.new(DummySchema)
+    runtime = Oxide::Execution::Runtime.new(DummySchema)
 
-    result = runtime.execute(query: Graphene::Query.new(query_string), initial_value: Query.new)["data"]
+    result = runtime.execute(query: Oxide::Query.new(query_string), initial_value: Query.new)["data"]
 
     expected_response = {
       "charges" => [
@@ -128,9 +128,9 @@ describe Graphene do
       }
     QUERY
 
-    runtime = Graphene::Execution::Runtime.new(DummySchema)
+    runtime = Oxide::Execution::Runtime.new(DummySchema)
 
-    result = runtime.execute(query: Graphene::Query.new(query_string), initial_value: Query.new)["data"]
+    result = runtime.execute(query: Oxide::Query.new(query_string), initial_value: Query.new)["data"]
 
     result.should eq({
       "transactions" => [
@@ -157,9 +157,9 @@ describe Graphene do
       }
     QUERY
 
-    runtime = Graphene::Execution::Runtime.new(DummySchema)
+    runtime = Oxide::Execution::Runtime.new(DummySchema)
 
-    result = runtime.execute(query: Graphene::Query.new(query_string), initial_value: Query.new)["data"]
+    result = runtime.execute(query: Oxide::Query.new(query_string), initial_value: Query.new)["data"]
 
     result.should eq({
       "paymentMethods" => [
@@ -182,9 +182,9 @@ describe Graphene do
       }
     QUERY
 
-    runtime = Graphene::Execution::Runtime.new(DummySchema)
+    runtime = Oxide::Execution::Runtime.new(DummySchema)
 
-    result = runtime.execute(query: Graphene::Query.new(query_string), initial_value: Query.new)["data"]
+    result = runtime.execute(query: Oxide::Query.new(query_string), initial_value: Query.new)["data"]
 
     result.should eq({ "charge" => { "id" => "1" } })
   end
@@ -204,9 +204,9 @@ describe Graphene do
       }
     STRING
 
-    runtime = Graphene::Execution::Runtime.new(DummySchema)
+    runtime = Oxide::Execution::Runtime.new(DummySchema)
 
-    result = runtime.execute(query: Graphene::Query.new(query_string, variables: variables.as_h), initial_value: Query.new)["data"]
+    result = runtime.execute(query: Oxide::Query.new(query_string, variables: variables.as_h), initial_value: Query.new)["data"]
 
     result.should eq({ "charge" => { "id" => "10" } })
   end
@@ -222,10 +222,10 @@ describe Graphene do
 
     variables = {} of String => JSON::Any
 
-    runtime = Graphene::Execution::Runtime.new(DummySchema)
+    runtime = Oxide::Execution::Runtime.new(DummySchema)
 
     result = runtime.execute(
-      query: Graphene::Query.new(
+      query: Oxide::Query.new(
         query_string,
         variables: variables
       ),
@@ -241,17 +241,17 @@ describe Graphene do
       "bar"
     ]
 
-    query_type = Graphene::Types::ObjectType.new(
+    query_type = Oxide::Types::ObjectType.new(
       name: "DynamicQuery",
       resolver: DynamicResolver.new,
-      fields: fields.each_with_object({} of String => Graphene::Field) do |field_name, memo|
-        memo[field_name] = Graphene::Field.new(
-          type: Graphene::Types::StringType.new
+      fields: fields.each_with_object({} of String => Oxide::Field) do |field_name, memo|
+        memo[field_name] = Oxide::Field.new(
+          type: Oxide::Types::StringType.new
         )
       end
     )
 
-    schema = Graphene::Schema.new(query: query_type)
+    schema = Oxide::Schema.new(query: query_type)
 
     query_string = <<-QUERY
       query {
@@ -260,10 +260,10 @@ describe Graphene do
       }
     QUERY
 
-    runtime = Graphene::Execution::Runtime.new(schema)
+    runtime = Oxide::Execution::Runtime.new(schema)
 
     result = runtime.execute(
-      query: Graphene::Query.new(query_string),
+      query: Oxide::Query.new(query_string),
       initial_value: Query.new
     )["data"]
 
@@ -285,10 +285,10 @@ describe Graphene do
       }
     QUERY
 
-    runtime = Graphene::Execution::Runtime.new(DummySchema)
+    runtime = Oxide::Execution::Runtime.new(DummySchema)
 
     result = runtime.execute(
-      query: Graphene::Query.new(query_string, operation_name: "allCharges"),
+      query: Oxide::Query.new(query_string, operation_name: "allCharges"),
       initial_value: Query.new
     )["data"]
 

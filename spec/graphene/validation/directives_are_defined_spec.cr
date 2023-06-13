@@ -1,6 +1,6 @@
 require "../../spec_helper"
 
-describe Graphene::Validation::DirectivesAreDefined do
+describe Oxide::Validation::DirectivesAreDefined do
   it "counter example" do
     query_string = <<-QUERY
       query {
@@ -10,18 +10,18 @@ describe Graphene::Validation::DirectivesAreDefined do
       }
     QUERY
 
-    query = Graphene::Query.new(query_string)
+    query = Oxide::Query.new(query_string)
 
-    pipeline = Graphene::Validation::Pipeline.new(
+    pipeline = Oxide::Validation::Pipeline.new(
       ValidationsSchema,
       query,
-      [Graphene::Validation::DirectivesAreDefined.new.as(Graphene::Validation::Rule)]
+      [Oxide::Validation::DirectivesAreDefined.new.as(Oxide::Validation::Rule)]
     )
 
     pipeline.execute
 
     pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Graphene::Error.new("Directive @missing is not defined"))
+    pipeline.errors.should contain(Oxide::Error.new("Directive @missing is not defined"))
   end
 
   it "example" do
@@ -33,12 +33,12 @@ describe Graphene::Validation::DirectivesAreDefined do
       }
     QUERY
 
-    query = Graphene::Query.new(query_string)
+    query = Oxide::Query.new(query_string)
 
-    pipeline = Graphene::Validation::Pipeline.new(
+    pipeline = Oxide::Validation::Pipeline.new(
       ValidationsSchema,
       query,
-      [Graphene::Validation::DirectivesAreDefined.new.as(Graphene::Validation::Rule)]
+      [Oxide::Validation::DirectivesAreDefined.new.as(Oxide::Validation::Rule)]
     )
 
     pipeline.execute

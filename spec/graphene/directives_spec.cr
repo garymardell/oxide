@@ -1,6 +1,6 @@
 require "../spec_helper"
 
-describe Graphene do
+describe Oxide do
   it "does not have field if skip is true" do
     query_string = <<-QUERY
       query($toSkip: Boolean) {
@@ -17,10 +17,10 @@ describe Graphene do
       }
     STRING
 
-    runtime = Graphene::Execution::Runtime.new(DummySchema)
+    runtime = Oxide::Execution::Runtime.new(DummySchema)
 
     result = runtime.execute(
-      query: Graphene::Query.new(query_string, variables: variables.as_h),
+      query: Oxide::Query.new(query_string, variables: variables.as_h),
       initial_value: Query.new
     )["data"]
 
@@ -48,10 +48,10 @@ describe Graphene do
       }
     STRING
 
-    runtime = Graphene::Execution::Runtime.new(DummySchema)
+    runtime = Oxide::Execution::Runtime.new(DummySchema)
 
     result = runtime.execute(
-      query: Graphene::Query.new(query_string, variables: variables.as_h),
+      query: Oxide::Query.new(query_string, variables: variables.as_h),
       initial_value: Query.new
     )["data"]
 
@@ -79,10 +79,10 @@ describe Graphene do
       }
     STRING
 
-    runtime = Graphene::Execution::Runtime.new(DummySchema)
+    runtime = Oxide::Execution::Runtime.new(DummySchema)
 
     result = runtime.execute(
-      query: Graphene::Query.new(query_string, variables: variables.as_h),
+      query: Oxide::Query.new(query_string, variables: variables.as_h),
       initial_value: Query.new
     )["data"]
 
@@ -110,10 +110,10 @@ describe Graphene do
       }
     STRING
 
-    runtime = Graphene::Execution::Runtime.new(DummySchema)
+    runtime = Oxide::Execution::Runtime.new(DummySchema)
 
     result = runtime.execute(
-      query: Graphene::Query.new(query_string, variables: variables.as_h),
+      query: Oxide::Query.new(query_string, variables: variables.as_h),
       initial_value: Query.new
     )["data"]
 

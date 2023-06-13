@@ -1,9 +1,9 @@
 require "spec"
-require "../src/graphene"
+require "../src/oxide"
 require "./dummy/schema"
 
-class NullResolver < Graphene::Resolver
-  def resolve(object : Graphene::Resolvable?, field_name, argument_values, context, resolution_info) : Graphene::Result
+class NullResolver < Oxide::Resolver
+  def resolve(object : Oxide::Resolvable?, field_name, argument_values, context, resolution_info) : Oxide::Result
   end
 
   def resolve(object, field_name, argument_values, context, resolution_info)
@@ -11,259 +11,259 @@ class NullResolver < Graphene::Resolver
   end
 end
 
-DogCommandEnum = Graphene::Types::EnumType.new(
+DogCommandEnum = Oxide::Types::EnumType.new(
   name: "DogCommand",
   values: [
-    Graphene::Types::EnumValue.new(name: "SIT"),
-    Graphene::Types::EnumValue.new(name: "DOWN"),
-    Graphene::Types::EnumValue.new(name: "HEEL")
+    Oxide::Types::EnumValue.new(name: "SIT"),
+    Oxide::Types::EnumValue.new(name: "DOWN"),
+    Oxide::Types::EnumValue.new(name: "HEEL")
   ]
 )
 
-class SentientTypeResolver < Graphene::TypeResolver
+class SentientTypeResolver < Oxide::TypeResolver
   def resolve_type(object, context)
     AlienType
   end
 end
 
-class CatOrDogTypeResolver < Graphene::TypeResolver
+class CatOrDogTypeResolver < Oxide::TypeResolver
   def resolve_type(object, context)
     CatType
   end
 end
 
-class DogOrHumanTypeResolver < Graphene::TypeResolver
+class DogOrHumanTypeResolver < Oxide::TypeResolver
   def resolve_type(object, context)
     HumanType
   end
 end
 
-class HumanOrAlienTypeResolver < Graphene::TypeResolver
+class HumanOrAlienTypeResolver < Oxide::TypeResolver
   def resolve_type(object, context)
     HumanType
   end
 end
 
-class PetTypeResolver < Graphene::TypeResolver
+class PetTypeResolver < Oxide::TypeResolver
   def resolve_type(object, context)
     DogType
   end
 end
 
-SentientInterface = Graphene::Types::Interface.new(
+SentientInterface = Oxide::Types::Interface.new(
   name: "Sentient",
   type_resolver: SentientTypeResolver.new,
   fields: {
-    "name" => Graphene::Field.new(
-      type: Graphene::Types::NonNullType.new(
-        of_type: Graphene::Types::StringType.new
+    "name" => Oxide::Field.new(
+      type: Oxide::Types::NonNullType.new(
+        of_type: Oxide::Types::StringType.new
       )
     )
   }
 )
 
-AlienType = Graphene::Types::ObjectType.new(
+AlienType = Oxide::Types::ObjectType.new(
   name: "Alien",
   resolver: NullResolver.new,
   fields: {
-    "name" => Graphene::Field.new(
-      type: Graphene::Types::NonNullType.new(
-        of_type: Graphene::Types::StringType.new
+    "name" => Oxide::Field.new(
+      type: Oxide::Types::NonNullType.new(
+        of_type: Oxide::Types::StringType.new
       )
     ),
-    "homePlanet" => Graphene::Field.new(
-      type: Graphene::Types::StringType.new
+    "homePlanet" => Oxide::Field.new(
+      type: Oxide::Types::StringType.new
     )
   }
 )
 
-HumanType = Graphene::Types::ObjectType.new(
+HumanType = Oxide::Types::ObjectType.new(
   name: "Human",
   resolver: NullResolver.new,
   fields: {
-    "name" => Graphene::Field.new(
-      type: Graphene::Types::NonNullType.new(
-        of_type: Graphene::Types::StringType.new
+    "name" => Oxide::Field.new(
+      type: Oxide::Types::NonNullType.new(
+        of_type: Oxide::Types::StringType.new
       )
     )
   }
 )
 
 
-PetInterface = Graphene::Types::InterfaceType.new(
+PetInterface = Oxide::Types::InterfaceType.new(
   name: "Pet",
   type_resolver: PetTypeResolver.new,
   fields: {
-    "name" => Graphene::Field.new(
-      type: Graphene::Types::NonNullType.new(
-        of_type: Graphene::Types::StringType.new
+    "name" => Oxide::Field.new(
+      type: Oxide::Types::NonNullType.new(
+        of_type: Oxide::Types::StringType.new
       )
     )
   }
 )
 
-CatCommandEnum = Graphene::Types::EnumType.new(
+CatCommandEnum = Oxide::Types::EnumType.new(
   name: "CatCommand",
   values: [
-    Graphene::Types::EnumValue.new(name: "JUMP")
+    Oxide::Types::EnumValue.new(name: "JUMP")
   ]
 )
 
-CatType = Graphene::Types::ObjectType.new(
+CatType = Oxide::Types::ObjectType.new(
   name: "Cat",
   resolver: NullResolver.new,
   interfaces: [PetInterface],
   fields: {
-    "name" => Graphene::Field.new(
-      type: Graphene::Types::NonNullType.new(
-        of_type: Graphene::Types::StringType.new
+    "name" => Oxide::Field.new(
+      type: Oxide::Types::NonNullType.new(
+        of_type: Oxide::Types::StringType.new
       )
     ),
-    "nickname" => Graphene::Field.new(
-      type: Graphene::Types::StringType.new
+    "nickname" => Oxide::Field.new(
+      type: Oxide::Types::StringType.new
     ),
-    "doesKnowCommand" => Graphene::Field.new(
+    "doesKnowCommand" => Oxide::Field.new(
       arguments: {
-        "catCommand" => Graphene::Argument.new(
-          type: Graphene::Types::NonNullType.new(
+        "catCommand" => Oxide::Argument.new(
+          type: Oxide::Types::NonNullType.new(
             of_type: CatCommandEnum
           )
         )
       },
-      type: Graphene::Types::NonNullType.new(
-        of_type: Graphene::Types::BooleanType.new
+      type: Oxide::Types::NonNullType.new(
+        of_type: Oxide::Types::BooleanType.new
       )
     ),
-    "meowVolume" => Graphene::Field.new(
-      type: Graphene::Types::IntType.new
+    "meowVolume" => Oxide::Field.new(
+      type: Oxide::Types::IntType.new
     )
   }
 )
 
-CatOrDogUnion = Graphene::Types::UnionType.new(
+CatOrDogUnion = Oxide::Types::UnionType.new(
   name: "CatOrDog",
   type_resolver: CatOrDogTypeResolver.new,
   possible_types: [
-    CatType.as(Graphene::Type),
-    DogType.as(Graphene::Type)
+    CatType.as(Oxide::Type),
+    DogType.as(Oxide::Type)
   ]
 )
 
-DogOrHumanUnion = Graphene::Types::UnionType.new(
+DogOrHumanUnion = Oxide::Types::UnionType.new(
   name: "DogOrHuman",
   type_resolver: DogOrHumanTypeResolver.new,
   possible_types: [
-    DogType.as(Graphene::Type),
-    HumanType.as(Graphene::Type)
+    DogType.as(Oxide::Type),
+    HumanType.as(Oxide::Type)
   ]
 )
 
-HumanOrAlienUnion = Graphene::Types::UnionType.new(
+HumanOrAlienUnion = Oxide::Types::UnionType.new(
   name: "HumanOrAlien",
   type_resolver: HumanOrAlienTypeResolver.new,
   possible_types: [
-    AlienType.as(Graphene::Type),
-    HumanType.as(Graphene::Type)
+    AlienType.as(Oxide::Type),
+    HumanType.as(Oxide::Type)
   ]
 )
 
-DogType = Graphene::Types::ObjectType.new(
+DogType = Oxide::Types::ObjectType.new(
   name: "Dog",
   resolver: NullResolver.new,
   interfaces: [PetInterface],
   fields: {
-    "name" => Graphene::Field.new(
-      type: Graphene::Types::NonNullType.new(
-        of_type: Graphene::Types::StringType.new
+    "name" => Oxide::Field.new(
+      type: Oxide::Types::NonNullType.new(
+        of_type: Oxide::Types::StringType.new
       )
     ),
-    "nickname" => Graphene::Field.new(
-      type: Graphene::Types::StringType.new
+    "nickname" => Oxide::Field.new(
+      type: Oxide::Types::StringType.new
     ),
-    "barkVolume" => Graphene::Field.new(
-      type: Graphene::Types::IntType.new
+    "barkVolume" => Oxide::Field.new(
+      type: Oxide::Types::IntType.new
     ),
-    "doesKnowCommand" => Graphene::Field.new(
+    "doesKnowCommand" => Oxide::Field.new(
       arguments: {
-        "dogCommand" => Graphene::Argument.new(
-          type: Graphene::Types::NonNullType.new(
+        "dogCommand" => Oxide::Argument.new(
+          type: Oxide::Types::NonNullType.new(
             of_type: DogCommandEnum
           )
         )
       },
-      type: Graphene::Types::NonNullType.new(
-        of_type: Graphene::Types::BooleanType.new
+      type: Oxide::Types::NonNullType.new(
+        of_type: Oxide::Types::BooleanType.new
       )
     ),
-    "isHousetrained" => Graphene::Field.new(
+    "isHousetrained" => Oxide::Field.new(
       arguments: {
-        "atOtherHomes" => Graphene::Argument.new(
-          type: Graphene::Types::BooleanType.new
+        "atOtherHomes" => Oxide::Argument.new(
+          type: Oxide::Types::BooleanType.new
         )
       },
-      type: Graphene::Types::NonNullType.new(
-        of_type: Graphene::Types::BooleanType.new
+      type: Oxide::Types::NonNullType.new(
+        of_type: Oxide::Types::BooleanType.new
       )
     ),
-    "owner" => Graphene::Field.new(
+    "owner" => Oxide::Field.new(
       type: HumanType
     ),
   }
 )
 
-FindDogInputType = Graphene::Types::InputObjectType.new(
+FindDogInputType = Oxide::Types::InputObjectType.new(
   name: "FindDogInput",
   input_fields: {
-    "name" => Graphene::Argument.new(
-      type: Graphene::Types::StringType.new
+    "name" => Oxide::Argument.new(
+      type: Oxide::Types::StringType.new
     ),
-    "owner" => Graphene::Argument.new(
-      type: Graphene::Types::StringType.new
+    "owner" => Oxide::Argument.new(
+      type: Oxide::Types::StringType.new
     )
   }
 )
 
-ValidationsSchema = Graphene::Schema.new(
-  query: Graphene::Types::ObjectType.new(
+ValidationsSchema = Oxide::Schema.new(
+  query: Oxide::Types::ObjectType.new(
     name: "Query",
     resolver: NullResolver.new,
     fields: {
-      "dog" => Graphene::Field.new(
+      "dog" => Oxide::Field.new(
         type: DogType
       ),
-      "findDog" => Graphene::Field.new(
+      "findDog" => Oxide::Field.new(
         arguments: {
-          "searchBy" => Graphene::Argument.new(
+          "searchBy" => Oxide::Argument.new(
             type: FindDogInputType
           )
         },
         type: DogType
       ),
       # Extended for LeafFieldSelections test
-      "human" => Graphene::Field.new(
+      "human" => Oxide::Field.new(
         type: HumanType
       ),
-      "pet" => Graphene::Field.new(
+      "pet" => Oxide::Field.new(
         type: PetInterface
       ),
-      "catOrDog" => Graphene::Field.new(
+      "catOrDog" => Oxide::Field.new(
         type: CatOrDogUnion
       ),
-      "booleanList" => Graphene::Field.new(
+      "booleanList" => Oxide::Field.new(
         arguments: {
-          "booleanListArg" => Graphene::Argument.new(
-            type: Graphene::Types::ListType.new(
-              of_type: Graphene::Types::NonNullType.new(of_type: Graphene::Types::BooleanType.new)
+          "booleanListArg" => Oxide::Argument.new(
+            type: Oxide::Types::ListType.new(
+              of_type: Oxide::Types::NonNullType.new(of_type: Oxide::Types::BooleanType.new)
             )
           )
         },
-        type: Graphene::Types::BooleanType.new
+        type: Oxide::Types::BooleanType.new
       )
     }
   ),
   orphan_types: [
-    CatOrDogUnion.as(Graphene::Type),
-    DogOrHumanUnion.as(Graphene::Type),
-    HumanOrAlienUnion.as(Graphene::Type)
+    CatOrDogUnion.as(Oxide::Type),
+    DogOrHumanUnion.as(Oxide::Type),
+    HumanOrAlienUnion.as(Oxide::Type)
   ]
 )

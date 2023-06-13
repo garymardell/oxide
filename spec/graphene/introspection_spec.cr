@@ -1,6 +1,6 @@
 require "../spec_helper"
 
-describe Graphene do
+describe Oxide do
   it "gets object __typename" do
     query_string = <<-QUERY
       query {
@@ -11,10 +11,10 @@ describe Graphene do
       }
     QUERY
 
-    runtime = Graphene::Execution::Runtime.new(DummySchema)
+    runtime = Oxide::Execution::Runtime.new(DummySchema)
 
     result = runtime.execute(
-      query: Graphene::Query.new(query_string),
+      query: Oxide::Query.new(query_string),
       initial_value: Query.new
     )["data"]
 
@@ -33,9 +33,9 @@ describe Graphene do
       }
     QUERY
 
-    runtime = Graphene::Execution::Runtime.new(DummySchema)
+    runtime = Oxide::Execution::Runtime.new(DummySchema)
 
-    result = runtime.execute(query: Graphene::Query.new(query_string))["data"]
+    result = runtime.execute(query: Oxide::Query.new(query_string))["data"]
 
     pp result
   end
@@ -132,9 +132,9 @@ describe Graphene do
       }
     QUERY
 
-    runtime = Graphene::Execution::Runtime.new(DummySchema)
+    runtime = Oxide::Execution::Runtime.new(DummySchema)
 
-    result = runtime.execute(query: Graphene::Query.new(query_string))["data"]
+    result = runtime.execute(query: Oxide::Query.new(query_string))["data"]
 
     pp result
   end

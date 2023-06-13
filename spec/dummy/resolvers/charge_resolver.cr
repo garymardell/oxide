@@ -1,4 +1,4 @@
-class RefundLoader < Graphene::Loader(Int32, Refund?)
+class RefundLoader < Oxide::Loader(Int32, Refund?)
   def perform(load_keys)
     load_keys.each do |key|
       fulfill(key, Refund.new(key, "pending", "r_12345", false))
@@ -6,14 +6,14 @@ class RefundLoader < Graphene::Loader(Int32, Refund?)
   end
 end
 
-class ChargeResolver < Graphene::Resolver
+class ChargeResolver < Oxide::Resolver
   property loader : RefundLoader
 
   def initialize
     @loader = RefundLoader.new
   end
 
-  def resolve(object : Graphene::Resolvable?, field_name, argument_values, context, resolution_info) : Graphene::Result
+  def resolve(object : Oxide::Resolvable?, field_name, argument_values, context, resolution_info) : Oxide::Result
   end
 
   def resolve(object : Charge, field_name, argument_values, context, resolution_info)

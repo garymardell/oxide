@@ -1,6 +1,6 @@
 require "../../spec_helper"
 
-describe Graphene::Validation::DirectivesAreInValidLocations do
+describe Oxide::Validation::DirectivesAreInValidLocations do
   it "counter example #165" do
     query_string = <<-QUERY
       query @skip(if: $foo) {
@@ -8,17 +8,17 @@ describe Graphene::Validation::DirectivesAreInValidLocations do
       }
     QUERY
 
-    query = Graphene::Query.new(query_string)
+    query = Oxide::Query.new(query_string)
 
-    pipeline = Graphene::Validation::Pipeline.new(
+    pipeline = Oxide::Validation::Pipeline.new(
       ValidationsSchema,
       query,
-      [Graphene::Validation::DirectivesAreInValidLocations.new.as(Graphene::Validation::Rule)]
+      [Oxide::Validation::DirectivesAreInValidLocations.new.as(Oxide::Validation::Rule)]
     )
 
     pipeline.execute
 
     pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Graphene::Error.new("'@skip' can't be applied to queries (allowed: fields, fragment spreads, inline fragments)"))
+    pipeline.errors.should contain(Oxide::Error.new("'@skip' can't be applied to queries (allowed: fields, fragment spreads, inline fragments)"))
   end
 end

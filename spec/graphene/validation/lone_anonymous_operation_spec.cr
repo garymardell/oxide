@@ -1,6 +1,6 @@
 require "../../spec_helper"
 
-describe Graphene::Validation::LoneAnonymousOperation do
+describe Oxide::Validation::LoneAnonymousOperation do
   it "example #108" do
     query_string = <<-QUERY
       {
@@ -10,12 +10,12 @@ describe Graphene::Validation::LoneAnonymousOperation do
       }
     QUERY
 
-    query = Graphene::Query.new(query_string)
+    query = Oxide::Query.new(query_string)
 
-    pipeline = Graphene::Validation::Pipeline.new(
+    pipeline = Oxide::Validation::Pipeline.new(
       ValidationsSchema,
       query,
-      [Graphene::Validation::LoneAnonymousOperation.new.as(Graphene::Validation::Rule)]
+      [Oxide::Validation::LoneAnonymousOperation.new.as(Oxide::Validation::Rule)]
     )
 
     pipeline.execute
@@ -40,17 +40,17 @@ describe Graphene::Validation::LoneAnonymousOperation do
       }
     QUERY
 
-    query = Graphene::Query.new(query_string)
+    query = Oxide::Query.new(query_string)
 
-    pipeline = Graphene::Validation::Pipeline.new(
+    pipeline = Oxide::Validation::Pipeline.new(
       ValidationsSchema,
       query,
-      [Graphene::Validation::LoneAnonymousOperation.new.as(Graphene::Validation::Rule)]
+      [Oxide::Validation::LoneAnonymousOperation.new.as(Oxide::Validation::Rule)]
     )
 
     pipeline.execute
 
     pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Graphene::Error.new("Operation name is required when multiple operations are present"))
+    pipeline.errors.should contain(Oxide::Error.new("Operation name is required when multiple operations are present"))
   end
 end

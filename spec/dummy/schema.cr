@@ -1,8 +1,8 @@
-require "../../src/graphene"
+require "../../src/oxide"
 require "./models/*"
 require "./resolvers/*"
 
-class TransactionTypeResolver < Graphene::TypeResolver
+class TransactionTypeResolver < Oxide::TypeResolver
   def resolve_type(object : Charge, context)
     ChargeType
   end
@@ -16,91 +16,91 @@ class TransactionTypeResolver < Graphene::TypeResolver
   end
 end
 
-TransactionInterface = Graphene::Types::InterfaceType.new(
+TransactionInterface = Oxide::Types::InterfaceType.new(
   name: "Transaction",
   type_resolver: TransactionTypeResolver.new,
   fields: {
-    "id" => Graphene::Field.new(
-      type: Graphene::Types::IdType.new
+    "id" => Oxide::Field.new(
+      type: Oxide::Types::IdType.new
     ),
-    "reference" => Graphene::Field.new(
-      type: Graphene::Types::StringType.new
+    "reference" => Oxide::Field.new(
+      type: Oxide::Types::StringType.new
     )
   }
 )
 
-ChargeType = Graphene::Types::ObjectType.new(
+ChargeType = Oxide::Types::ObjectType.new(
   name: "Charge",
   resolver: ChargeResolver.new,
   interfaces: [TransactionInterface],
   fields: {
-    "status" => Graphene::Field.new(
-      type: Graphene::Types::NonNullType.new(
-        of_type: Graphene::Types::EnumType.new(
+    "status" => Oxide::Field.new(
+      type: Oxide::Types::NonNullType.new(
+        of_type: Oxide::Types::EnumType.new(
           name: "ChargeStatus",
           values: [
-            Graphene::Types::EnumValue.new(name: "PENDING", value: "pending"),
-            Graphene::Types::EnumValue.new(name: "PAID", value: "paid")
+            Oxide::Types::EnumValue.new(name: "PENDING", value: "pending"),
+            Oxide::Types::EnumValue.new(name: "PAID", value: "paid")
           ]
         )
       )
     ),
-    "refund" => Graphene::Field.new(
+    "refund" => Oxide::Field.new(
       type: RefundType
     )
   }
 )
 
-RefundType = Graphene::Types::ObjectType.new(
+RefundType = Oxide::Types::ObjectType.new(
   name: "Refund",
   resolver: RefundResolver.new,
   interfaces: [TransactionInterface],
   fields: {
-    "status" => Graphene::Field.new(
-      type: Graphene::Types::EnumType.new(
+    "status" => Oxide::Field.new(
+      type: Oxide::Types::EnumType.new(
         name: "RefundStatus",
         values: [
-          Graphene::Types::EnumValue.new(name: "PENDING", value: "pending"),
-          Graphene::Types::EnumValue.new(name: "REFUNDED", value: "refunded")
+          Oxide::Types::EnumValue.new(name: "PENDING", value: "pending"),
+          Oxide::Types::EnumValue.new(name: "REFUNDED", value: "refunded")
         ]
       )
     ),
-    "partial" => Graphene::Field.new(
-      type: Graphene::Types::BooleanType.new
+    "partial" => Oxide::Field.new(
+      type: Oxide::Types::BooleanType.new
     ),
-    "payment_method" => Graphene::Field.new(
+    "payment_method" => Oxide::Field.new(
       type: PaymentMethodType
     )
   }
 )
 
-CreditCardType = Graphene::Types::ObjectType.new(
+CreditCardType = Oxide::Types::ObjectType.new(
   name: "CreditCard",
   resolver: CreditCardResolver.new,
   fields: {
-    "id" => Graphene::Field.new(
-      type: Graphene::Types::IdType.new
+    "id" => Oxide::Field.new(
+      type: Oxide::Types::IdType.new
     ),
-    "last4" => Graphene::Field.new(
-      type: Graphene::Types::StringType.new
+    "last4" => Oxide::Field.new(
+      type: Oxide::Types::StringType.new
     )
   }
 )
 
-BankAccountType = Graphene::Types::ObjectType.new(
+BankAccountType = Oxide::Types::ObjectType.new(
   name: "BankAccount",
   resolver: BankAccountResolver.new,
   fields: {
-    "id" => Graphene::Field.new(
-      type: Graphene::Types::IdType.new
+    "id" => Oxide::Field.new(
+      type: Oxide::Types::IdType.new
     ),
-    "accountNumber" => Graphene::Field.new(
-      type: Graphene::Types::StringType.new
+    "accountNumber" => Oxide::Field.new(
+      type: Oxide::Types::StringType.new
     )
   }
 )
 
-class PaymentMethodTypeResolver < Graphene::TypeResolver
+class PaymentMethodTypeResolver < Oxide::TypeResolver
   def resolve_type(object : CreditCard, context)
     CreditCardType
   end
@@ -114,65 +114,65 @@ class PaymentMethodTypeResolver < Graphene::TypeResolver
   end
 end
 
-PaymentMethodType = Graphene::Types::UnionType.new(
+PaymentMethodType = Oxide::Types::UnionType.new(
   name: "PaymentMethod",
   type_resolver: PaymentMethodTypeResolver.new,
   possible_types: [
-    CreditCardType.as(Graphene::Type),
-    BankAccountType.as(Graphene::Type)
+    CreditCardType.as(Oxide::Type),
+    BankAccountType.as(Oxide::Type)
   ]
 )
 
-CreateChargeInputObject = Graphene::Types::InputObjectType.new(
+CreateChargeInputObject = Oxide::Types::InputObjectType.new(
   name: "CreateChargeInput",
   input_fields: {
-    "reference" => Graphene::Argument.new(
-      type: Graphene::Types::NonNullType.new(of_type: Graphene::Types::StringType.new)
+    "reference" => Oxide::Argument.new(
+      type: Oxide::Types::NonNullType.new(of_type: Oxide::Types::StringType.new)
     )
   }
 )
 
-DummySchema = Graphene::Schema.new(
-  query: Graphene::Types::ObjectType.new(
+DummySchema = Oxide::Schema.new(
+  query: Oxide::Types::ObjectType.new(
     name: "Query",
     fields: {
-      "charge" => Graphene::Field.new(
-        type: Graphene::Types::NonNullType.new(of_type: ChargeType),
+      "charge" => Oxide::Field.new(
+        type: Oxide::Types::NonNullType.new(of_type: ChargeType),
         arguments: {
-          "id" => Graphene::Argument.new(
-            type: Graphene::Types::IdType.new
+          "id" => Oxide::Argument.new(
+            type: Oxide::Types::IdType.new
           )
         }
       ),
-      "charges" => Graphene::Field.new(
-        type: Graphene::Types::NonNullType.new(
-          of_type: Graphene::Types::ListType.new(of_type: ChargeType)
+      "charges" => Oxide::Field.new(
+        type: Oxide::Types::NonNullType.new(
+          of_type: Oxide::Types::ListType.new(of_type: ChargeType)
         )
       ),
-      "transactions" => Graphene::Field.new(
-        type: Graphene::Types::NonNullType.new(
-          of_type: Graphene::Types::ListType.new(of_type: TransactionInterface)
+      "transactions" => Oxide::Field.new(
+        type: Oxide::Types::NonNullType.new(
+          of_type: Oxide::Types::ListType.new(of_type: TransactionInterface)
         )
       ),
-      "paymentMethods" => Graphene::Field.new(
-        type: Graphene::Types::NonNullType.new(
-          of_type: Graphene::Types::ListType.new(of_type: PaymentMethodType)
+      "paymentMethods" => Oxide::Field.new(
+        type: Oxide::Types::NonNullType.new(
+          of_type: Oxide::Types::ListType.new(of_type: PaymentMethodType)
         )
       ),
-      "nullList" => Graphene::Field.new(
-        type: Graphene::Types::ListType.new(
-          of_type: Graphene::Types::NonNullType.new(of_type: ChargeType)
+      "nullList" => Oxide::Field.new(
+        type: Oxide::Types::ListType.new(
+          of_type: Oxide::Types::NonNullType.new(of_type: ChargeType)
         )
       )
     }
   ),
-  mutation: Graphene::Types::ObjectType.new(
+  mutation: Oxide::Types::ObjectType.new(
     name: "Mutation",
     fields: {
-      "createCharge" => Graphene::Field.new(
+      "createCharge" => Oxide::Field.new(
         type: ChargeType,
         arguments: {
-          "input" => Graphene::Argument.new(
+          "input" => Oxide::Argument.new(
             type: CreateChargeInputObject
           )
         }
@@ -180,6 +180,6 @@ DummySchema = Graphene::Schema.new(
     }
   ),
   orphan_types: [
-    RefundType.as(Graphene::Type)
+    RefundType.as(Oxide::Type)
   ]
 )

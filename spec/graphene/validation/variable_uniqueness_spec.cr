@@ -1,6 +1,6 @@
 require "../../spec_helper"
 
-describe Graphene::Validation::VariableUniqueness do
+describe Oxide::Validation::VariableUniqueness do
   it "counter example #168" do
     query_string = <<-QUERY
       query houseTrainedQuery($atOtherHomes: Boolean, $atOtherHomes: Boolean) {
@@ -10,18 +10,18 @@ describe Graphene::Validation::VariableUniqueness do
       }
     QUERY
 
-    query = Graphene::Query.new(query_string)
+    query = Oxide::Query.new(query_string)
 
-    pipeline = Graphene::Validation::Pipeline.new(
+    pipeline = Oxide::Validation::Pipeline.new(
       ValidationsSchema,
       query,
-      [Graphene::Validation::VariableUniqueness.new.as(Graphene::Validation::Rule)]
+      [Oxide::Validation::VariableUniqueness.new.as(Oxide::Validation::Rule)]
     )
 
     pipeline.execute
 
     pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Graphene::Error.new("There can only be one variable named \"atOtherHomes\""))
+    pipeline.errors.should contain(Oxide::Error.new("There can only be one variable named \"atOtherHomes\""))
   end
 
   it "example #169" do
@@ -41,12 +41,12 @@ describe Graphene::Validation::VariableUniqueness do
       }
     QUERY
 
-    query = Graphene::Query.new(query_string)
+    query = Oxide::Query.new(query_string)
 
-    pipeline = Graphene::Validation::Pipeline.new(
+    pipeline = Oxide::Validation::Pipeline.new(
       ValidationsSchema,
       query,
-      [Graphene::Validation::VariableUniqueness.new.as(Graphene::Validation::Rule)]
+      [Oxide::Validation::VariableUniqueness.new.as(Oxide::Validation::Rule)]
     )
 
     pipeline.execute

@@ -1,6 +1,6 @@
 require "../spec_helper"
 
-describe Graphene do
+describe Oxide do
   # it "returns error for requesting field that does not exist" do
   #   query_string = <<-QUERY
   #     query {
@@ -12,9 +12,9 @@ describe Graphene do
   #     }
   #   QUERY
 
-  #   runtime = Graphene::Execution::Runtime.new(
+  #   runtime = Oxide::Execution::Runtime.new(
   #     DummySchema,
-  #     Graphene::Query.new(query_string)
+  #     Oxide::Query.new(query_string)
   #   )
 
   #   result = JSON.parse(runtime.execute)
@@ -41,9 +41,9 @@ describe Graphene do
   #     }
   #   QUERY
 
-  #   runtime = Graphene::Execution::Runtime.new(
+  #   runtime = Oxide::Execution::Runtime.new(
   #     DummySchema,
-  #     Graphene::Query.new(query_string)
+  #     Oxide::Query.new(query_string)
   #   )
 
   #   result = JSON.parse(runtime.execute)
@@ -72,9 +72,9 @@ describe Graphene do
   #     }
   #   QUERY
 
-  #   runtime = Graphene::Execution::Runtime.new(
+  #   runtime = Oxide::Execution::Runtime.new(
   #     DummySchema,
-  #     Graphene::Query.new(query_string)
+  #     Oxide::Query.new(query_string)
   #   )
 
   #   result = JSON.parse(runtime.execute)
@@ -100,9 +100,9 @@ describe Graphene do
   #     }
   #   QUERY
 
-  #   runtime = Graphene::Execution::Runtime.new(
+  #   runtime = Oxide::Execution::Runtime.new(
   #     DummySchema,
-  #     Graphene::Query.new(query_string)
+  #     Oxide::Query.new(query_string)
   #   )
 
   #   result = JSON.parse(runtime.execute)
