@@ -28,7 +28,14 @@ This library was originally built to experiment with building dynamic schemas on
     - [x] Argument Uniqueness
   - [ ] Fragments
     - [ ] Fragment Declarations
+      - [ ] Fragment Name Uniqueness
+      - [ ] Fragment Spread Type Existence
+      - [ ] Fragments on Composite Types
+      - [ ] Fragments Must Be Used
     - [ ] Fragment Spreads
+      - [ ] Fragment Spread Target Defined
+      - [ ] Fragment Spreads Must Not Form Cycles
+      - [ ] Fragment Spread is Possible
   - [ ] Values
     - [ ] Values of Correct Type
     - [ ] Input Object Field Names
