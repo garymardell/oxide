@@ -66,6 +66,7 @@ module Oxide
           # FragmentNameUniqueness.new.as(Rule),
           # FragmentsMustBeUsed.new.as(Rule),
           # Values
+          InputObjectFieldNames.new.as(Rule),
           InputObjectFieldUniqueness.new.as(Rule),
           # Directives
           DirectivesAreDefined.new.as(Rule),

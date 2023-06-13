@@ -38,7 +38,7 @@ This library was originally built to experiment with building dynamic schemas on
       - [ ] Fragment Spread is Possible
   - [ ] Values
     - [ ] Values of Correct Type
-    - [ ] Input Object Field Names
+    - [x] Input Object Field Names
     - [x] Input Object Field Uniqueness
     - [ ] Input Object Required Fields
   - [x] Directives
