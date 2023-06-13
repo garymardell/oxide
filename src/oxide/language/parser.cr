@@ -51,10 +51,10 @@ module Oxide
 
         LibGraphqlParser.node_get_location({{ast_node}}.as(LibGraphqlParser::GraphQLAstNode), pointerof(location))
 
-        {{node}}.beginLine = location.beginLine
-        {{node}}.endLine = location.endLine
-        {{node}}.beginColumn = location.beginColumn
-        {{node}}.endColumn = location.endColumn
+        {{node}}.begin_line = location.beginLine
+        {{node}}.end_line = location.endLine
+        {{node}}.begin_column = location.beginColumn
+        {{node}}.end_column = location.endColumn
       end
 
       def initialize

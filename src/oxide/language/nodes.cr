@@ -14,10 +14,14 @@ module Oxide
       abstract class Node
         include Visitable
 
-        property beginLine : Int32?
-        property beginColumn : Int32?
-        property endLine : Int32?
-        property endColumn : Int32?
+        property begin_line : Int32?
+        property begin_column : Int32?
+        property end_line : Int32?
+        property end_column : Int32?
+
+        def to_location
+          Oxide::Location.new(line: begin_line.not_nil!, column: begin_column.not_nil!)
+        end
       end
 
       class Document < Node

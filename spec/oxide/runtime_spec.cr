@@ -65,7 +65,8 @@ describe Oxide do
 
     expected_errors = [
       {
-        "message" => "Cannot return null for non-nullable field Charge.status"
+        "message" => "Cannot return null for non-nullable field Charge.status",
+        "locations" => [] of Oxide::Location
       }
     ]
 
