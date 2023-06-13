@@ -184,9 +184,18 @@ module Oxide
       #   break;
       # }
 
-      def enter(node : Oxide::Language::Nodes::ObjectField)
+      # def enter(node : Oxide::Language::Nodes::ObjectField)
+      #   object_type = named_type(context.input_type)
 
-      end
+
+      #   case object_type
+      #   when Oxide::Types::InputObjectType
+      #     input_field = object_type.input_fields[node.name]?
+      #     input_field_type = input_field.try &.type
+
+      #     context.input_type_stack << (input_field_type.try &.input_type? ? input_field_type : nil)
+      #   end
+      # end
 
       # case Kind.ENUM: {
       #   const enumType: unknown = getNamedType(this.getInputType());
