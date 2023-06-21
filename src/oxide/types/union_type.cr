@@ -12,7 +12,7 @@ module Oxide
       def initialize(@name, @type_resolver, @description = nil, @possible_types = [] of Oxide::Type)
       end
 
-      def resolve(field_name, argument_values, context, resolution_info) : Result
+      def resolve(field_name, argument_values, context, resolution_info)
         case field_name
         when "name"
           name

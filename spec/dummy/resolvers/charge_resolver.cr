@@ -6,14 +6,13 @@ class RefundLoader < Oxide::Loader(Int32, Refund?)
   end
 end
 
-class ChargeResolver < Oxide::Resolver
+class ChargeResolver
+  include Oxide::Resolves(Charge)
+
   property loader : RefundLoader
 
   def initialize
     @loader = RefundLoader.new
-  end
-
-  def resolve(object : Oxide::Resolvable?, field_name, argument_values, context, resolution_info) : Oxide::Result
   end
 
   def resolve(object : Charge, field_name, argument_values, context, resolution_info)

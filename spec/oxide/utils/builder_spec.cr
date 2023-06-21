@@ -1,7 +1,9 @@
 require "../../spec_helper"
 
-class BuilderResolver < Oxide::Resolver
-  def resolve(object : Oxide::Resolvable?, field_name, argument_values, context, resolution_info) : Oxide::Result
+class BuilderResolver
+  include Oxide::Resolver
+
+  def resolve(object, field_name, argument_values, context, resolution_info)
   end
 end
 

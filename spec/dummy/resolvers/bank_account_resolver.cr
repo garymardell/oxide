@@ -1,8 +1,7 @@
-class BankAccountResolver < Oxide::Resolver
-  def resolve(object : Oxide::Resolvable?, field_name, argument_values, context, resolution_info) : Oxide::Result
-  end
+class BankAccountResolver
+  include Oxide::Resolves(BankAccount)
 
-  def resolve(object : BankAccount, field_name, context, argument_values, resolution_info)
+  def resolve(object : BankAccount, field_name, argument_values, context, resolution_info)
     case field_name
     when "id"
       object.id

@@ -9,7 +9,7 @@ module Oxide
       def initialize(@name, @argument)
       end
 
-      def resolve(field_name, argument_values, context, resolution_info) : Result
+      def resolve(field_name, argument_values, context, resolution_info)
         case field_name
         when "name"
           name
@@ -18,7 +18,7 @@ module Oxide
         when "type"
           argument.type
         when "defaultValue"
-          argument.default_value.as(Result)
+          argument.default_value
         end
       end
     end

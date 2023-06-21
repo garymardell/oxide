@@ -2,9 +2,8 @@ require "spec"
 require "../src/oxide"
 require "./dummy/schema"
 
-class NullResolver < Oxide::Resolver
-  def resolve(object : Oxide::Resolvable?, field_name, argument_values, context, resolution_info) : Oxide::Result
-  end
+class NullResolver
+  include Oxide::Resolver
 
   def resolve(object, field_name, argument_values, context, resolution_info)
     nil

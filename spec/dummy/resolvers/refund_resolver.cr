@@ -7,17 +7,16 @@ class PaymentMethodLoader < Oxide::Loader(Int32, BankAccount | CreditCard | Nil)
 end
 
 
-class RefundResolver < Oxide::Resolver
+class RefundResolver
+  include Oxide::Resolves(Refund)
+
   property loader : PaymentMethodLoader
 
   def initialize
     @loader = PaymentMethodLoader.new
   end
 
-  def resolve(object : Oxide::Resolvable?, field_name, argument_values, context, resolution_info) : Oxide::Result
-  end
-
-  def resolve(object : Refund, field_name, context, argument_values, resolution_info)
+  def resolve(object : Refund, field_name, argument_values, context, resolution_info)
     case field_name
     when "id"
       object.id

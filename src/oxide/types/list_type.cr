@@ -9,7 +9,7 @@ module Oxide
       def initialize(@of_type, @description = nil)
       end
 
-      def resolve(field_name, argument_values, context, resolution_info) : Result
+      def resolve(field_name, argument_values, context, resolution_info)
         case field_name
         when "kind"
           kind

@@ -8,7 +8,7 @@ module Oxide
       def initialize(@typename)
       end
 
-      def resolve(field_name, argument_values, context, resolution_info) : Result
+      def resolve(field_name, argument_values, context, resolution_info)
         unwrapped_type = get_type(resolution_info.schema, typename)
         unwrapped_type.resolve(field_name, argument_values, context, resolution_info)
       end

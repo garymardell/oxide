@@ -10,7 +10,7 @@ module Oxide
       def initialize(@name, @values, @description = nil)
       end
 
-      def resolve(field_name, argument_values, context, resolution_info) : Result
+      def resolve(field_name, argument_values, context, resolution_info)
         case field_name
         when "name"
           name
@@ -76,7 +76,7 @@ module Oxide
         @value = value || @name
       end
 
-      def resolve(field_name, argument_values, context, resolution_info) : Result
+      def resolve(field_name, argument_values, context, resolution_info)
         case field_name
         when "name"
           name

@@ -3,7 +3,7 @@ module Oxide
     class RootResolver
       include Oxide::Resolver
 
-      def resolve(object : Resolvable?, field_name, argument_values, context, resolution_info) : Result
+      def resolve(object, field_name, argument_values, context, resolution_info)
         resolution_info.schema
       end
     end
