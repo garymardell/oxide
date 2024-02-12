@@ -69,7 +69,7 @@ module Oxide
         if query_type = schema.query
 
           begin
-            result = execute_selection_set(context, query.selection_set.not_nil!.selections, query_type, initial_value, coerced_variable_values)
+            result = execute_selection_set(context, query.selection_set.selections, query_type, initial_value, coerced_variable_values)
 
             serialize(result)
           rescue e : FieldError
@@ -103,7 +103,7 @@ module Oxide
       private def execute_mutation(context, mutation, schema, coerced_variable_values, initial_value)
         if mutation_type = schema.mutation
           begin
-            result = execute_selection_set(context, mutation.selection_set.not_nil!.selections, mutation_type, initial_value, coerced_variable_values)
+            result = execute_selection_set(context, mutation.selection_set.selections, mutation_type, initial_value, coerced_variable_values)
 
             serialize(result)
           rescue e : FieldError
@@ -366,22 +366,23 @@ module Oxide
 
             next unless fragment = fragments.find(&.name.===(fragment_spread_name))
 
-            fragment_type = get_type(fragment.type_condition.not_nil!.name)
+            fragment_type = get_type(fragment.type_condition.name)
 
             next unless does_fragment_type_apply(object_type, fragment_type)
 
-            fragment_selection_set = fragment.selection_set.not_nil!.selections
+            fragment_selection_set = fragment.selection_set.selections
             fragment_grouped_field_set = collect_fields(context, object_type, fragment_selection_set, variable_values, visited_fragments)
             fragment_grouped_field_set.each do |response_key, fields|
               grouped_fields[response_key] ||= [] of Oxide::Language::Nodes::Field
               grouped_fields[response_key].concat(fields)
             end
           when Oxide::Language::Nodes::InlineFragment
+            # TODO: Handle case when type condition is omitted
             fragment_type = schema.get_type(selection.type_condition.not_nil!.name)
 
             next if !fragment_type.nil? && !does_fragment_type_apply(object_type, fragment_type)
 
-            fragment_selection_set = selection.selection_set.not_nil!.selections
+            fragment_selection_set = selection.selection_set.selections
             fragment_grouped_field_set = collect_fields(context, object_type, fragment_selection_set, variable_values, visited_fragments)
             fragment_grouped_field_set.each do |response_key, fields|
               grouped_fields[response_key] ||= [] of Oxide::Language::Nodes::Field
@@ -439,7 +440,7 @@ module Oxide
 
           if !has_value && argument_definition.has_default_value?
             # TODO: Something wrong with this conversion?
-            coerced_values[argument_name] = argument_definition.default_value.not_nil!.as(SerializedOutput)
+            coerced_values[argument_name] = argument_definition.default_value.as(SerializedOutput)
           elsif argument_type.is_a?(Oxide::Types::NonNullType) && (!has_value || value.nil?)
             raise "non nullable argument has null value"
           elsif has_value
@@ -466,7 +467,7 @@ module Oxide
 
         variable_definitions = operation.variable_definitions
         variable_definitions.each do |variable_definition|
-          variable_name = variable_definition.variable.not_nil!.name
+          variable_name = variable_definition.variable.name
 
           variable_type = @schema.get_type_from_ast(variable_definition.type)
 

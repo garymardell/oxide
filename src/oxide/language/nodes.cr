@@ -44,7 +44,7 @@ module Oxide
       class OperationDefinition < Node
         property name : String?
         property operation_type : String
-        property selection_set : SelectionSet?
+        property! selection_set : SelectionSet
         property variable_definitions : Array(VariableDefinition)
         property directives : Array(Directive)
 
@@ -54,9 +54,7 @@ module Oxide
         def accept(visitor : Visitor)
           visitor.enter(self)
 
-          unless selection_set.nil?
-            selection_set.not_nil!.accept(visitor)
-          end
+          selection_set.accept(visitor)
 
           variable_definitions.each do |variable_definition|
             variable_definition.accept(visitor)
@@ -89,8 +87,8 @@ module Oxide
 
       class FragmentDefinition < Node
         property name : String
-        property type_condition : NamedType?
-        property selection_set : SelectionSet?
+        property! type_condition : NamedType
+        property! selection_set : SelectionSet
         property directives : Array(Directive)
 
         def initialize(@name, @type_condition = nil, @selection_set = nil, @directives = [] of Directive)
@@ -99,9 +97,7 @@ module Oxide
         def accept(visitor : Visitor)
           visitor.enter(self)
 
-          unless selection_set.nil?
-            selection_set.not_nil!.accept(visitor)
-          end
+          selection_set.accept(visitor)
 
           directives.each do |directive|
             directive.accept(visitor)
@@ -135,7 +131,7 @@ module Oxide
 
       class OperationTypeDefinition < Node
         property operation_type : String
-        property named_type : NamedType?
+        property! named_type : NamedType
 
         def initialize(@operation_type, @named_type = nil)
         end
@@ -166,7 +162,7 @@ module Oxide
 
       class InlineFragment < Node
         property type_condition : NamedType?
-        property selection_set : SelectionSet?
+        property! selection_set : SelectionSet
         property directives : Array(Directive)
 
         def initialize(@type_condition = nil, @selection_set = nil, @directives = [] of Directive)
@@ -236,7 +232,7 @@ module Oxide
       end
 
       class VariableDefinition < Node
-        property variable : Variable?
+        property! variable : Variable
         property type : Type?
         property default_value : Value?
 
@@ -246,9 +242,7 @@ module Oxide
         def accept(visitor : Visitor)
           visitor.enter(self)
 
-          unless variable.nil?
-            variable.not_nil!.accept(visitor)
-          end
+          variable.accept(visitor)
 
           visitor.leave(self)
         end
