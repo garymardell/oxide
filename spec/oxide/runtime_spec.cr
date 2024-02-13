@@ -244,10 +244,10 @@ describe Oxide do
 
     query_type = Oxide::Types::ObjectType.new(
       name: "DynamicQuery",
-      resolver: DynamicResolver.new,
-      fields: fields.each_with_object({} of String => Oxide::Field) do |field_name, memo|
+      fields: fields.each_with_object({} of String => Oxide::BaseField) do |field_name, memo|
         memo[field_name] = Oxide::Field.new(
-          type: Oxide::Types::StringType.new
+          type: Oxide::Types::StringType.new,
+          resolve: -> (query : Query) { field_name }
         )
       end
     )

@@ -10,16 +10,5 @@ module Oxide
         "__Field" => Oxide::Introspection::FieldType
       }
     end
-
-    def self.resolvers
-      {
-        "__Type" => Oxide::DefaultResolver.new,
-        "__Schema" => Oxide::DefaultResolver.new,
-        "__InputValue" => Oxide::DefaultResolver.new,
-        "__Directive" => Oxide::DefaultResolver.new,
-        "__EnumValue" => Oxide::DefaultResolver.new,
-        "__Field" => Oxide::DefaultResolver.new,
-      }
-    end
   end
 end

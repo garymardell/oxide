@@ -10,8 +10,6 @@ require "./error"
 
 module Oxide
   class Schema
-    include Resolvable
-
     DEFAULT_DIRECTIVES = [
       Oxide::Directives::SkipDirective.new,
       Oxide::Directives::IncludeDirective.new
@@ -25,21 +23,6 @@ module Oxide
 
     def initialize(@query, @mutation = nil, @orphan_types = [] of Oxide::Type, directives = [] of Directive)
       @directives = DEFAULT_DIRECTIVES + directives
-    end
-
-    def resolve(field_name, argument_values, context, resolution_info)
-      case field_name
-      when "queryType"
-        query
-      when "mutationType"
-        mutation
-      when "subscriptionType"
-        nil
-      when "types"
-        types.map { |type| type.as(Resolvable) }
-      when "directives"
-        directives.map { |type| type.as(Resolvable) }
-      end
     end
 
     def validate(query : Oxide::Query)

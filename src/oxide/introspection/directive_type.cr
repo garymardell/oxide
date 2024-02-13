@@ -28,15 +28,16 @@ module Oxide
 
     DirectiveType = Oxide::Types::ObjectType.new(
       name: "__Directive",
-      resolver: DefaultResolver.new,
       fields: {
         "name" => Oxide::Field.new(
           type: Oxide::Types::NonNullType.new(
             of_type: Oxide::Types::StringType.new
-          )
+          ),
+          resolve: ->(directive : Directive) { directive.name }
         ),
         "description" => Oxide::Field.new(
-          type: Oxide::Types::StringType.new
+          type: Oxide::Types::StringType.new,
+          resolve: ->(directive : Directive) { nil }
         ),
         "locations" => Oxide::Field.new(
           type: Oxide::Types::NonNullType.new(
@@ -45,7 +46,8 @@ module Oxide
                 of_type: DirectiveLocationType
               )
             )
-          )
+          ),
+          resolve: ->(directive : Directive) { directive.locations.map(&.to_s) }
         ),
         "args" => Oxide::Field.new(
           type: Oxide::Types::NonNullType.new(
@@ -54,7 +56,8 @@ module Oxide
                 of_type: Oxide::Types::LateBoundType.new("__InputValue")
               )
             )
-          )
+          ),
+          resolve: ->(directive : Directive) { directive.arguments.map { |name, argument| Introspection::ArgumentInfo.new(name, argument) } }
         )
       }
     )

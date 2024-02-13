@@ -10,19 +10,6 @@ module Oxide
       def initialize(@name, @description = nil, @input_fields = {} of String => Argument)
       end
 
-      def resolve(field_name, argument_values, context, resolution_info)
-        case field_name
-        when "name"
-          name
-        when "kind"
-          kind
-        when "description"
-          description
-        when "inputFields"
-          input_fields.map { |name, argument| Introspection::ArgumentInfo.new(name, argument).as(Resolvable) }
-        end
-      end
-
       def kind
         "INPUT_OBJECT"
       end

@@ -4,10 +4,9 @@ module Oxide
       property input : String
       property type_map : Hash(String, Oxide::Type)
       property interface_map : Hash(String, Oxide::Types::InterfaceType)
-      property resolvers : Hash(String, Resolver)
       property type_resolvers : Hash(String, TypeResolver)
 
-      def initialize(@input : String, @resolvers : Hash(String, Resolver), @type_resolvers : Hash(String, TypeResolver))
+      def initialize(@input : String, @type_resolvers : Hash(String, TypeResolver))
         @type_map = {} of String => Oxide::Type
         @interface_map = {} of String => Oxide::Types::InterfaceType
       end
@@ -118,7 +117,6 @@ module Oxide
 
           Oxide::Types::ObjectType.new(
             name: object_definition.name,
-            resolver: resolvers[object_definition.name],
             fields: build_fields(object_definition.field_definitions),
             interfaces: interfaces
           )

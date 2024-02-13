@@ -12,19 +12,6 @@ module Oxide
       def initialize(@name, @type_resolver, @description = nil, @possible_types = [] of Oxide::Type)
       end
 
-      def resolve(field_name, argument_values, context, resolution_info)
-        case field_name
-        when "name"
-          name
-        when "description"
-          description
-        when "kind"
-          kind
-        when "possibleTypes"
-          possible_types.map { |type| type.as(Resolvable) }
-        end
-      end
-
       def kind
         "UNION"
       end

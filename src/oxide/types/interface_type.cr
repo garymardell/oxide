@@ -8,38 +8,10 @@ module Oxide
       getter description : String?
       getter type_resolver : TypeResolver
       getter interfaces : Array(Oxide::Types::InterfaceType)
-      getter fields : Hash(String, Field)
+      getter fields : Hash(String, BaseField)
 
-      def initialize(@name, @type_resolver, @description = nil, @fields = {} of String => Field, @interfaces = [] of Oxide::Types::InterfaceType)
-      end
-
-      def resolve(field_name, argument_values, context, resolution_info)
-        case field_name
-        when "name"
-          name
-        when "description"
-          description
-        when "kind"
-          kind
-        when "fields"
-          if argument_values["includeDeprecated"]?
-            fields.map do |name, field|
-              Introspection::FieldInfo.new(name, field).as(Resolvable)
-            end
-          else
-            fields.reject { |_, field| field.deprecated? }.map do |name, field|
-              Introspection::FieldInfo.new(name, field).as(Resolvable)
-            end
-          end
-        when "interfaces"
-          interfaces.map { |interface| interface.as(Resolvable) }
-        when "possibleTypes"
-          resolution_info.schema.not_nil!.type_map.each_with_object([] of Oxide::Resolvable) do |(_, type), memo|
-            if type.responds_to?(:interfaces) && type.interfaces.includes?(self)
-              memo << type
-            end
-          end
-        end
+      def initialize(@name, @type_resolver, @description = nil, fields = {} of String => BaseField, @interfaces = [] of Oxide::Types::InterfaceType)
+        @fields = fields.transform_values { |v| v.as(BaseField) }
       end
 
       def kind

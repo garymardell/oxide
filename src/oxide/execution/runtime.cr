@@ -9,6 +9,8 @@ require "./resolution_info"
 require "./context"
 
 module Oxide
+  alias ArgumentValues = Hash(String, SerializedOutput)
+
   module Execution
     class Runtime
       alias IntermediateType = SerializedOutput | Proc(IntermediateType) | Array(IntermediateType) | Hash(String, IntermediateType)
@@ -20,7 +22,7 @@ module Oxide
       def initialize(@schema : Oxide::Schema)
       end
 
-      def execute(query : Oxide::Query, initial_value : Resolvable? = nil)
+      def execute(query : Oxide::Query, initial_value = nil)
         context = Execution::Context.new(query)
 
         begin
@@ -131,9 +133,15 @@ module Oxide
 
       private def get_field(object_type, field_name)
         if schema.query == object_type && field_name == "__schema"
-          Oxide::Field.new(type: Oxide::Introspection::SchemaType)
+          Oxide::Field(Nil, Schema).new(
+            type: Oxide::Introspection::SchemaType,
+            resolve: ->(query : Nil) { schema }
+          )
         elsif field_name == "__typename"
-          Oxide::Field.new(type: Oxide::Types::StringType.new)
+          Oxide::Field.new(
+            type: Oxide::Types::StringType.new,
+            resolve: ->(type : Type) { type.name }
+          )
         else
           get_field_from_object_type(object_type, field_name)
         end
@@ -157,7 +165,13 @@ module Oxide
         field = fields.first
         field_name = field.name
 
-        argument_definitions = if schema_field = object_type.fields[field_name]?
+        if field_name == "__typename"
+          return object_type.name
+        end
+
+        schema_field = get_field(object_type, field_name)
+
+        argument_definitions = if schema_field
           schema_field.arguments
         else
           {} of String => Oxide::Argument
@@ -165,29 +179,13 @@ module Oxide
 
         argument_values = coerce_argument_values(argument_definitions, field.arguments, variable_values)
 
-        if field_name == "__typename"
-          return object_type.name
-        end
-
-        resolver = case field_name
-        when "__schema"
-          Oxide::Introspection::RootResolver.new
-        else
-          case object_type.name
-          when "__Schema", "__Type", "__InputValue", "__Directive", "__EnumValue", "__Field"
-            Oxide::IntrospectionSystem.resolvers[object_type.name]
-          else
-            object_type.resolver || DefaultResolver.new
-          end
-        end
-
         resolution_info = ResolutionInfo.new(
           schema: schema,
           context: context,
           field: schema_field,
         )
 
-        value = resolver.resolve(object_value, field_name, argument_values, context, resolution_info)
+        value = schema_field.try &.resolve(object_value, argument_values, context, resolution_info)
 
         if value.is_a?(Lazy)
           Proc(IntermediateType).new {
@@ -406,7 +404,7 @@ module Oxide
         selection_set
       end
 
-      private def coerce_argument_values(argument_definitions, arguments, variable_values)
+      private def coerce_argument_values(argument_definitions, arguments, variable_values) : ArgumentValues
         coerced_values = {} of String => SerializedOutput
 
         argument_values = arguments.each_with_object({} of String => Oxide::Language::Nodes::Value?) do |argument, memo|

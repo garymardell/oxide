@@ -3,7 +3,7 @@ module Oxide
     struct ResolutionInfo
       getter schema : Oxide::Schema
       getter context : Execution::Context
-      getter field : Oxide::Field?
+      getter field : Oxide::BaseField?
 
       delegate query, to: context
 

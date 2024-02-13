@@ -9,7 +9,7 @@ module Oxide
       getter type_stack : Array(Oxide::Type?)
       getter parent_type_stack : Array(Composite?)
       getter input_type_stack : Array(Oxide::Type?)
-      getter field_definition_stack : Array(Tuple(String, Oxide::Field)?)
+      getter field_definition_stack : Array(Tuple(String, Oxide::BaseField)?)
       # default_value_stack
       property directive : Oxide::Directive?
       property argument : Oxide::Argument?
@@ -21,7 +21,7 @@ module Oxide
         @type_stack = [] of Oxide::Type?
         @input_type_stack = [] of Oxide::Type?
         @parent_type_stack = [] of Composite?
-        @field_definition_stack = [] of Tuple(String, Oxide::Field)?
+        @field_definition_stack = [] of Tuple(String, Oxide::BaseField)?
         @errors = [] of Error
       end
 
@@ -37,7 +37,7 @@ module Oxide
         parent_type_stack.last?
       end
 
-      def field_definition : Tuple(String, Oxide::Field)?
+      def field_definition : Tuple(String, Oxide::BaseField)?
         field_definition_stack.last?
       end
     end

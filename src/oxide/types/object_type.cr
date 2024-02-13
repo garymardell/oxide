@@ -5,45 +5,23 @@ require "./interface_type"
 module Oxide
   module Types
     class ObjectType < Type
-      getter fields : Hash(String, Field)
+      getter fields : Hash(String, BaseField)
       getter name : String
       getter description : String?
       getter interfaces : Array(Oxide::Types::InterfaceType)
-      getter resolver : Resolver?
 
       def initialize(
         @name,
-        @resolver = nil,
         @description = nil,
-        @fields = {} of String => Field,
+        fields = {} of String => BaseField,
         @interfaces = [] of Oxide::Types::InterfaceType
       )
+        @fields = fields.transform_values { |v| v.as(BaseField) }
       end
 
-      def resolve(field_name, argument_values, context, resolution_info)
-        case field_name
-        when "name"
-          name
-        when "description"
-          description
-        when "kind"
-          kind
-        when "fields"
-          all_fields = interfaces.reduce(fields) do |fields, interface|
-            fields.merge(interface.fields)
-          end
-
-          if argument_values["includeDeprecated"]?
-            all_fields.map do |name, field|
-              Introspection::FieldInfo.new(name, field).as(Resolvable)
-            end
-          else
-            all_fields.reject { |_, field| field.deprecated? }.map do |name, field|
-              Introspection::FieldInfo.new(name, field).as(Resolvable)
-            end
-          end
-        when "interfaces"
-          interfaces.map { |interface| interface.as(Resolvable) }
+      def all_fields
+        interfaces.reduce(fields) do |fields, interface|
+          fields.merge(interface.fields)
         end
       end
 

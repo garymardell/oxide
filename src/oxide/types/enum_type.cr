@@ -10,23 +10,6 @@ module Oxide
       def initialize(@name, @values, @description = nil)
       end
 
-      def resolve(field_name, argument_values, context, resolution_info)
-        case field_name
-        when "name"
-          name
-        when "description"
-          description
-        when "kind"
-          kind
-        when "enumValues"
-          if argument_values["includeDeprecated"]?
-            values.map { |value| value.as(Resolvable) }
-          else
-            values.reject(&.deprecated?).map { |value| value.as(Resolvable) }
-          end
-        end
-      end
-
       def coerce(value : String) : CoercedInput
         enum_value = values.find { |ev| ev.value == value }
 
@@ -65,8 +48,6 @@ module Oxide
     end
 
     class EnumValue
-      include Resolvable
-
       getter name : String
       getter description : String?
       getter value : String
@@ -74,19 +55,6 @@ module Oxide
 
       def initialize(@name, @description = nil, value = nil, @deprecation_reason = nil)
         @value = value || @name
-      end
-
-      def resolve(field_name, argument_values, context, resolution_info)
-        case field_name
-        when "name"
-          name
-        when "description"
-          description
-        when "isDeprecated"
-          deprecated?
-        when "deprecationReason"
-          deprecation_reason
-        end
       end
 
       def deprecated?

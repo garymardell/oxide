@@ -1,10 +1,8 @@
-require "./resolver"
 require "./visitable"
 
 module Oxide
   abstract class Type
     include Visitable
-    include Resolvable
 
     abstract def name
     abstract def description
