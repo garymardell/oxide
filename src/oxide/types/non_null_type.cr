@@ -8,15 +8,6 @@ module Oxide
       def initialize(@of_type)
       end
 
-      def resolve(field_name, argument_values, context, resolution_info)
-        case field_name
-        when "kind"
-          kind
-        when "ofType"
-          of_type
-        end
-      end
-
       def name
         of_type.name
       end
