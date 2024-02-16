@@ -75,7 +75,8 @@ module Oxide
           # Variables
           VariableUniqueness.new.as(Rule),
           VariablesAreInputTypes.new.as(Rule),
-          AllVariableUsesDefined.new.as(Rule)
+          AllVariableUsesDefined.new.as(Rule),
+          AllVariablesUsed.new.as(Rule)
         ]
       end
     end
