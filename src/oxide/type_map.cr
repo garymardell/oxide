@@ -16,6 +16,12 @@ module Oxide
         type.accept(self)
       end
 
+      schema.directives.each do |directive|
+        directive.arguments.each do |_name, argument|
+          argument.type.accept(self)
+        end
+      end
+
       type_map
     end
 
