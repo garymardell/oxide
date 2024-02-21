@@ -18,10 +18,6 @@ jobs:
         uses: crystal-lang/install-crystal@v1
         with:
           crystal: ${{ matrix.crystal }}
-      - uses: actions/setup-python@v4
-        id: py2
-        with:
-          python-version: '2.7'
       - name: Install packages
         run: sudo apt-get -qy install cmake
       - name: Install libgraphqlparser
