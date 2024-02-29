@@ -29,7 +29,7 @@ module Oxide
         value
       end
 
-      def coerce(value : Int32)  : CoercedInput
+      def coerce(value : Int)  : CoercedInput
         value.to_s
       end
 
