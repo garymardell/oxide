@@ -9,7 +9,7 @@ module Oxide
       end
 
       def name
-        of_type.name
+        nil
       end
 
       def description
