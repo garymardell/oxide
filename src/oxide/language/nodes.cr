@@ -39,6 +39,8 @@ module Oxide
 
           visitor.leave(self)
         end
+
+        def_equals_and_hash definitions
       end
 
       class OperationDefinition < Node
@@ -66,6 +68,8 @@ module Oxide
 
           visitor.leave(self)
         end
+
+        def_equals_and_hash name, operation_type, selection_set, variable_definitions, directives
       end
 
       class SelectionSet < Node
@@ -83,6 +87,8 @@ module Oxide
 
           visitor.leave(self)
         end
+
+        def_equals_and_hash selections
       end
 
       class FragmentDefinition < Node
@@ -105,6 +111,8 @@ module Oxide
 
           visitor.leave(self)
         end
+
+        def_equals_and_hash name, type_condition, selection_set, directives
       end
 
       class SchemaDefinition < Node
@@ -127,6 +135,8 @@ module Oxide
 
           visitor.leave(self)
         end
+
+        def_equals_and_hash directives, operation_type_definitions
       end
 
       class OperationTypeDefinition < Node
@@ -140,6 +150,8 @@ module Oxide
           visitor.enter(self)
           visitor.leave(self)
         end
+
+        def_equals_and_hash operation_type, named_type
       end
 
       class FragmentSpread < Node
@@ -158,6 +170,8 @@ module Oxide
 
           visitor.leave(self)
         end
+
+        def_equals_and_hash name, directives
       end
 
       class InlineFragment < Node
@@ -177,6 +191,8 @@ module Oxide
 
           visitor.leave(self)
         end
+
+        def_equals_and_hash type_condition, selection_set, directives
       end
 
       class Field < Node
@@ -211,6 +227,8 @@ module Oxide
 
           visitor.leave(self)
         end
+
+        def_equals_and_hash @alias, name, arguments, selection_set, directives
       end
 
       class Argument < Node
@@ -229,6 +247,8 @@ module Oxide
 
           visitor.leave(self)
         end
+
+        def_equals_and_hash name, value
       end
 
       class VariableDefinition < Node
@@ -246,6 +266,8 @@ module Oxide
 
           visitor.leave(self)
         end
+
+        def_equals_and_hash variable, type, default_value
       end
 
       class NamedType < Node
@@ -258,6 +280,8 @@ module Oxide
           visitor.enter(self)
           visitor.leave(self)
         end
+
+        def_equals_and_hash name
       end
 
       class ListType < Node
@@ -275,6 +299,8 @@ module Oxide
 
           visitor.leave(self)
         end
+
+        def_equals_and_hash of_type
       end
 
       class NonNullType < Node
@@ -292,6 +318,8 @@ module Oxide
 
           visitor.leave(self)
         end
+
+        def_equals_and_hash of_type
       end
 
       abstract class Value < Node
@@ -302,6 +330,8 @@ module Oxide
 
           visitor.leave(self)
         end
+
+        def_equals_and_hash value
       end
 
       class StringValue < Value
@@ -430,6 +460,8 @@ module Oxide
 
           visitor.leave(self)
         end
+
+        def_equals_and_hash fields
       end
 
       class ObjectField < Node
@@ -446,6 +478,8 @@ module Oxide
 
           visitor.leave(self)
         end
+
+        def_equals_and_hash name, value
       end
 
       class Directive < Node
@@ -464,6 +498,8 @@ module Oxide
 
           visitor.leave(self)
         end
+
+        def_equals_and_hash name, arguments
       end
 
       class ScalarTypeDefinition < Node
@@ -477,6 +513,8 @@ module Oxide
           visitor.enter(self)
           visitor.leave(self)
         end
+
+        def_equals_and_hash name, directives
       end
 
       class ObjectTypeDefinition < Node
@@ -501,6 +539,8 @@ module Oxide
 
           visitor.leave(self)
         end
+
+        def_equals_and_hash name, implements, directives, field_definitions
       end
 
       class FieldDefinition < Node
@@ -525,6 +565,8 @@ module Oxide
 
           visitor.leave(self)
         end
+
+        def_equals_and_hash name, argument_definitions, type, directives
       end
 
       class InputValueDefinition < Node
@@ -545,6 +587,8 @@ module Oxide
 
           visitor.leave(self)
         end
+
+        def_equals_and_hash name, type, default_value, directives
       end
 
       class InterfaceTypeDefinition < Node
@@ -564,6 +608,8 @@ module Oxide
 
           visitor.leave(self)
         end
+
+        def_equals_and_hash name, field_definitions, directives
       end
 
       class UnionTypeDefinition < Node
@@ -583,6 +629,8 @@ module Oxide
 
           visitor.leave(self)
         end
+
+        def_equals_and_hash name, member_types, directives
       end
 
       class EnumTypeDefinition < Node
@@ -602,6 +650,8 @@ module Oxide
 
           visitor.leave(self)
         end
+
+        def_equals_and_hash name, value_definitions, directives
       end
 
       class EnumValueDefinition < Node
@@ -615,6 +665,8 @@ module Oxide
           visitor.enter(self)
           visitor.leave(self)
         end
+
+        def_equals_and_hash name, directives
       end
 
       class InputObjectTypeDefinition < Node
@@ -641,6 +693,8 @@ module Oxide
 
           visitor.leave(self)
         end
+
+        def_equals_and_hash name, argument_definitions, directive_locations
       end
 
       class ArgumentsDefintion < Node
@@ -658,6 +712,8 @@ module Oxide
 
           visitor.leave(self)
         end
+
+        def_equals_and_hash input_value_definitions
       end
     end
   end
