@@ -694,7 +694,7 @@ module Oxide
           visitor.leave(self)
         end
 
-        def_equals_and_hash name, argument_definitions, directive_locations
+        def_equals_and_hash name, arguments_definitions, directive_locations
       end
 
       class ArgumentsDefintion < Node
