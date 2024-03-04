@@ -12,9 +12,9 @@ module Oxide
       def next_token : Token
         skip_whitespace
 
-        # @token.line_number = @line_number
-        # @token.column_number = @column_number
-        #
+        @token.line_number = @line_number
+        @token.column_number = @column_number
+
         case current_char
         when '\0'
           @token.kind = :EOF
@@ -177,6 +177,7 @@ module Oxide
       end
 
       def consume_block_string
+        # TODO: Consume block string
       end
 
       def consume_name
@@ -187,8 +188,6 @@ module Oxide
             next_char
           end
         end
-
-        # pp value
 
         @token.kind = :name
         @token.raw_value = value
@@ -220,6 +219,8 @@ module Oxide
           # Read the comment
           while current_char != '\0'
             if current_char == '\n' || current_char == '\r'
+              @line_number += 1
+              @column_number = 0
               break
             end
 

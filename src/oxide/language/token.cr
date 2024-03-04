@@ -26,12 +26,13 @@ module Oxide
 
       property kind : Kind
       property raw_value : String
+      property line_number : Int32
+      property column_number : Int32
 
       def initialize
         @kind = :EOF
-        # @line_number = 0
-        # @column_number = 0
-        # @string_value = ""
+        @line_number = 0
+        @column_number = 0
         @raw_value = ""
       end
 

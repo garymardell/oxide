@@ -18,7 +18,23 @@ module Oxide
         next_token
       end
 
-      def parse : Nodes::Document
+      macro with_location(method_def)
+        def {{method_def.name}}(
+          {% for arg in method_def.args %}
+            {{ arg.name }}{% if arg.restriction %} : {{ arg.restriction }}{% end %},
+          {% end %}
+        )
+          begin_line = token.line_number
+          begin_column = token.column_number
+
+          {{method_def.body}}.tap do |node|
+            node.begin_line = begin_line
+            node.begin_column = begin_column
+          end
+        end
+      end
+
+      with_location def parse : Nodes::Document
         definitions = [] of Nodes::Definition
 
         loop do
@@ -30,7 +46,7 @@ module Oxide
         Nodes::Document.new(definitions: definitions)
       end
 
-      def parse_definition
+      with_location def parse_definition : Nodes::Definition
         if token.kind.l_brace?
           return parse_operation_definition
         end
@@ -47,7 +63,7 @@ module Oxide
         end
       end
 
-      def parse_operation_definition
+      with_location def parse_operation_definition : Nodes::OperationDefinition
         if token.kind.l_brace?
           return Nodes::OperationDefinition.new(
             operation_type: "query",
@@ -74,7 +90,7 @@ module Oxide
         )
       end
 
-      def parse_fragment_definition : Nodes::FragmentDefinition
+      with_location def parse_fragment_definition : Nodes::FragmentDefinition
         expect_current_token(Token::Kind::Name)
         expect_keyword_and_consume("fragment")
 
@@ -118,7 +134,7 @@ module Oxide
         definitions
       end
 
-      def parse_variable_definition : Nodes::VariableDefinition
+      with_location def parse_variable_definition : Nodes::VariableDefinition
         variable = parse_variable
         consume_token(Token::Kind::Colon)
         type = parse_type_reference
@@ -135,40 +151,7 @@ module Oxide
         )
       end
 
-      def consume_token(kind : Token::Kind)
-        expect_current_token(kind)
-        next_token
-      end
-
-
-      def expect_current_token(kind : Token::Kind)
-        unless token.kind == kind
-          raise "Was expecting #{kind} but got #{token.kind}"
-        end
-      end
-
-      def expect_keyword_and_consume(value : String)
-        unless token.raw_value == value
-          raise "unexpected token got #{token.raw_value}"
-        end
-
-        next_token
-      end
-
-      def expect_next_token(kind : Token::Kind)
-        next_token
-        expect_current_token(kind)
-      end
-
-      def expect_token(kind : Token::Kind)
-        next_token
-
-        unless token.kind == kind
-          raise "Was expecting #{kind}"
-        end
-      end
-
-      def parse_type_reference : Nodes::Type | Nil
+      with_location def parse_type_reference : Nodes::Type
         type = if token.kind.l_bracket?
           consume_token(Token::Kind::LBracket)
           inner_type = parse_type_reference
@@ -192,7 +175,7 @@ module Oxide
         type
       end
 
-      def parse_variable : Nodes::Variable
+      with_location def parse_variable : Nodes::Variable
         consume_token(Token::Kind::Dollar)
 
         Nodes::Variable.new(
@@ -208,7 +191,7 @@ module Oxide
         end
       end
 
-      def parse_selection_set : Nodes::SelectionSet?
+      with_location def parse_selection_set : Nodes::SelectionSet
         selections = [] of Nodes::Selection
 
         consume_token(Token::Kind::LBrace)
@@ -223,7 +206,7 @@ module Oxide
         )
       end
 
-      def parse_selection : Nodes::Selection
+      with_location def parse_selection : Nodes::Selection
         if token.kind.spread?
           parse_fragment
         else
@@ -231,7 +214,7 @@ module Oxide
         end
       end
 
-      def parse_fragment : Nodes::FragmentSpread | Nodes::InlineFragment
+      with_location def parse_fragment : Nodes::FragmentSpread | Nodes::InlineFragment
         consume_token(Token::Kind::Spread)
 
         has_type_condition = if token.kind.name? && token.raw_value == "on"
@@ -262,13 +245,13 @@ module Oxide
         end
       end
 
-      def parse_named_type : Nodes::NamedType
+      with_location def parse_named_type : Nodes::NamedType
         Nodes::NamedType.new(
           name: parse_name,
         )
       end
 
-      def parse_field : Nodes::Field
+      with_location def parse_field : Nodes::Field
         expect_current_token(Token::Kind::Name)
         name_or_alias = token.raw_value
         next_token
@@ -307,7 +290,7 @@ module Oxide
         directives
       end
 
-      def parse_directive(is_const) : Nodes::Directive
+      with_location def parse_directive(is_const) : Nodes::Directive
         consume_token(Token::Kind::At)
 
         Nodes::Directive.new(
@@ -336,7 +319,7 @@ module Oxide
         arguments
       end
 
-      def parse_argument(is_const) : Nodes::Argument
+      with_location def parse_argument(is_const) : Nodes::Argument
         name = parse_name
         consume_token(Token::Kind::Colon)
 
@@ -346,7 +329,7 @@ module Oxide
         )
       end
 
-      def parse_value_literal(is_const) : Nodes::Value
+      with_location def parse_value_literal(is_const) : Nodes::Value
         case token.kind
         when .l_bracket?
           parse_list(is_const)
@@ -387,7 +370,7 @@ module Oxide
         end
       end
 
-      def parse_list(is_const) : Nodes::ListValue
+      with_location def parse_list(is_const) : Nodes::ListValue
         values = [] of Nodes::Value
 
         consume_token(Token::Kind::LBracket)
@@ -402,7 +385,7 @@ module Oxide
         Nodes::ListValue.new(values: values)
       end
 
-      def parse_object(is_const) : Nodes::ObjectValue
+      with_location def parse_object(is_const) : Nodes::ObjectValue
         consume_token(Token::Kind::LBrace)
 
         fields = [] of Nodes::ObjectField
@@ -417,7 +400,7 @@ module Oxide
         Nodes::ObjectValue.new(fields)
       end
 
-      def parse_object_field(is_const) : Nodes::ObjectField
+      with_location def parse_object_field(is_const) : Nodes::ObjectField
         name = parse_name
         consume_token(Token::Kind::Colon)
 
@@ -427,13 +410,24 @@ module Oxide
         )
       end
 
-      def expect_optional_token(kind : Token::Kind) : Bool
-        if token.kind == kind
-          next_token
-          true
-        else
-          false
+      def consume_token(kind : Token::Kind)
+        expect_current_token(kind)
+        next_token
+      end
+
+
+      def expect_current_token(kind : Token::Kind)
+        unless token.kind == kind
+          raise "Was expecting #{kind} but got #{token.kind}"
         end
+      end
+
+      def expect_keyword_and_consume(value : String)
+        unless token.raw_value == value
+          raise "unexpected token got #{token.raw_value}"
+        end
+
+        next_token
       end
     end
   end
