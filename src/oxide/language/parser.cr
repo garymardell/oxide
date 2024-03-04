@@ -59,7 +59,7 @@ module Oxide
         when "fragment"
           parse_fragment_definition
         else
-          raise "unexpected value #{token.raw_value}"
+          raise_unexpected
         end
       end
 
@@ -108,7 +108,7 @@ module Oxide
 
       def parse_fragment_name
         if token.raw_value == "on"
-          raise "unexpected token"
+          raise_unexpected
         end
 
         parse_name
@@ -358,15 +358,15 @@ module Oxide
             next_token
             if token.kind.name?
               variable_name = token.raw_value
-              raise "unexpected token when const"
+              raise "Unexpected variable \"$#{variable_name}\" in constant value."
             else
-              raise "unexpected token #{token.kind} for name"
+              raise_unexpected
             end
           end
 
           parse_variable
         else
-          raise "unexpected token"
+          raise_unexpected
         end
       end
 
@@ -386,15 +386,13 @@ module Oxide
       end
 
       with_location def parse_object(is_const) : Nodes::ObjectValue
-        consume_token(Token::Kind::LBrace)
-
         fields = [] of Nodes::ObjectField
 
+        consume_token(Token::Kind::LBrace)
         loop do
           fields << parse_object_field(is_const)
           break if token.kind.r_brace?
         end
-
         consume_token(Token::Kind::RBrace)
 
         Nodes::ObjectValue.new(fields)
@@ -418,16 +416,24 @@ module Oxide
 
       def expect_current_token(kind : Token::Kind)
         unless token.kind == kind
-          raise "Was expecting #{kind} but got #{token.kind}"
+          raise "Expected #{kind}, found #{token.kind}."
         end
       end
 
       def expect_keyword_and_consume(value : String)
         unless token.raw_value == value
-          raise "unexpected token got #{token.raw_value}"
+          raise "Expected #{value}, found #{token.raw_value}."
         end
 
         next_token
+      end
+
+      def raise_unexpected
+        raise "Unexpected #{token.kind}"
+      end
+
+      private def raise(message)
+        ::raise ParseException.new("Syntax Error: #{message}", @line_number, @column_number)
       end
     end
   end

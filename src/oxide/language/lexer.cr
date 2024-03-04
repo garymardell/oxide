@@ -66,7 +66,11 @@ module Oxide
           if start_of_name?(current_char)
             consume_name
           else
-            raise "invalid character found #{current_char}"
+            if current_char == '\''
+              raise "Unexpected single quote character (\'), did you mean to use a double quote (\")?"
+            else
+              raise "Unexpected character: #{current_char}"
+            end
           end
         end
 
@@ -89,7 +93,7 @@ module Oxide
             next_char
 
             if current_char.ascii_number?
-              raise "Unexpected digit after 0"
+              raise "Invalid number, unexpected digit after 0: #{current_char}"
             end
           else
             read_digits(io)
@@ -116,7 +120,7 @@ module Oxide
           end
 
           if current_char == '.' || start_of_name?(current_char)
-            raise "number cannot be followed by period or name start"
+            raise "Invalid number, expected digit but got: #{current_char}"
           end
         end
 
@@ -126,7 +130,7 @@ module Oxide
 
       def read_digits(io : IO)
         unless current_char.ascii_number?
-          raise "unexpected character"
+          raise "Invalid number, expected digit but got: #{current_char}"
         end
 
         while current_char.ascii_number?
@@ -202,7 +206,7 @@ module Oxide
 
         char = @reader.next_char
         if char == '\0' && @reader.pos != @reader.string.bytesize
-          unexpected_char
+          raise "Unexpectedly reached the end of input"
         end
         char
       end
@@ -252,8 +256,8 @@ module Oxide
         end
       end
 
-      private def unexpected_char(char = current_char)
-        raise "Unexpected char '#{char}'"
+      private def raise(message)
+        ::raise ParseException.new("Syntax Error: #{message}", @line_number, @column_number)
       end
     end
   end
