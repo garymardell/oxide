@@ -211,16 +211,12 @@ module Oxide
       def parse_selection_set : Nodes::SelectionSet?
         selections = [] of Nodes::Selection
 
-        expect_current_token(Token::Kind::LBrace)
-        next_token
-
+        consume_token(Token::Kind::LBrace)
         loop do
           selections << parse_selection
           break if token.kind.r_brace?
         end
-
-        expect_current_token(Token::Kind::RBrace)
-        next_token
+        consume_token(Token::Kind::RBrace)
 
         Nodes::SelectionSet.new(
           selections: selections
@@ -236,8 +232,7 @@ module Oxide
       end
 
       def parse_fragment : Nodes::FragmentSpread | Nodes::InlineFragment
-        expect_current_token(Token::Kind::Spread)
-        next_token
+        consume_token(Token::Kind::Spread)
 
         has_type_condition = if token.kind.name? && token.raw_value == "on"
           next_token
@@ -343,15 +338,11 @@ module Oxide
 
       def parse_argument(is_const) : Nodes::Argument
         name = parse_name
-
-        expect_current_token(Token::Kind::Colon)
-        next_token
-
-        value = parse_value_literal(is_const)
+        consume_token(Token::Kind::Colon)
 
         Nodes::Argument.new(
           name: name,
-          value: value
+          value: parse_value_literal(is_const)
         )
       end
 
@@ -397,20 +388,16 @@ module Oxide
       end
 
       def parse_list(is_const) : Nodes::ListValue
-        expect_current_token(Token::Kind::LBracket)
-        next_token
-
         values = [] of Nodes::Value
 
+        consume_token(Token::Kind::LBracket)
         loop do
           values << parse_value_literal(is_const)
           next_token
 
           break if token.kind.r_bracket?
         end
-
-        expect_current_token(Token::Kind::RBracket)
-        next_token
+        consume_token(Token::Kind::RBracket)
 
         Nodes::ListValue.new(values: values)
       end
@@ -425,7 +412,7 @@ module Oxide
           break if token.kind.r_brace?
         end
 
-        next_token
+        consume_token(Token::Kind::RBrace)
 
         Nodes::ObjectValue.new(fields)
       end
@@ -433,11 +420,10 @@ module Oxide
       def parse_object_field(is_const) : Nodes::ObjectField
         name = parse_name
         consume_token(Token::Kind::Colon)
-        value = parse_value_literal(is_const)
 
         Nodes::ObjectField.new(
           name: name,
-          value: value
+          value: parse_value_literal(is_const)
         )
       end
 
