@@ -96,7 +96,7 @@ module Oxide
         when "query", "mutation", "subscription"
           operation
         else
-          raise_unexpected
+          raise "Expected (query, mutation, subscription), found #{operation}"
         end
       end
 
