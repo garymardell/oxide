@@ -14,7 +14,6 @@ module Oxide
 
       def initialize(input : String)
         @lexer = Lexer.new(input)
-        @stack = Stack.new
 
         next_token
       end
