@@ -72,10 +72,8 @@ module Oxide
           )
         end
 
-        operation = token.raw_value
-        consume_token(Token::Kind::Name)
+        operation = parse_operation_definition_type
 
-        # TODO: Check that its a correct value
         name = nil
         if token.kind.name?
           name = parse_name
@@ -88,6 +86,18 @@ module Oxide
           directives: parse_directives(false),
           selection_set: parse_selection_set
         )
+      end
+
+      def parse_operation_definition_type
+        operation = token.raw_value
+        consume_token(Token::Kind::Name)
+
+        case operation
+        when "query", "mutation", "subscription"
+          operation
+        else
+          raise_unexpected
+        end
       end
 
       with_location def parse_fragment_definition : Nodes::FragmentDefinition
