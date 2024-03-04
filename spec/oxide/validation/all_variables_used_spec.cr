@@ -42,7 +42,7 @@ describe Oxide::Validation::AllVariablesUsed do
     pipeline = Oxide::Validation::Pipeline.new(
       ValidationsSchema,
       query,
-      [Oxide::Validation::ValuesOfCorrectType.new.as(Oxide::Validation::Rule)]
+      [Oxide::Validation::AllVariablesUsed.new.as(Oxide::Validation::Rule)]
     )
 
     pipeline.execute

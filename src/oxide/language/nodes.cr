@@ -3,7 +3,6 @@ require "./visitable"
 module Oxide
   module Language
     module Nodes
-      alias Type = NamedType | ListType | NonNullType
       alias TypeDefinition = ScalarTypeDefinition | ObjectTypeDefinition | InterfaceTypeDefinition | UnionTypeDefinition | EnumTypeDefinition | InputObjectTypeDefinition
       alias Definition = OperationDefinition | FragmentDefinition | SchemaDefinition | TypeDefinition | DirectiveDefinition
       alias Selection = Field | FragmentSpread | InlineFragment
@@ -16,12 +15,14 @@ module Oxide
 
         property begin_line : Int32?
         property begin_column : Int32?
-        property end_line : Int32?
-        property end_column : Int32?
 
         def to_location
           Oxide::Location.new(line: begin_line.not_nil!, column: begin_column.not_nil!)
         end
+      end
+
+      abstract class Type < Node
+        abstract def unwrap
       end
 
       class Document < Node
@@ -270,10 +271,14 @@ module Oxide
         def_equals_and_hash variable, type, default_value
       end
 
-      class NamedType < Node
+      class NamedType < Type
         property name : String
 
         def initialize(@name)
+        end
+
+        def unwrap
+          self
         end
 
         def accept(visitor : Visitor)
@@ -284,10 +289,14 @@ module Oxide
         def_equals_and_hash name
       end
 
-      class ListType < Node
+      class ListType < Type
         property of_type : NamedType | ListType | Nil
 
         def initialize(@of_type = nil)
+        end
+
+        def unwrap
+          of_type.try &.unwrap
         end
 
         def accept(visitor : Visitor)
@@ -303,10 +312,14 @@ module Oxide
         def_equals_and_hash of_type
       end
 
-      class NonNullType < Node
+      class NonNullType < Type
         property of_type : NamedType | ListType | Nil
 
         def initialize(@of_type = nil)
+        end
+
+        def unwrap
+          of_type.try &.unwrap
         end
 
         def accept(visitor : Visitor)

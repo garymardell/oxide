@@ -1,11 +1,10 @@
-
 module Oxide
   module Validation
     class VariablesAreInputTypes < Rule
       def enter(node : Oxide::Language::Nodes::VariableDefinition, context)
         if variable = node.variable
           type = begin
-            context.schema.get_type_from_ast(node.type)
+            context.schema.get_type_from_ast(node.type.try &.unwrap)
           rescue
             nil
           end

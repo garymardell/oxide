@@ -1,4 +1,3 @@
-
 module Oxide
   module Validation
     class VariableUniqueness < Rule

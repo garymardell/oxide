@@ -1,657 +1,449 @@
-require "./libgraphqlparser"
 require "log"
-
-Log.setup_from_env
+require "./lexer"
 
 module Oxide
   module Language
-    class Stack
-      private property array : Array(Nodes::Node)
-
-      def initialize
-        @array = [] of Nodes::Node
-      end
-
-      def document
-        @array.first
-      end
-
-      def peek
-        @array.last
-      end
-
-      def push(node)
-        @array << node
-      end
-
-      def pop
-        @array.pop
-      end
-    end
-
     class Parser
-      private property stack : Stack
-      private property callbacks : LibGraphqlParser::GraphQLAstVisitorCallbacks
+      delegate token, to: @lexer
+      delegate next_token, to: @lexer
 
-      macro log_visit(callback)
-        # puts {{callback}}
+      def self.parse(input : String)
+        parser = self.new(input)
+        parser.parse
       end
 
-      macro log_visit(callback, name)
-        # puts {{callback}}
-        # puts {{name}}
+      def initialize(input : String)
+        @lexer = Lexer.new(input)
+
+        next_token
       end
 
-      macro extract_value(method, operator)
-        String.new(LibGraphqlParser.{{method.id}}(node)).{{operator.id}}
-      end
+      macro with_location(method_def)
+        def {{method_def.name}}(
+          {% for arg in method_def.args %}
+            {{ arg.name }}{% if arg.restriction %} : {{ arg.restriction }}{% end %},
+          {% end %}
+        )
+          begin_line = token.line_number
+          begin_column = token.column_number
 
-      macro copy_location_from_ast(ast_node, node)
-        location = LibGraphqlParser::GraphQLAstLocation.new
-
-        LibGraphqlParser.node_get_location({{ast_node}}.as(LibGraphqlParser::GraphQLAstNode), pointerof(location))
-
-        {{node}}.begin_line = location.beginLine
-        {{node}}.end_line = location.endLine
-        {{node}}.begin_column = location.beginColumn
-        {{node}}.end_column = location.endColumn
-      end
-
-      def initialize
-        @stack = Stack.new
-        @callbacks = LibGraphqlParser::GraphQLAstVisitorCallbacks.new
-
-        @callbacks.visit_document = ->(node : LibGraphqlParser::GraphQLAstDocument, data : Pointer(Void)) {
-          log_visit("visit_document")
-
-          stack = data.as(Pointer(Stack)).value
-          stack.push(Nodes::Document.new)
-          return 1
-        }
-
-        @callbacks.end_visit_document = ->(node : LibGraphqlParser::GraphQLAstDocument, data : Pointer(Void)) {
-          log_visit("end_visit_document")
-
-          stack = data.as(Pointer(Stack)).value
-        }
-
-        @callbacks.visit_operation_definition = ->(node : LibGraphqlParser::GraphQLAstOperationDefinition, data : Pointer(Void)) {
-          log_visit("visit_operation_definition")
-
-          operation = LibGraphqlParser.GraphQLAstOperationDefinition_get_operation(node)
-
-          operation_name = LibGraphqlParser.GraphQLAstOperationDefinition_get_name(node)
-          operation_name_value = if operation_name
-            String.new(LibGraphqlParser.GraphQLAstName_get_value(operation_name))
+          {{method_def.body}}.tap do |node|
+            node.begin_line = begin_line
+            node.begin_column = begin_column
           end
-
-          operation_type = if (operation)
-            String.new(operation)
-          else
-            "query"
-          end
-
-          stack = data.as(Pointer(Stack)).value
-
-          operation_definition = Nodes::OperationDefinition.new(operation_type, name: operation_name_value)
-
-          copy_location_from_ast(node, operation_definition)
-
-          stack.push(operation_definition)
-
-          return 1
-        }
-
-        @callbacks.end_visit_operation_definition = ->(node : LibGraphqlParser::GraphQLAstOperationDefinition, data : Pointer(Void)) {
-          log_visit("end_visit_operation_definition")
-
-          stack = data.as(Pointer(Stack)).value
-
-          operation_definition = stack.pop.as(Nodes::OperationDefinition)
-
-          stack.peek.as(Nodes::Document).definitions << operation_definition
-        }
-
-        @callbacks.visit_variable_definition = -> (node : LibGraphqlParser::GraphQLAstVariableDefinition, data : Pointer(Void)) {
-          log_visit("visit_variable_definition")
-
-          stack = data.as(Pointer(Stack)).value
-
-          variable_definition = Nodes::VariableDefinition.new
-
-          copy_location_from_ast(node, variable_definition)
-
-          stack.push(variable_definition)
-
-          return 1
-        }
-
-        @callbacks.end_visit_variable_definition = ->(node : LibGraphqlParser::GraphQLAstVariableDefinition, data : Pointer(Void)) {
-          log_visit("end_visit_variable_definition")
-
-          stack = data.as(Pointer(Stack)).value
-
-          default_value = if stack.peek.is_a?(Nodes::Value)
-            stack.pop.as(Nodes::Value)
-          else
-            nil
-          end
-
-          variable_definition = stack.pop.as(Nodes::VariableDefinition)
-          variable_definition.default_value = default_value
-
-          stack.peek.as(Nodes::OperationDefinition).variable_definitions << variable_definition
-
-        }
-
-        @callbacks.visit_selection_set = ->(node : LibGraphqlParser::GraphQLAstSelectionSet, data : Pointer(Void)) {
-          log_visit("visit_selection_set")
-
-          stack = data.as(Pointer(Stack)).value
-
-          selection_set = Nodes::SelectionSet.new
-
-          copy_location_from_ast(node, selection_set)
-
-          stack.push(selection_set)
-
-          return 1
-        }
-
-        @callbacks.end_visit_selection_set = ->(node : LibGraphqlParser::GraphQLAstSelectionSet, data : Pointer(Void)) {
-          log_visit("end_visit_selection_set")
-
-          stack = data.as(Pointer(Stack)).value
-
-          selections = [] of Nodes::Selection
-
-          while stack.peek.is_a?(Nodes::Field) || stack.peek.is_a?(Nodes::FragmentSpread)
-            selections << stack.pop
-          end
-
-          selection_set = stack.pop.as(Nodes::SelectionSet)
-
-          case stack.peek
-          when Nodes::OperationDefinition
-            stack.peek.as(Nodes::OperationDefinition).selection_set = selection_set
-          when Nodes::Field
-            stack.peek.as(Nodes::Field).selection_set = selection_set
-          when Nodes::FragmentDefinition
-            stack.peek.as(Nodes::FragmentDefinition).selection_set = selection_set
-          when Nodes::InlineFragment
-            stack.peek.as(Nodes::InlineFragment).selection_set = selection_set
-          else
-          end
-        }
-
-        @callbacks.visit_field = ->(node : LibGraphqlParser::GraphQLAstField, data : Pointer(Void)) {
-          log_visit("visit_field")
-
-          alias_name = LibGraphqlParser.GraphQLAstField_get_alias(node)
-
-          alias_value = if alias_name
-            String.new(LibGraphqlParser.GraphQLAstName_get_value(alias_name))
-          end
-
-          field_name = LibGraphqlParser.GraphQLAstField_get_name(node)
-          field_name_value = String.new(LibGraphqlParser.GraphQLAstName_get_value(field_name))
-
-          stack = data.as(Pointer(Stack)).value
-
-          field = Nodes::Field.new(field_name_value, alias_value)
-
-          copy_location_from_ast(node, field)
-
-          stack.push(field)
-
-          return 1
-        }
-
-        @callbacks.end_visit_field = ->(node : LibGraphqlParser::GraphQLAstField, data : Pointer(Void)) {
-          log_visit("end_visit_field")
-
-          stack = data.as(Pointer(Stack)).value
-
-          field = stack.pop.as(Nodes::Field)
-
-          stack.peek.as(Nodes::SelectionSet).selections << field
-        }
-
-        @callbacks.visit_argument = -> (node : LibGraphqlParser::GraphQLAstArgument, data : Pointer(Void)) {
-          log_visit("visit_argument")
-
-          argument_name = LibGraphqlParser.GraphQLAstArgument_get_name(node)
-          argument_name_value = String.new(LibGraphqlParser.GraphQLAstName_get_value(argument_name))
-
-          stack = data.as(Pointer(Stack)).value
-
-          argument = Nodes::Argument.new(argument_name_value)
-
-          copy_location_from_ast(node, argument)
-
-          stack.push(argument)
-
-          return 1
-        }
-
-        @callbacks.end_visit_argument = ->(node : LibGraphqlParser::GraphQLAstArgument, data : Pointer(Void)) {
-          log_visit("end_visit_argument")
-
-          stack = data.as(Pointer(Stack)).value
-
-          value = stack.pop.as(Nodes::Value)
-
-          argument = stack.pop.as(Nodes::Argument)
-          argument.value = value
-
-          case stack.peek
-          when Nodes::Field
-            stack.peek.as(Nodes::Field).arguments << argument
-          when Nodes::Directive
-            stack.peek.as(Nodes::Directive).arguments << argument
-          else
-          end
-        }
-
-        @callbacks.visit_fragment_spread = ->(node : LibGraphqlParser::GraphQLAstFragmentSpread, data : Pointer(Void)) {
-          log_visit("visit_fragment_spread")
-
-          stack = data.as(Pointer(Stack)).value
-
-          fragment_spread_name = LibGraphqlParser.GraphQLAstFragmentSpread_get_name(node)
-          fragment_spread_name_value = String.new(LibGraphqlParser.GraphQLAstName_get_value(fragment_spread_name))
-
-          fragment_spread = Nodes::FragmentSpread.new(fragment_spread_name_value)
-
-          copy_location_from_ast(node, fragment_spread)
-
-          stack.push(fragment_spread)
-
-          return 1
-        }
-
-        @callbacks.end_visit_fragment_spread = ->(node : LibGraphqlParser::GraphQLAstFragmentSpread, data : Pointer(Void)) {
-          log_visit("end_visit_fragment_spread")
-
-          stack = data.as(Pointer(Stack)).value
-
-          fragment_spread = stack.pop.as(Nodes::FragmentSpread)
-
-          stack.peek.as(Nodes::SelectionSet).selections << fragment_spread
-        }
-
-        @callbacks.visit_inline_fragment = ->(node : LibGraphqlParser::GraphQLAstInlineFragment, data : Pointer(Void)) {
-          log_visit("visit_inline_fragment")
-
-          stack = data.as(Pointer(Stack)).value
-
-          inline_fragment = Nodes::InlineFragment.new
-
-          copy_location_from_ast(node, inline_fragment)
-
-          stack.push(inline_fragment)
-
-          return 1
-        }
-
-        @callbacks.end_visit_inline_fragment = ->(node : LibGraphqlParser::GraphQLAstInlineFragment, data : Pointer(Void)) {
-          log_visit("end_visit_inline_fragment")
-
-          stack = data.as(Pointer(Stack)).value
-          inline_fragment = stack.pop.as(Nodes::InlineFragment)
-
-          stack.peek.as(Nodes::SelectionSet).selections << inline_fragment
-        }
-
-        @callbacks.visit_fragment_definition = ->(node : LibGraphqlParser::GraphQLAstFragmentDefinition, data : Pointer(Void)) {
-          log_visit("visit_fragment_definition")
-
-          stack = data.as(Pointer(Stack)).value
-
-          fragment_name = LibGraphqlParser.GraphQLAstFragmentDefinition_get_name(node)
-          fragment_name_value = String.new(LibGraphqlParser.GraphQLAstName_get_value(fragment_name))
-
-          fragment_definition = Nodes::FragmentDefinition.new(fragment_name_value)
-
-          copy_location_from_ast(node, fragment_definition)
-
-          stack.push(fragment_definition)
-
-          return 1
-        }
-
-        @callbacks.end_visit_fragment_definition = ->(node : LibGraphqlParser::GraphQLAstFragmentDefinition, data : Pointer(Void)) {
-          log_visit("end_visit_fragment_definition")
-
-          stack = data.as(Pointer(Stack)).value
-
-          fragment_definition = stack.pop.as(Nodes::FragmentDefinition)
-
-          stack.peek.as(Nodes::Document).definitions << fragment_definition
-        }
-
-        @callbacks.visit_variable = -> (node : LibGraphqlParser::GraphQLAstVariable, data : Pointer(Void)) {
-          log_visit("visit_variable")
-
-          stack = data.as(Pointer(Stack)).value
-
-          variable_name = LibGraphqlParser.GraphQLAstVariable_get_name(node)
-          variable_name_value = String.new(LibGraphqlParser.GraphQLAstName_get_value(variable_name))
-
-          variable = Nodes::Variable.new(variable_name_value)
-
-          copy_location_from_ast(node, variable)
-
-          stack.push(variable)
-
-          return 1
-        }
-
-        @callbacks.end_visit_variable = ->(node : LibGraphqlParser::GraphQLAstVariable, data : Pointer(Void)) {
-          log_visit("end_visit_variable")
-
-          stack = data.as(Pointer(Stack)).value
-
-          variable = stack.pop.as(Nodes::Variable)
-
-          case stack.peek
-          when Nodes::VariableDefinition
-            stack.peek.as(Nodes::VariableDefinition).variable = variable
-          when Nodes::Argument
-            # stack.peek.as(Nodes::Argument).value = variable
-            stack.push(variable) # TODO: Values are left on the stack for now
-          end
-        }
-
-        @callbacks.visit_int_value = ->(node : LibGraphqlParser::GraphQLAstIntValue, data : Pointer(Void)) {
-          log_visit("visit_int_value")
-
-          stack = data.as(Pointer(Stack)).value
-          stack.push(Nodes::IntValue.new(extract_value("GraphQLAstIntValue_get_value", "to_i32")))
-          return 1
-        }
-
-        @callbacks.end_visit_int_value = ->(node : LibGraphqlParser::GraphQLAstIntValue, data : Pointer(Void)) {
-          log_visit("end_visit_int_value")
-        }
-
-        @callbacks.visit_float_value = ->(node : LibGraphqlParser::GraphQLAstFloatValue, data : Pointer(Void)) {
-          log_visit("visit_float_value")
-
-          stack = data.as(Pointer(Stack)).value
-          stack.push(Nodes::FloatValue.new(extract_value("GraphQLAstFloatValue_get_value", "to_f32")))
-
-          return 1
-        }
-
-        @callbacks.end_visit_float_value = ->(node : LibGraphqlParser::GraphQLAstFloatValue, data : Pointer(Void)) {
-          log_visit("end_visit_float_value")
-        }
-
-        @callbacks.visit_string_value = ->(node : LibGraphqlParser::GraphQLAstStringValue, data : Pointer(Void)) {
-          log_visit("visit_string_value")
-
-          stack = data.as(Pointer(Stack)).value
-          stack.push(Nodes::StringValue.new(extract_value("GraphQLAstStringValue_get_value", "to_s")))
-
-          return 1
-        }
-
-        @callbacks.end_visit_string_value = ->(node : LibGraphqlParser::GraphQLAstStringValue, data : Pointer(Void)) {
-          log_visit("end_visit_string_value")
-        }
-
-        @callbacks.visit_boolean_value = ->(node : LibGraphqlParser::GraphQLAstBooleanValue, data : Pointer(Void)) {
-          log_visit("visit_boolean_value")
-
-          stack = data.as(Pointer(Stack)).value
-          stack.push(Nodes::BooleanValue.new(LibGraphqlParser.GraphQLAstBooleanValue_get_value(node) != 0))
-
-          return 1
-        }
-
-        @callbacks.end_visit_boolean_value = ->(node : LibGraphqlParser::GraphQLAstBooleanValue, data : Pointer(Void)) {
-          log_visit("end_visit_boolean_value")
-        }
-
-        @callbacks.visit_null_value = ->(node : LibGraphqlParser::GraphQLAstNullValue, data : Pointer(Void)) {
-          log_visit("visit_null_value")
-
-          stack = data.as(Pointer(Stack)).value
-          stack.push(Nodes::NullValue.new)
-
-          return 1
-        }
-
-        @callbacks.end_visit_null_value = ->(node : LibGraphqlParser::GraphQLAstNullValue, data : Pointer(Void)) {
-          log_visit("end_visit_null_value")
-        }
-
-        @callbacks.visit_enum_value = ->(node : LibGraphqlParser::GraphQLAstEnumValue, data : Pointer(Void)) {
-          log_visit("visit_enum_value")
-
-          stack = data.as(Pointer(Stack)).value
-
-          enum_value = LibGraphqlParser.GraphQLAstEnumValue_get_value(node)
-
-          stack.push(Nodes::EnumValue.new(String.new(enum_value)))
-
-          return 1
-        }
-
-        @callbacks.end_visit_enum_value = ->(node : LibGraphqlParser::GraphQLAstEnumValue, data : Pointer(Void)) {
-          log_visit("end_visit_enum_value")
-        }
-
-        @callbacks.visit_list_value = ->(node : LibGraphqlParser::GraphQLAstListValue, data : Pointer(Void)) {
-          log_visit("visit_list_value")
-          return 1
-        }
-
-        @callbacks.end_visit_list_value = ->(node : LibGraphqlParser::GraphQLAstListValue, data : Pointer(Void)) {
-          log_visit("end_visit_list_value")
-
-          stack = data.as(Pointer(Stack)).value
-
-          values = [] of Nodes::Value
-
-          while stack.peek.is_a?(Nodes::Value)
-            values.unshift stack.pop.as(Nodes::Value)
-          end
-
-          stack.push(Nodes::ListValue.new(values))
-        }
-
-        @callbacks.visit_object_value = ->(node : LibGraphqlParser::GraphQLAstObjectValue, data : Pointer(Void)) {
-          log_visit("visit_object_value")
-
-          stack = data.as(Pointer(Stack)).value
-
-          object_value = Nodes::ObjectValue.new
-
-          stack.push(object_value)
-
-          return 1
-        }
-
-        @callbacks.end_visit_object_value = ->(node : LibGraphqlParser::GraphQLAstObjectValue, data : Pointer(Void)) {
-          log_visit("end_visit_object_value")
-        }
-
-        @callbacks.visit_object_field = ->(node : LibGraphqlParser::GraphQLAstObjectField, data : Pointer(Void)) {
-          log_visit("visit_object_field")
-
-          return 1
-        }
-
-        @callbacks.end_visit_object_field = ->(node : LibGraphqlParser::GraphQLAstObjectField, data : Pointer(Void)) {
-          log_visit("end_visit_object_field")
-
-          stack = data.as(Pointer(Stack)).value
-
-          field_name = LibGraphqlParser.GraphQLAstObjectField_get_name(node)
-          field_name_value = LibGraphqlParser.GraphQLAstName_get_value(field_name)
-
-          value = stack.pop.as(Nodes::Value)
-
-          object_field = Nodes::ObjectField.new(String.new(field_name_value), value)
-
-          stack.peek.as(Nodes::ObjectValue).fields << object_field
-        }
-
-        @callbacks.visit_directive = ->(node : LibGraphqlParser::GraphQLAstDirective, data : Pointer(Void)) {
-          log_visit("visit_directive")
-
-          stack = data.as(Pointer(Stack)).value
-
-          directive_name = LibGraphqlParser.GraphQLAstDirective_get_name(node)
-          directive_name_value = LibGraphqlParser.GraphQLAstName_get_value(directive_name)
-
-          directive = Nodes::Directive.new(String.new(directive_name_value))
-
-          copy_location_from_ast(node, directive)
-
-          stack.push(directive)
-
-          return 1
-        }
-
-        @callbacks.end_visit_directive = ->(node : LibGraphqlParser::GraphQLAstDirective, data : Pointer(Void)) {
-          log_visit("end_visit_directive")
-
-          stack = data.as(Pointer(Stack)).value
-
-          directive = stack.pop.as(Nodes::Directive)
-
-          case stack.peek
-          when Nodes::OperationDefinition
-            stack.peek.as(Nodes::OperationDefinition).directives << directive
-          when Nodes::FragmentDefinition
-            stack.peek.as(Nodes::FragmentDefinition).directives << directive
-          when Nodes::FragmentSpread
-            stack.peek.as(Nodes::FragmentSpread).directives << directive
-          when Nodes::InlineFragment
-            stack.peek.as(Nodes::InlineFragment).directives << directive
-          when Nodes::SchemaDefinition
-            stack.peek.as(Nodes::SchemaDefinition).directives << directive
-          when Nodes::ScalarTypeDefinition
-            stack.peek.as(Nodes::ScalarTypeDefinition).directives << directive
-          when Nodes::ObjectTypeDefinition
-            stack.peek.as(Nodes::ObjectTypeDefinition).directives << directive
-          when Nodes::FieldDefinition
-            stack.peek.as(Nodes::FieldDefinition).directives << directive
-          when Nodes::InputValueDefinition
-            stack.peek.as(Nodes::InputValueDefinition).directives << directive
-          when Nodes::InterfaceTypeDefinition
-            stack.peek.as(Nodes::InterfaceTypeDefinition).directives << directive
-          when Nodes::UnionTypeDefinition
-            stack.peek.as(Nodes::UnionTypeDefinition).directives << directive
-          when Nodes::EnumTypeDefinition
-            stack.peek.as(Nodes::EnumTypeDefinition).directives << directive
-          when Nodes::EnumValueDefinition
-            stack.peek.as(Nodes::EnumValueDefinition).directives << directive
-          when Nodes::Field
-            stack.peek.as(Nodes::Field).directives << directive
-          end
-        }
-
-        @callbacks.visit_named_type = ->(node : LibGraphqlParser::GraphQLAstNamedType, data : Pointer(Void)) {
-          log_visit("visit_named_type")
-
-          stack = data.as(Pointer(Stack)).value
-
-          named_type_name = LibGraphqlParser.GraphQLAstNamedType_get_name(node)
-          named_type_name_value = LibGraphqlParser.GraphQLAstName_get_value(named_type_name)
-
-          named_type = Nodes::NamedType.new(String.new(named_type_name_value))
-
-          copy_location_from_ast(node, named_type)
-
-          stack.push(named_type)
-
-          return 1
-        }
-
-        @callbacks.end_visit_named_type = ->(node : LibGraphqlParser::GraphQLAstNamedType, data : Pointer(Void)) {
-          log_visit("end_visit_named_type")
-
-          stack = data.as(Pointer(Stack)).value
-          named_type = stack.pop.as(Nodes::NamedType)
-
-          case stack.peek
-          when Nodes::FragmentDefinition
-            stack.peek.as(Nodes::FragmentDefinition).type_condition = named_type
-          when Nodes::InlineFragment
-            stack.peek.as(Nodes::InlineFragment).type_condition = named_type
-          when Nodes::VariableDefinition
-            stack.peek.as(Nodes::VariableDefinition).type = named_type
-          when Nodes::NonNullType
-            stack.peek.as(Nodes::NonNullType).of_type = named_type
-          end
-        }
-
-        @callbacks.visit_list_type = ->(node : LibGraphqlParser::GraphQLAstListType, data : Pointer(Void)) {
-          log_visit("visit_list_type")
-          return 1
-        }
-
-        @callbacks.end_visit_list_type = ->(node : LibGraphqlParser::GraphQLAstListType, data : Pointer(Void)) {
-          log_visit("end_visit_list_type")
-        }
-
-        @callbacks.visit_non_null_type = ->(node : LibGraphqlParser::GraphQLAstNonNullType, data : Pointer(Void)) {
-          log_visit("visit_non_null_type")
-
-          stack = data.as(Pointer(Stack)).value
-
-          non_null_type = Nodes::NonNullType.new
-
-          copy_location_from_ast(node, non_null_type)
-
-          stack.push(non_null_type)
-
-          return 1
-        }
-
-        @callbacks.end_visit_non_null_type = ->(node : LibGraphqlParser::GraphQLAstNonNullType, data : Pointer(Void)) {
-          log_visit("end_visit_non_null_type")
-
-          # Pick up either the list type or named type
-          stack = data.as(Pointer(Stack)).value
-
-          type = stack.pop.as(Nodes::NonNullType)
-
-          case stack.peek
-          when Nodes::VariableDefinition
-            stack.peek.as(Nodes::VariableDefinition).type = type
-          end
-
-          # stack.push(Nodes::NonNullType.new(type))
-        }
-
-        @callbacks.visit_name = ->(node : LibGraphqlParser::GraphQLAstName, data : Pointer(Void)) {
-          log_visit("visit_name")
-          return 1
-        }
-
-        @callbacks.end_visit_name = ->(node : LibGraphqlParser::GraphQLAstName, data : Pointer(Void)) {
-          log_visit("end_visit_name")
-        }
-      end
-
-      def parse(string)
-        node = LibGraphqlParser.parse_string(string, out error)
-
-        if node.null?
-          error_message = String.new(chars: error)
-          LibGraphqlParser.error_free(error)
-
-          raise error_message
-        else
-          LibGraphqlParser.node_visit(node, pointerof(@callbacks), pointerof(@stack))
-
-          @stack.document.as(Nodes::Document)
         end
+      end
+
+      with_location def parse : Nodes::Document
+        definitions = [] of Nodes::Definition
+
+        loop do
+          definitions << parse_definition
+
+          break if token.kind.eof?
+        end
+
+        Nodes::Document.new(definitions: definitions)
+      end
+
+      with_location def parse_definition : Nodes::Definition
+        if token.kind.l_brace?
+          return parse_operation_definition
+        end
+
+        # TODO: Process descriptions
+
+        case token.raw_value
+        when "query", "mutation", "subscription"
+          parse_operation_definition
+        when "fragment"
+          parse_fragment_definition
+        else
+          raise "Expected (query, mutation, subscription, fragment), found #{token.raw_value}"
+        end
+      end
+
+      with_location def parse_operation_definition : Nodes::OperationDefinition
+        if token.kind.l_brace?
+          return Nodes::OperationDefinition.new(
+            operation_type: "query",
+            name: nil,
+            selection_set: parse_selection_set
+          )
+        end
+
+        operation = parse_operation_definition_type
+
+        name = nil
+        if token.kind.name?
+          name = parse_name
+        end
+
+        Nodes::OperationDefinition.new(
+          operation_type: operation,
+          name: name,
+          variable_definitions: parse_variable_definitions,
+          directives: parse_directives(false),
+          selection_set: parse_selection_set
+        )
+      end
+
+      def parse_operation_definition_type
+        operation = token.raw_value
+        consume_token(Token::Kind::Name)
+
+        case operation
+        when "query", "mutation", "subscription"
+          operation
+        else
+          raise "Expected (query, mutation, subscription), found #{operation}"
+        end
+      end
+
+      with_location def parse_fragment_definition : Nodes::FragmentDefinition
+        expect_current_token(Token::Kind::Name)
+        expect_keyword_and_consume("fragment")
+
+        name = parse_fragment_name
+
+        expect_keyword_and_consume("on")
+
+        Nodes::FragmentDefinition.new(
+          name: name,
+          type_condition: parse_named_type,
+          directives: parse_directives(false),
+          selection_set: parse_selection_set
+        )
+      end
+
+      def parse_fragment_name
+        if token.raw_value == "on"
+          raise_unexpected
+        end
+
+        parse_name
+      end
+
+      def parse_variable_definitions : Array(Nodes::VariableDefinition)
+        definitions = [] of Nodes::VariableDefinition
+
+        unless token.kind.l_paren?
+          return definitions
+        end
+
+        consume_token(Token::Kind::LParen)
+
+        loop do
+          definitions << parse_variable_definition
+
+          break if token.kind.r_paren?
+        end
+
+        consume_token(Token::Kind::RParen)
+
+        definitions
+      end
+
+      with_location def parse_variable_definition : Nodes::VariableDefinition
+        variable = parse_variable
+        consume_token(Token::Kind::Colon)
+        type = parse_type_reference
+
+        default_value = if token.kind.equals?
+          consume_token(Token::Kind::Equals)
+          parse_value_literal(true)
+        end
+
+        Nodes::VariableDefinition.new(
+          variable: variable,
+          type: type,
+          default_value: default_value
+        )
+      end
+
+      with_location def parse_type_reference : Nodes::Type
+        type = if token.kind.l_bracket?
+          consume_token(Token::Kind::LBracket)
+          inner_type = parse_type_reference
+          consume_token(Token::Kind::RBracket)
+
+          Nodes::ListType.new(
+            of_type: inner_type
+          )
+        else
+          parse_named_type
+        end
+
+        if token.kind.bang?
+          consume_token(Token::Kind::Bang)
+
+          return Nodes::NonNullType.new(
+            of_type: type
+          )
+        end
+
+        type
+      end
+
+      with_location def parse_variable : Nodes::Variable
+        consume_token(Token::Kind::Dollar)
+
+        Nodes::Variable.new(
+          name: parse_name,
+        )
+      end
+
+      def parse_name
+        expect_current_token(Token::Kind::Name)
+
+        token.raw_value.tap do
+          next_token
+        end
+      end
+
+      with_location def parse_selection_set : Nodes::SelectionSet
+        selections = [] of Nodes::Selection
+
+        consume_token(Token::Kind::LBrace)
+        loop do
+          selections << parse_selection
+          break if token.kind.r_brace?
+        end
+        consume_token(Token::Kind::RBrace)
+
+        Nodes::SelectionSet.new(
+          selections: selections
+        )
+      end
+
+      with_location def parse_selection : Nodes::Selection
+        if token.kind.spread?
+          parse_fragment
+        else
+          parse_field
+        end
+      end
+
+      with_location def parse_fragment : Nodes::FragmentSpread | Nodes::InlineFragment
+        consume_token(Token::Kind::Spread)
+
+        has_type_condition = if token.kind.name? && token.raw_value == "on"
+          next_token
+          true
+        else
+          false
+        end
+
+        if !has_type_condition && token.kind.name?
+          name = token.raw_value
+          next_token
+
+          Nodes::FragmentSpread.new(
+            name: name,
+            directives: parse_directives(false)
+          )
+        else
+          type_condition = if has_type_condition
+            parse_named_type
+          end
+
+          Nodes::InlineFragment.new(
+            type_condition: type_condition,
+            directives: parse_directives(false),
+            selection_set: parse_selection_set
+          )
+        end
+      end
+
+      with_location def parse_named_type : Nodes::NamedType
+        Nodes::NamedType.new(
+          name: parse_name,
+        )
+      end
+
+      with_location def parse_field : Nodes::Field
+        expect_current_token(Token::Kind::Name)
+        name_or_alias = token.raw_value
+        next_token
+
+        alias_name = nil
+        name = nil
+
+        if token.kind.colon?
+          alias_name = name_or_alias
+          next_token
+          expect_current_token(Token::Kind::Name)
+          name = token.raw_value
+          next_token
+        else
+          name = name_or_alias
+        end
+
+        Nodes::Field.new(
+          name: name,
+          alias: alias_name,
+          arguments: parse_arguments(false),
+          directives: parse_directives(false),
+          selection_set: if token.kind.l_brace?
+            parse_selection_set
+          end
+        )
+      end
+
+      def parse_directives(is_const) : Array(Nodes::Directive)
+        directives = [] of Nodes::Directive
+
+        while token.kind.at?
+          directives << parse_directive(is_const)
+        end
+
+        directives
+      end
+
+      with_location def parse_directive(is_const) : Nodes::Directive
+        consume_token(Token::Kind::At)
+
+        Nodes::Directive.new(
+          name: parse_name,
+          arguments: parse_arguments(is_const)
+        )
+      end
+
+      def parse_arguments(is_const) : Array(Nodes::Argument)
+        unless token.kind.l_paren?
+          return [] of Nodes::Argument
+        end
+
+        consume_token(Token::Kind::LParen)
+
+        arguments = [] of Nodes::Argument
+
+        loop do
+          arguments << parse_argument(is_const)
+
+          break if token.kind.r_paren?
+        end
+
+        consume_token(Token::Kind::RParen)
+
+        arguments
+      end
+
+      with_location def parse_argument(is_const) : Nodes::Argument
+        name = parse_name
+        consume_token(Token::Kind::Colon)
+
+        Nodes::Argument.new(
+          name: name,
+          value: parse_value_literal(is_const)
+        )
+      end
+
+      with_location def parse_value_literal(is_const) : Nodes::Value
+        case token.kind
+        when .l_bracket?
+          parse_list(is_const)
+        when .l_brace?
+          parse_object(is_const)
+        when .int?
+          Nodes::IntValue.new(token.int_value).tap { next_token }
+        when .float?
+          Nodes::FloatValue.new(token.float_value).tap { next_token }
+        when .string?
+          Nodes::StringValue.new(token.raw_value).tap { next_token }
+        when .name?
+          # Could actually be a boolean value or null
+          case token.raw_value
+          when "true"
+            Nodes::BooleanValue.new(true).tap { next_token }
+          when "false"
+            Nodes::BooleanValue.new(false).tap { next_token }
+          when "null"
+            Nodes::NullValue.new.tap { next_token }
+          else
+            Nodes::EnumValue.new(token.raw_value).tap { next_token }
+          end
+        when .dollar?
+          if is_const
+            next_token
+            if token.kind.name?
+              variable_name = token.raw_value
+              raise "Unexpected variable \"$#{variable_name}\" in constant value."
+            else
+              raise_unexpected
+            end
+          end
+
+          parse_variable
+        else
+          raise_unexpected
+        end
+      end
+
+      with_location def parse_list(is_const) : Nodes::ListValue
+        values = [] of Nodes::Value
+
+        consume_token(Token::Kind::LBracket)
+        loop do
+          values << parse_value_literal(is_const)
+          next_token
+
+          break if token.kind.r_bracket?
+        end
+        consume_token(Token::Kind::RBracket)
+
+        Nodes::ListValue.new(values: values)
+      end
+
+      with_location def parse_object(is_const) : Nodes::ObjectValue
+        fields = [] of Nodes::ObjectField
+
+        consume_token(Token::Kind::LBrace)
+        loop do
+          fields << parse_object_field(is_const)
+          break if token.kind.r_brace?
+        end
+        consume_token(Token::Kind::RBrace)
+
+        Nodes::ObjectValue.new(fields)
+      end
+
+      with_location def parse_object_field(is_const) : Nodes::ObjectField
+        name = parse_name
+        consume_token(Token::Kind::Colon)
+
+        Nodes::ObjectField.new(
+          name: name,
+          value: parse_value_literal(is_const)
+        )
+      end
+
+      def consume_token(kind : Token::Kind)
+        expect_current_token(kind)
+        next_token
+      end
+
+
+      def expect_current_token(kind : Token::Kind)
+        unless token.kind == kind
+          raise "Expected #{kind}, found #{token.kind}."
+        end
+      end
+
+      def expect_keyword_and_consume(value : String)
+        unless token.raw_value == value
+          raise "Expected #{value}, found #{token.raw_value}."
+        end
+
+        next_token
+      end
+
+      def raise_unexpected
+        raise "Unexpected #{token.kind}"
+      end
+
+      private def raise(message)
+        ::raise ParseException.new("Syntax Error: #{message}", token.line_number, token.column_number)
       end
     end
   end

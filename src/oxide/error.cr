@@ -14,6 +14,15 @@ module Oxide
     def_equals_and_hash line, column
   end
 
+  class ParseException < Exception
+    property line_number : Int32?
+    property column_number : Int32?
+
+    def initialize(message, @line_number, @column_number)
+      super(message)
+    end
+  end
+
   class Error < Exception
     property locations : Array(Location) = [] of Location
 
