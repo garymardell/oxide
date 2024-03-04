@@ -59,7 +59,7 @@ module Oxide
         when "fragment"
           parse_fragment_definition
         else
-          raise_unexpected
+          raise "Expected (query, mutation, subscription, fragment), found #{token.raw_value}"
         end
       end
 

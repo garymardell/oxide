@@ -188,6 +188,19 @@ describe Oxide::Language::Parser do
     Oxide::Language::Parser.parse(schema)
   end
 
+  it "raises on incorrect operation type" do
+    input = <<-INPUT
+      notAnOperation {
+        selection
+      }
+    INPUT
+
+    expect_raises Oxide::ParseException, "Expected (query, mutation, subscription, fragment), found notAnOperation" do
+      parser = Oxide::Language::Parser.new(input)
+      parser.parse
+    end
+  end
+
   it "supports list values" do
     schema = <<-QUERY
       query {
