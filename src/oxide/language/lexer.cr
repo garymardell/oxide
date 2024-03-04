@@ -182,6 +182,29 @@ module Oxide
 
       def consume_block_string
         # TODO: Consume block string
+        @token.raw_value = String.build do |io|
+          quote_count = 0
+          next_char
+
+          while current_char != '\0'
+            # We terminate when we get either a end of input or 3 '"' in a row
+            if current_char == '"'
+              quote_count += 1
+
+              if quote_count == 3
+                break
+              else
+                next_char
+              end
+            else
+              quote_count.times { io << '"' }
+              quote_count = 0
+
+              io << current_char
+              next_char
+            end
+          end
+        end
       end
 
       def consume_name
