@@ -42,7 +42,7 @@ describe Oxide::Validation::ArgumentNames do
     pipeline.execute
 
     pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Oxide::Error.new("Field 'doesKnowCommand' doesn't accept argument 'command'", [Oxide::Location.new(2, 21)]))
+    pipeline.errors.should contain(Oxide::Error.new("Field 'doesKnowCommand' doesn't accept argument 'command'"))
   end
 
   it "counter example #133" do

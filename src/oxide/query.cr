@@ -17,8 +17,7 @@ module Oxide
     end
 
     private def parse(query_string)
-      parser = Oxide::Language::Parser.new
-      parser.parse(query_string).as(Oxide::Language::Nodes::Document)
+      Oxide::Language::Parser.parse(query_string).as(Oxide::Language::Nodes::Document)
     end
   end
 end

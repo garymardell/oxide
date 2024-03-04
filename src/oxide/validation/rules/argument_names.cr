@@ -20,7 +20,7 @@ module Oxide
               parent_type.name
             end
 
-            context.errors << Error.new("Field '#{field_name}' doesn't accept argument '#{node.name}'", [node.to_location])
+            context.errors << Error.new("Field '#{field_name}' doesn't accept argument '#{node.name}'")
           end
         end
       end
