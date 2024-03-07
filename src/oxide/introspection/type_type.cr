@@ -23,15 +23,21 @@ module Oxide
       fields: {
         "kind" => Oxide::Field.new(
           type: Oxide::Types::NonNullType.new(of_type: TypeKindType),
-          resolve: ->(type : Type) { type.kind }
+          resolve: ->(type : Type, arguments : ArgumentValues, context : Execution::Context, info : Execution::ResolutionInfo) {
+            type.unwrap(info.schema).kind
+          }
         ),
         "name" => Oxide::Field.new(
           type: Oxide::Types::StringType.new,
-          resolve: ->(type : Type) { type.name }
+          resolve: ->(type : Type, arguments : ArgumentValues, context : Execution::Context, info : Execution::ResolutionInfo) {
+            type.unwrap(info.schema).name
+          }
         ),
         "description" => Oxide::Field.new(
           type: Oxide::Types::StringType.new,
-          resolve: ->(type : Type) { type.description }
+          resolve: ->(type : Type, arguments : ArgumentValues, context : Execution::Context, info : Execution::ResolutionInfo) {
+            type.unwrap(info.schema).description
+          }
         ),
         "fields" => Oxide::Field.new(
           arguments: {
@@ -45,7 +51,9 @@ module Oxide
               of_type: Oxide::Types::LateBoundType.new("__Field") # Introspection::Field
             )
           ),
-          resolve: ->(type : Type, arguments : ArgumentValues) {
+          resolve: ->(type : Type, arguments : ArgumentValues, context : Execution::Context, info : Execution::ResolutionInfo) {
+            type = type.unwrap(info.schema)
+
             case type
             when Types::ObjectType, Types::InterfaceType
               if arguments["includeDeprecated"]?
@@ -66,7 +74,9 @@ module Oxide
               of_type: Oxide::Types::LateBoundType.new("__Type")  # Introspection::Type
             )
           ),
-          resolve: ->(type : Type) {
+          resolve: ->(type : Type, arguments : ArgumentValues, context : Execution::Context, info : Execution::ResolutionInfo) {
+            type = type.unwrap(info.schema)
+
             case type
             when Types::ObjectType, Types::InterfaceType
               type.interfaces
@@ -80,6 +90,8 @@ module Oxide
             )
           ),
           resolve: ->(type : Type, arguments : ArgumentValues, context : Execution::Context, info : Execution::ResolutionInfo) {
+            type = type.unwrap(info.schema)
+
             case type
             when Types::UnionType
               type.possible_types
@@ -104,7 +116,9 @@ module Oxide
               of_type: Introspection::EnumValueType
             )
           ),
-          resolve: ->(type : Type, arguments : ArgumentValues) {
+          resolve: ->(type : Type, arguments : ArgumentValues, context : Execution::Context, info : Execution::ResolutionInfo) {
+            type = type.unwrap(info.schema)
+
             case type
             when Types::EnumType
               if arguments["includeDeprecated"]?
@@ -121,7 +135,9 @@ module Oxide
               of_type: Oxide::Types::LateBoundType.new("__InputValue") # Introspection::InputValue
             )
           ),
-          resolve: ->(type : Type) {
+          resolve: ->(type : Type, arguments : ArgumentValues, context : Execution::Context, info : Execution::ResolutionInfo) {
+            type = type.unwrap(info.schema)
+
             case type
             when Types::InputObjectType
               type.input_fields.map { |name, argument| ArgumentInfo.new(name, argument) }
@@ -130,7 +146,9 @@ module Oxide
         ),
         "ofType" => Oxide::Field.new(
           type: Oxide::Types::LateBoundType.new("__Type"),
-          resolve: ->(type : Type) {
+          resolve: ->(type : Type, arguments : ArgumentValues, context : Execution::Context, info : Execution::ResolutionInfo) {
+            type = type.unwrap(info.schema)
+
             case type
             when Types::NonNullType, Types::ListType
               type.of_type

@@ -5,6 +5,8 @@ module Oxide
     class LateBoundType < Type
       getter typename : String
 
+      @unwrapped_type : Type?
+
       def initialize(@typename)
       end
 
@@ -33,8 +35,8 @@ module Oxide
         false
       end
 
-      private def get_type(schema, typename)
-        case typename
+      def unwrap(schema : Schema)
+        @unwrapped_type ||= case typename
         when "__Schema", "__Type", "__InputValue", "__Directive", "__EnumValue", "__Field"
           IntrospectionSystem.types[typename]
         else

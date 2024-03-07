@@ -11,5 +11,9 @@ module Oxide
 
     abstract def input_type? : Bool
     abstract def output_type? : Bool
+
+    def unwrap(schema : Schema)
+      self
+    end
   end
 end
