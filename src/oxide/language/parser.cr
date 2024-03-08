@@ -58,6 +58,18 @@ module Oxide
           parse_operation_definition
         when "fragment"
           parse_fragment_definition
+        when "scalar"
+          raise "Not implemented"
+        when "type"
+          raise "Not implemented"
+        when "interface"
+          raise "Not implemented"
+        when "union"
+          raise "Not implemented"
+        when "enum"
+          raise "Not implemented"
+        when "input"
+          raise "Not implemented"
         when "schema"
           parse_schema_definition
         when "directive"
