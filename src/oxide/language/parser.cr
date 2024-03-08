@@ -58,8 +58,132 @@ module Oxide
           parse_operation_definition
         when "fragment"
           parse_fragment_definition
+        when "schema"
+          parse_schema_definition
+        when "directive"
+          parse_directive_definition
         else
           raise "Expected (query, mutation, subscription, fragment), found #{token.raw_value}"
+        end
+      end
+
+      with_location def parse_schema_definition : Nodes::SchemaDefinition
+        expect_keyword_and_consume("schema")
+        directives = parse_directives(true)
+
+        operation_type_definitions = [] of Nodes::OperationTypeDefinition
+
+        if token.kind.l_brace?
+          consume_token(Token::Kind::LBrace)
+          loop do
+            operation_type_definitions << parse_operation_type_definition
+
+            break if token.kind.r_brace?
+          end
+          consume_token(Token::Kind::RBrace)
+        end
+
+        Nodes::SchemaDefinition.new(
+          operation_type_definitions: operation_type_definitions,
+          directives: directives
+        )
+      end
+
+      with_location def parse_operation_type_definition : Nodes::OperationTypeDefinition
+        operation_type = parse_operation_definition_type
+        consume_token(Token::Kind::Colon)
+        named_type = parse_named_type
+
+        Nodes::OperationTypeDefinition.new(
+          operation_type: operation_type,
+          named_type: named_type
+        )
+      end
+
+      with_location def parse_directive_definition : Nodes::DirectiveDefinition
+        expect_keyword_and_consume("directive")
+        consume_token(Token::Kind::At)
+        name = parse_name
+        args = parse_arguments_definitions
+        # TODO: Repeatable?
+        expect_keyword_and_consume("on")
+        locations = parse_directive_locations
+
+        Nodes::DirectiveDefinition.new(
+          name: name,
+          arguments_definitions: args,
+          directive_locations: locations
+        )
+      end
+
+      def parse_arguments_definitions : Array(Nodes::InputValueDefinition)
+        unless token.kind.l_paren?
+          return [] of Nodes::InputValueDefinition
+        end
+
+        definitions = [] of Nodes::InputValueDefinition
+        consume_token(Token::Kind::LParen)
+        loop do
+          definitions << parse_input_value_definition
+          break if token.kind.r_paren?
+        end
+        consume_token(Token::Kind::RParen)
+
+        definitions
+      end
+
+      with_location def parse_input_value_definition : Nodes::InputValueDefinition
+        description = parse_description
+        name = parse_name
+        consume_token(Token::Kind::Colon)
+        type = parse_type_reference
+
+        default_value = if token.kind.equals?
+          consume_token(Token::Kind::Equals)
+          parse_value_literal(true)
+        end
+
+        directives = parse_directives(true)
+
+        Nodes::InputValueDefinition.new(
+          name: name,
+          type: type,
+          default_value: default_value,
+          directives: directives
+        )
+      end
+
+      def parse_directive_locations : Array(Nodes::DirectiveLocation)
+        if token.kind.pipe?
+          consume_token(Token::Kind::Pipe)
+        end
+
+        locations = [] of Nodes::DirectiveLocation
+
+        loop do
+          locations << parse_directive_location
+
+          if token.kind.pipe?
+            consume_token(Token::Kind::Pipe)
+          else
+            break
+          end
+        end
+
+        locations
+      end
+
+      def parse_directive_location : Nodes::DirectiveLocation
+        name = parse_name
+        # TODO: Check that is valid location
+        name.as(Nodes::DirectiveLocation)
+      end
+
+      def parse_description : String?
+        if token.kind.string?
+          token.raw_value.tap do
+            next_token
+          end
         end
       end
 
