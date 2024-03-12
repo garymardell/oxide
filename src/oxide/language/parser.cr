@@ -51,7 +51,7 @@ module Oxide
           return parse_operation_definition
         end
 
-        # TODO: Process descriptions
+        description = parse_description
 
         case token.raw_value
         when "query", "mutation", "subscription"
@@ -59,27 +59,27 @@ module Oxide
         when "fragment"
           parse_fragment_definition
         when "scalar"
-          parse_scalar_definition
+          parse_scalar_definition(description)
         when "type"
-          parse_object_type_definition
+          parse_object_type_definition(description)
         when "interface"
-          parse_interface_type_definition
+          parse_interface_type_definition(description)
         when "union"
-          parse_union_type_definition
+          parse_union_type_definition(description)
         when "enum"
-          parse_enum_type_definition
+          parse_enum_type_definition(description)
         when "input"
-          parse_input_object_type_definition
+          parse_input_object_type_definition(description)
         when "schema"
-          parse_schema_definition
+          parse_schema_definition(description)
         when "directive"
-          parse_directive_definition
+          parse_directive_definition(description)
         else
           raise "Expected (query, mutation, subscription, fragment), found #{token.raw_value}"
         end
       end
 
-      with_location def parse_input_object_type_definition : Nodes::InputObjectTypeDefinition
+      with_location def parse_input_object_type_definition(description : String?) : Nodes::InputObjectTypeDefinition
         expect_keyword_and_consume("input")
         name = parse_name
         directives = parse_directives(true)
@@ -87,6 +87,7 @@ module Oxide
 
         Nodes::InputObjectTypeDefinition.new(
           name: name,
+          description: description,
           fields: fields,
           directives: directives
         )
@@ -110,7 +111,7 @@ module Oxide
         fields
       end
 
-      with_location def parse_enum_type_definition : Nodes::EnumTypeDefinition
+      with_location def parse_enum_type_definition(description : String?) : Nodes::EnumTypeDefinition
         expect_keyword_and_consume("enum")
         name = parse_name
         directives = parse_directives(true)
@@ -118,6 +119,7 @@ module Oxide
 
         Nodes::EnumTypeDefinition.new(
           name: name,
+          description: description,
           directives: directives,
           value_definitions: values
         )
@@ -142,6 +144,7 @@ module Oxide
       end
 
       with_location def parse_enum_value_definition : Nodes::EnumValueDefinition
+        description = parse_description
         name = parse_enum_value_name
         directives = parse_directives(true)
 
@@ -160,7 +163,7 @@ module Oxide
         end
       end
 
-      with_location def parse_union_type_definition : Nodes::UnionTypeDefinition
+      with_location def parse_union_type_definition(description : String?) : Nodes::UnionTypeDefinition
         expect_keyword_and_consume("union")
         name = parse_name
         directives = parse_directives(true)
@@ -168,6 +171,7 @@ module Oxide
 
         Nodes::UnionTypeDefinition.new(
           name: name,
+          description: description,
           member_types: types,
           directives: directives
         )
@@ -199,7 +203,7 @@ module Oxide
         types
       end
 
-      with_location def parse_interface_type_definition : Nodes::InterfaceTypeDefinition
+      with_location def parse_interface_type_definition(description : String?) : Nodes::InterfaceTypeDefinition
         expect_keyword_and_consume("interface")
         name = parse_name
         interfaces = parse_implements_interfaces
@@ -208,13 +212,14 @@ module Oxide
 
         Nodes::InterfaceTypeDefinition.new(
           name: name,
+          description: description,
           implements_interfaces: interfaces,
           field_definitions: fields,
           directives: directives
         )
       end
 
-      with_location def parse_object_type_definition : Nodes::ObjectTypeDefinition
+      with_location def parse_object_type_definition(description : String?) : Nodes::ObjectTypeDefinition
         expect_keyword_and_consume("type")
         name = parse_name
         interfaces = parse_implements_interfaces
@@ -223,6 +228,7 @@ module Oxide
 
         Nodes::ObjectTypeDefinition.new(
           name: name,
+          description: description,
           implements: interfaces,
           directives: directives,
           field_definitions: fields
@@ -272,7 +278,7 @@ module Oxide
       end
 
       with_location def parse_field_definition : Nodes::FieldDefinition
-        # description = parse_description
+        description = parse_description
         name = parse_name
         args = parse_arguments_definitions
         consume_token(Token::Kind::Colon)
@@ -281,24 +287,26 @@ module Oxide
 
         Nodes::FieldDefinition.new(
           name: name,
+          description: description,
           argument_definitions: args,
           type: type,
           directives: directives
         )
       end
 
-      with_location def parse_scalar_definition : Nodes::ScalarTypeDefinition
+      with_location def parse_scalar_definition(description : String?) : Nodes::ScalarTypeDefinition
         expect_keyword_and_consume("scalar")
         name = parse_name
         directives = parse_directives(true)
 
         Nodes::ScalarTypeDefinition.new(
           name: name,
+          description: description,
           directives: directives
         )
       end
 
-      with_location def parse_schema_definition : Nodes::SchemaDefinition
+      with_location def parse_schema_definition(description : String?) : Nodes::SchemaDefinition
         expect_keyword_and_consume("schema")
         directives = parse_directives(true)
 
@@ -315,6 +323,7 @@ module Oxide
         end
 
         Nodes::SchemaDefinition.new(
+          description: description,
           operation_type_definitions: operation_type_definitions,
           directives: directives
         )
@@ -331,7 +340,7 @@ module Oxide
         )
       end
 
-      with_location def parse_directive_definition : Nodes::DirectiveDefinition
+      with_location def parse_directive_definition(description : String?) : Nodes::DirectiveDefinition
         expect_keyword_and_consume("directive")
         consume_token(Token::Kind::At)
         name = parse_name
@@ -342,6 +351,7 @@ module Oxide
 
         Nodes::DirectiveDefinition.new(
           name: name,
+          description: description,
           arguments_definitions: args,
           directive_locations: locations
         )
@@ -413,7 +423,7 @@ module Oxide
       def parse_description : String?
         if token.kind.string?
           token.raw_value.tap do
-            next_token
+            consume_token(Token::Kind::String)
           end
         end
       end

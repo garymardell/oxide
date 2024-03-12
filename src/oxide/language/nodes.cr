@@ -117,10 +117,11 @@ module Oxide
       end
 
       class SchemaDefinition < Node
+        property description : String?
         property directives : Array(Directive)
         property operation_type_definitions : Array(OperationTypeDefinition)
 
-        def initialize(@operation_type_definitions = [] of OperationTypeDefinition, @directives = [] of Directive)
+        def initialize(@description = nil, @operation_type_definitions = [] of OperationTypeDefinition, @directives = [] of Directive)
         end
 
         def accept(visitor : Visitor)
@@ -517,9 +518,10 @@ module Oxide
 
       class ScalarTypeDefinition < Node
         property name : String
+        property description : String?
         property directives : Array(Directive)
 
-        def initialize(@name, @directives = [] of Directive)
+        def initialize(@name, @description = nil, @directives = [] of Directive)
         end
 
         def accept(visitor : Visitor)
@@ -532,11 +534,12 @@ module Oxide
 
       class ObjectTypeDefinition < Node
         property name : String
+        property description : String?
         property implements : Array(NamedType)
         property directives : Array(Directive)
         property field_definitions : Array(FieldDefinition)
 
-        def initialize(@name, @implements = [] of NamedType, @directives = [] of Directive, @field_definitions = [] of FieldDefinition)
+        def initialize(@name, @description = nil, @implements = [] of NamedType, @directives = [] of Directive, @field_definitions = [] of FieldDefinition)
         end
 
         def accept(visitor : Visitor)
@@ -558,11 +561,12 @@ module Oxide
 
       class FieldDefinition < Node
         property name : String
+        property description : String?
         property argument_definitions : Array(InputValueDefinition)
         property type : NamedType | ListType | NonNullType | Nil
         property directives : Array(Directive)
 
-        def initialize(@name, @argument_definitions = [] of InputValueDefinition, @type = nil, @directives = [] of Directive)
+        def initialize(@name, @description = nil, @argument_definitions = [] of InputValueDefinition, @type = nil, @directives = [] of Directive)
         end
 
         def accept(visitor : Visitor)
@@ -606,11 +610,12 @@ module Oxide
 
       class InterfaceTypeDefinition < Node
         property name : String
+        property description : String?
         property implements_interfaces : Array(NamedType)
         property field_definitions : Array(FieldDefinition)
         property directives : Array(Directive)
 
-        def initialize(@name, @implements_interfaces = [] of NamedType, @field_definitions = [] of FieldDefinition, @directives = [] of Directive)
+        def initialize(@name, @description = nil, @implements_interfaces = [] of NamedType, @field_definitions = [] of FieldDefinition, @directives = [] of Directive)
         end
 
         def accept(visitor : Visitor)
@@ -628,10 +633,11 @@ module Oxide
 
       class UnionTypeDefinition < Node
         property name : String
+        property description : String?
         property member_types : Array(NamedType)
         property directives : Array(Directive)
 
-        def initialize(@name, @member_types = [] of NamedType, @directives = [] of Directive)
+        def initialize(@name, @description = nil, @member_types = [] of NamedType, @directives = [] of Directive)
         end
 
         def accept(visitor : Visitor)
@@ -649,10 +655,11 @@ module Oxide
 
       class EnumTypeDefinition < Node
         property name : String
+        property description : String?
         property value_definitions : Array(EnumValueDefinition)
         property directives : Array(Directive)
 
-        def initialize(@name, @directives = [] of Directive, @value_definitions = [] of EnumValueDefinition)
+        def initialize(@name, @description = nil, @directives = [] of Directive, @value_definitions = [] of EnumValueDefinition)
         end
 
         def accept(visitor : Visitor)
@@ -670,9 +677,10 @@ module Oxide
 
       class EnumValueDefinition < Node
         property name : String
+        property description : String?
         property directives : Array(Directive)
 
-        def initialize(@name, @directives = [] of Directive)
+        def initialize(@name, @description = nil, @directives = [] of Directive)
         end
 
         def accept(visitor : Visitor)
@@ -685,10 +693,11 @@ module Oxide
 
       class InputObjectTypeDefinition < Node
         property name : String
+        property description : String?
         property directives : Array(Directive)
         property fields : Array(InputValueDefinition)
 
-        def initialize(@name, @directives = [] of Directive, @fields = [] of InputValueDefinition)
+        def initialize(@name, @description = nil, @directives = [] of Directive, @fields = [] of InputValueDefinition)
         end
 
         def accept(visitor : Visitor)
@@ -699,10 +708,11 @@ module Oxide
 
       class DirectiveDefinition < Node
         property name : String
+        property description : String?
         property arguments_definitions : Array(InputValueDefinition)
         property directive_locations : Array(DirectiveLocation)
 
-        def initialize(@name, @arguments_definitions = [] of InputValueDefinition, @directive_locations = [] of DirectiveLocation)
+        def initialize(@name, @description = nil, @arguments_definitions = [] of InputValueDefinition, @directive_locations = [] of DirectiveLocation)
         end
 
         def accept(visitor : Visitor)

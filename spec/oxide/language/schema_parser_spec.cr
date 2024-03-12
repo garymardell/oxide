@@ -32,6 +32,54 @@ describe Oxide::Language::Parser do
     document = Oxide::Language::Parser.parse(schema)
   end
 
+  describe "descriptions" do
+    it "example #36" do
+      schema = <<-QUERY
+        """
+        A simple GraphQL schema which is well described.
+        """
+        schema {
+          query: Query
+        }
+
+        """
+        Root type for all your query operations
+        """
+        type Query {
+          """
+          Translates a string from a given language into a different language.
+          """
+          translate(
+            "The original language that `text` is provided in."
+            fromLanguage: Language
+
+            "The translated language to be returned."
+            toLanguage: Language
+
+            "The text to be translated."
+            text: String
+          ): String
+        }
+
+        """
+        The set of languages supported by `translate`.
+        """
+        enum Language {
+          "English"
+          EN
+
+          "French"
+          FR
+
+          "Chinese"
+          CH
+        }
+      QUERY
+
+      Oxide::Language::Parser.parse(schema)
+    end
+  end
+
   describe "object type definition" do
     it "example #44" do
       schema = <<-QUERY
