@@ -709,10 +709,11 @@ module Oxide
       class DirectiveDefinition < Node
         property name : String
         property description : String?
+        property repeatable : Bool
         property arguments_definitions : Array(InputValueDefinition)
         property directive_locations : Array(DirectiveLocation)
 
-        def initialize(@name, @description = nil, @arguments_definitions = [] of InputValueDefinition, @directive_locations = [] of DirectiveLocation)
+        def initialize(@name, @description = nil, @repeatable = false, @arguments_definitions = [] of InputValueDefinition, @directive_locations = [] of DirectiveLocation)
         end
 
         def accept(visitor : Visitor)

@@ -345,13 +345,21 @@ module Oxide
         consume_token(Token::Kind::At)
         name = parse_name
         args = parse_arguments_definitions
-        # TODO: Repeatable?
+
+        repeatable = if token.kind.name? && token.raw_value == "repeatable"
+          consume_token(Token::Kind::Name)
+          true
+        else
+          false
+        end
+
         expect_keyword_and_consume("on")
         locations = parse_directive_locations
 
         Nodes::DirectiveDefinition.new(
           name: name,
           description: description,
+          repeatable: repeatable,
           arguments_definitions: args,
           directive_locations: locations
         )
