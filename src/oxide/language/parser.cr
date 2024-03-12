@@ -424,8 +424,10 @@ module Oxide
 
       def parse_directive_location : Nodes::DirectiveLocation
         name = parse_name
-        # TODO: Check that is valid location
+        Directive::Location.parse(name)
         name.as(Nodes::DirectiveLocation)
+      rescue e : ArgumentError
+        raise "Invalid directive location \"#{name}\""
       end
 
       def parse_description : String?

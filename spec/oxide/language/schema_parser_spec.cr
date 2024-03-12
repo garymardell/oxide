@@ -32,6 +32,16 @@ describe Oxide::Language::Parser do
 
       Oxide::Language::Parser.parse(schema)
     end
+
+    it "raises if directive location is invalid" do
+      schema = <<-QUERY
+        directive @example repeatable on INVALID
+      QUERY
+
+      expect_raises Oxide::ParseException, "Invalid directive location \"INVALID\"" do
+        Oxide::Language::Parser.parse(schema)
+      end
+    end
   end
 
   it "parses scalar type definition" do
