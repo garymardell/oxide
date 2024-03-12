@@ -10,7 +10,6 @@ This library was originally built to experiment with building dynamic schemas on
 
 - [ ] Parser & Lexer
   - [ ] Fully support block strings
-  - [ ] Parse schema definitions
   - [ ] Add tests for parsing errors
 - [ ] Error handling
   - [ ] Raise appropriate classes of exceptions within runtime
