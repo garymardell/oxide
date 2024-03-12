@@ -606,10 +606,11 @@ module Oxide
 
       class InterfaceTypeDefinition < Node
         property name : String
+        property implements_interfaces : Array(NamedType)
         property field_definitions : Array(FieldDefinition)
         property directives : Array(Directive)
 
-        def initialize(@name, @field_definitions = [] of FieldDefinition, @directives = [] of Directive)
+        def initialize(@name, @implements_interfaces = [] of NamedType, @field_definitions = [] of FieldDefinition, @directives = [] of Directive)
         end
 
         def accept(visitor : Visitor)
@@ -683,6 +684,13 @@ module Oxide
       end
 
       class InputObjectTypeDefinition < Node
+        property name : String
+        property directives : Array(Directive)
+        property fields : Array(InputValueDefinition)
+
+        def initialize(@name, @directives = [] of Directive, @fields = [] of InputValueDefinition)
+        end
+
         def accept(visitor : Visitor)
           visitor.enter(self)
           visitor.leave(self)

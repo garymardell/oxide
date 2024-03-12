@@ -59,17 +59,17 @@ module Oxide
         when "fragment"
           parse_fragment_definition
         when "scalar"
-          raise "Not implemented"
+          parse_scalar_definition
         when "type"
-          raise "Not implemented"
+          parse_object_type_definition
         when "interface"
-          raise "Not implemented"
+          parse_interface_type_definition
         when "union"
-          raise "Not implemented"
+          parse_union_type_definition
         when "enum"
-          raise "Not implemented"
+          parse_enum_type_definition
         when "input"
-          raise "Not implemented"
+          parse_input_object_type_definition
         when "schema"
           parse_schema_definition
         when "directive"
@@ -77,6 +77,225 @@ module Oxide
         else
           raise "Expected (query, mutation, subscription, fragment), found #{token.raw_value}"
         end
+      end
+
+      with_location def parse_input_object_type_definition : Nodes::InputObjectTypeDefinition
+        expect_keyword_and_consume("input")
+        name = parse_name
+        directives = parse_directives(true)
+        fields = parse_input_fields_definition
+
+        Nodes::InputObjectTypeDefinition.new(
+          name: name,
+          fields: fields,
+          directives: directives
+        )
+      end
+
+      def parse_input_fields_definition : Array(Nodes::InputValueDefinition)
+        unless token.kind.l_brace?
+          return [] of Nodes::InputValueDefinition
+        end
+
+        fields = [] of Nodes::InputValueDefinition
+
+        consume_token(Token::Kind::LBrace)
+        loop do
+          fields << parse_input_value_definition
+
+          break if token.kind.r_brace?
+        end
+        consume_token(Token::Kind::RBrace)
+
+        fields
+      end
+
+      with_location def parse_enum_type_definition : Nodes::EnumTypeDefinition
+        expect_keyword_and_consume("enum")
+        name = parse_name
+        directives = parse_directives(true)
+        values = parse_enum_values_definition
+
+        Nodes::EnumTypeDefinition.new(
+          name: name,
+          directives: directives,
+          value_definitions: values
+        )
+      end
+
+      def parse_enum_values_definition : Array(Nodes::EnumValueDefinition)
+        unless token.kind.l_brace?
+          return [] of Nodes::EnumValueDefinition
+        end
+
+        values = [] of Nodes::EnumValueDefinition
+
+        consume_token(Token::Kind::LBrace)
+        loop do
+          values << parse_enum_value_definition
+
+          break if token.kind.r_brace?
+        end
+        consume_token(Token::Kind::RBrace)
+
+        values
+      end
+
+      with_location def parse_enum_value_definition : Nodes::EnumValueDefinition
+        name = parse_enum_value_name
+        directives = parse_directives(true)
+
+        Nodes::EnumValueDefinition.new(
+          name: name,
+          directives: directives
+        )
+      end
+
+      def parse_enum_value_name : String
+        case token.raw_value
+        when "true", "false", "null"
+          raise "#{token.raw_value} is reserved and cannot be used for an enum value."
+        else
+          parse_name
+        end
+      end
+
+      with_location def parse_union_type_definition : Nodes::UnionTypeDefinition
+        expect_keyword_and_consume("union")
+        name = parse_name
+        directives = parse_directives(true)
+        types = parse_union_member_types
+
+        Nodes::UnionTypeDefinition.new(
+          name: name,
+          member_types: types,
+          directives: directives
+        )
+      end
+
+      def parse_union_member_types : Array(Nodes::NamedType)
+        unless token.kind.equals?
+          return [] of Nodes::NamedType
+        end
+
+        consume_token(Token::Kind::Equals)
+
+        if token.kind.pipe?
+          consume_token(Token::Kind::Pipe)
+        end
+
+        types = [] of Nodes::NamedType
+
+        loop do
+          types << parse_named_type
+
+          if token.kind.pipe?
+            consume_token(Token::Kind::Pipe)
+          else
+            break
+          end
+        end
+
+        types
+      end
+
+      with_location def parse_interface_type_definition : Nodes::InterfaceTypeDefinition
+        expect_keyword_and_consume("interface")
+        name = parse_name
+        interfaces = parse_implements_interfaces
+        directives = parse_directives(true)
+        fields = parse_fields_definition
+
+        Nodes::InterfaceTypeDefinition.new(
+          name: name,
+          implements_interfaces: interfaces,
+          field_definitions: fields,
+          directives: directives
+        )
+      end
+
+      with_location def parse_object_type_definition : Nodes::ObjectTypeDefinition
+        expect_keyword_and_consume("type")
+        name = parse_name
+        interfaces = parse_implements_interfaces
+        directives = parse_directives(true)
+        fields = parse_fields_definition
+
+        Nodes::ObjectTypeDefinition.new(
+          name: name,
+          implements: interfaces,
+          directives: directives,
+          field_definitions: fields
+        )
+      end
+
+      def parse_implements_interfaces : Array(Nodes::NamedType)
+        unless token.raw_value == "implements"
+          return [] of Nodes::NamedType
+        end
+
+        next_token
+
+        if token.kind.amp?
+          consume_token(Token::Kind::Amp)
+        end
+
+        interfaces = [] of Nodes::NamedType
+
+        loop do
+          interfaces << parse_named_type
+
+          if token.kind.amp?
+            consume_token(Token::Kind::Amp)
+          else
+            break
+          end
+        end
+
+        interfaces
+      end
+
+      def parse_fields_definition : Array(Nodes::FieldDefinition)
+        unless token.kind.l_brace?
+          return [] of Nodes::FieldDefinition
+        end
+
+        definitions = [] of Nodes::FieldDefinition
+        consume_token(Token::Kind::LBrace)
+        loop do
+          definitions << parse_field_definition
+
+          break if token.kind.r_brace?
+        end
+        consume_token(Token::Kind::RBrace)
+        definitions
+      end
+
+      with_location def parse_field_definition : Nodes::FieldDefinition
+        # description = parse_description
+        name = parse_name
+        args = parse_arguments_definitions
+        consume_token(Token::Kind::Colon)
+        type = parse_type_reference
+        directives = parse_directives(true)
+
+        Nodes::FieldDefinition.new(
+          name: name,
+          argument_definitions: args,
+          type: type,
+          directives: directives
+        )
+      end
+
+      with_location def parse_scalar_definition : Nodes::ScalarTypeDefinition
+        expect_keyword_and_consume("scalar")
+        name = parse_name
+        directives = parse_directives(true)
+
+        Nodes::ScalarTypeDefinition.new(
+          name: name,
+          directives: directives
+        )
       end
 
       with_location def parse_schema_definition : Nodes::SchemaDefinition

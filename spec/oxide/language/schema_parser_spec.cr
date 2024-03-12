@@ -23,4 +23,112 @@ describe Oxide::Language::Parser do
     schema_directive = schema_definition.directives.find(&.name.===("example"))
     schema_directive.should_not be_nil
   end
+
+  it "parses scalar type definition" do
+    schema = <<-QUERY
+      scalar value
+    QUERY
+
+    document = Oxide::Language::Parser.parse(schema)
+  end
+
+  describe "object type definition" do
+    it "example #44" do
+      schema = <<-QUERY
+        type Person {
+          name: String
+          age: Int
+          picture: Url
+        }
+      QUERY
+
+      document = Oxide::Language::Parser.parse(schema)
+    end
+
+    it "example #49" do
+      schema = <<-QUERY
+        type Person {
+          name: String
+          age: Int
+          picture: Url
+          relationship: Person
+        }
+      QUERY
+
+      document = Oxide::Language::Parser.parse(schema)
+    end
+  end
+
+  describe "interface type definition" do
+    it "example #65" do
+      schema = <<-QUERY
+        interface NamedEntity {
+          name: String
+        }
+
+        interface ValuedEntity {
+          value: Int
+        }
+
+        type Person implements NamedEntity {
+          name: String
+          age: Int
+        }
+      QUERY
+
+      Oxide::Language::Parser.parse(schema)
+    end
+  end
+
+  describe "union type definition" do
+    it "example #75" do
+      schema = <<-QUERY
+        union SearchResult = Photo | Person
+
+        type Person {
+          name: String
+          age: Int
+        }
+
+        type Photo {
+          height: Int
+          width: Int
+        }
+
+        type SearchQuery {
+          firstSearchResult: SearchResult
+        }
+      QUERY
+
+      Oxide::Language::Parser.parse(schema)
+    end
+  end
+
+  describe "enum type definition" do
+    it "example #79" do
+      schema = <<-QUERY
+        enum Direction {
+          NORTH
+          EAST
+          SOUTH
+          WEST
+        }
+      QUERY
+
+      Oxide::Language::Parser.parse(schema)
+    end
+  end
+
+  describe "input object type definition" do
+    it "example #80" do
+      schema = <<-QUERY
+        input Point2D {
+          x: Float
+          y: Float
+        }
+      QUERY
+
+      Oxide::Language::Parser.parse(schema)
+    end
+  end
 end
