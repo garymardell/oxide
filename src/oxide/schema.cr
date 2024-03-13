@@ -17,11 +17,12 @@ module Oxide
 
     getter query : Oxide::Types::ObjectType
     getter mutation : Oxide::Types::ObjectType | Nil
+    getter subscription : Oxide::Types::ObjectType | Nil
 
     getter orphan_types : Array(Oxide::Type)
     getter directives : Array(Oxide::Directive)
 
-    def initialize(@query, @mutation = nil, @orphan_types = [] of Oxide::Type, directives = [] of Directive)
+    def initialize(@query, @mutation = nil, @subscription = nil, @orphan_types = [] of Oxide::Type, directives = [] of Directive)
       @directives = DEFAULT_DIRECTIVES + directives
     end
 

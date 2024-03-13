@@ -215,6 +215,17 @@ DummySchema = Oxide::Schema.new(
       )
     }
   ),
+  subscription: Oxide::Types::ObjectType.new(
+    name: "Subscription",
+    fields: {
+      "feed" => Oxide::Field.new(
+        type: ChargeType,
+        resolve: ->(query : Query) {
+          nil
+        }
+      )
+    }
+  ),
   orphan_types: [
     RefundType.as(Oxide::Type)
   ]

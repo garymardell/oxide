@@ -37,6 +37,8 @@ module Oxide
             execute_query(context, operation, schema, coerced_variable_values, initial_value)
           when "mutation"
             execute_mutation(context, operation, schema, coerced_variable_values, initial_value)
+          when "subscription"
+            subscribe(context, operation, schema, coerced_variable_values, initial_value)
           end
         rescue e : Error
           context.errors << e
@@ -112,6 +114,47 @@ module Oxide
             context.errors << e
             nil
           end
+        end
+      end
+
+      private def subscribe(context, subscription, schema, variable_values, initial_value)
+        source_stream = create_source_event_stream(context, subscription, schema, variable_values, initial_value)
+        map_source_to_response_events(source_stream, subscription, schema, variable_values)
+      end
+
+      private def create_source_event_stream(context, subscription, schema, variable_values, initial_value)
+        if subscription_type = schema.subscription
+          selection_set = subscription.selection_set
+          grouped_field_set = collect_fields(context, subscription_type, selection_set.selections, variable_values, nil)
+
+          unless grouped_field_set.size == 1
+            raise "Subscriptions can only contain a single selection"
+          end
+
+          fields = grouped_field_set.values.first
+          field = fields.first
+          field_name = field.name
+
+          # argument_values = coerce_argument_values(subscription_type.arguments, field.arguments, variable_values)
+          # resolve_field_event_stream(subscription_type, initial_value, field_name, argument_values)
+        end
+      end
+
+      private def resolve_field_event_stream(subscription_type, initial_value, field_name, argument_values)
+        # TODO: Call the resolve function...
+      end
+
+      private def map_source_to_response_events(source_stream, subscription, schema, variable_values)
+        # Consume the source stream and call ExecuteSubscriptionEvent(subscription, schema, variableValues, event).
+      end
+
+      private def execute_subscription_event(subscription, schema, variable_values, event)
+        if subscription_type = schema.subscription
+          selection_set = subscription.selection_set
+
+          # ExecuteSelectionSet(selectionSet, subscriptionType, initialValue, variableValues)
+
+          # Return data and errors
         end
       end
 
