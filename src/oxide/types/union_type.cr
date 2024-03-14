@@ -8,8 +8,9 @@ module Oxide
       getter description : String?
       getter type_resolver : TypeResolver
       getter possible_types : Array(Oxide::Type)
+      property directives : Array(Directive)
 
-      def initialize(@name, @type_resolver, @description = nil, @possible_types = [] of Oxide::Type)
+      def initialize(@name, @type_resolver, @description = nil, @possible_types = [] of Oxide::Type, @directives = [] of Directive)
       end
 
       def kind

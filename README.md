@@ -55,6 +55,17 @@ This library was originally built to experiment with building dynamic schemas on
     - [x] All Variables Used
     - [ ] All Variable Usages are Allowed
 - [ ] Custom directives
+  - [ ] SCHEMA
+  - [x] SCALAR
+  - [x] OBJECT
+  - [x] FIELD_DEFINITION
+  - [ ] ARGUMENT_DEFINITION
+  - [x] INTERFACE
+  - [x] UNION
+  - [x] ENUM
+  - [x] ENUM_VALUE
+  - [x] INPUT_OBJECT
+  - [x] INPUT_FIELD_DEFINITION
 - [ ] Test framework
   - [ ] Validating responses
   - [ ] Generating schema + resolvers

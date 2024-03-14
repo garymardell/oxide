@@ -188,8 +188,9 @@ module Oxide
       getter name : String
       getter description : String?
       getter specified_by_url : String?
+      property directives : Array(Directive)
 
-      def initialize(@name : String, @description : String? = nil, @specified_by_url : String? = nil)
+      def initialize(@name : String, @description : String? = nil, @specified_by_url : String? = nil, @directives = [] of Directive)
       end
 
       def coerce(value) : CoercedInput

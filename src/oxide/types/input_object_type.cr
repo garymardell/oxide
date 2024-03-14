@@ -6,8 +6,9 @@ module Oxide
       getter name : String
       getter description : String?
       getter input_fields : Hash(String, Argument)
+      property directives : Array(Directive)
 
-      def initialize(@name, @description = nil, @input_fields = {} of String => Argument)
+      def initialize(@name, @description = nil, @input_fields = {} of String => Argument, @directives = [] of Directive)
       end
 
       def kind
