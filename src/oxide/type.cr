@@ -1,4 +1,5 @@
 require "./visitable"
+require "./applied_directive"
 
 module Oxide
   abstract class Type

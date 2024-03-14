@@ -9,14 +9,14 @@ module Oxide
       getter name : String
       getter description : String?
       getter interfaces : Array(Oxide::Types::InterfaceType)
-      property applied_directives : Array(Directive)
+      property applied_directives : Array(AppliedDirective)
 
       def initialize(
         @name,
         @description = nil,
         fields = {} of String => BaseField,
         @interfaces = [] of Oxide::Types::InterfaceType,
-        @applied_directives = [] of Directive
+        @applied_directives = [] of AppliedDirective
       )
         @fields = fields.transform_values { |v| v.as(BaseField) }
       end

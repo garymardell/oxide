@@ -9,9 +9,9 @@ module Oxide
       getter type_resolver : TypeResolver
       getter interfaces : Array(Oxide::Types::InterfaceType)
       getter fields : Hash(String, BaseField)
-      property applied_directives : Array(Directive)
+      property applied_directives : Array(AppliedDirective)
 
-      def initialize(@name, @type_resolver, @description = nil, fields = {} of String => BaseField, @interfaces = [] of Oxide::Types::InterfaceType, @applied_directives = [] of Directive)
+      def initialize(@name, @type_resolver, @description = nil, fields = {} of String => BaseField, @interfaces = [] of Oxide::Types::InterfaceType, @applied_directives = [] of AppliedDirective)
         @fields = fields.transform_values { |v| v.as(BaseField) }
       end
 
