@@ -49,7 +49,7 @@ module Oxide
         end
       end
 
-      private def get_operation(definitions, operation_name : Nil)
+      private def get_operation(definitions : Array(Language::Nodes::Definition), operation_name : Nil)
         if definitions.one?
           definitions.first
         else
@@ -57,7 +57,7 @@ module Oxide
         end
       end
 
-      private def get_operation(definitions, operation_name : String)
+      private def get_operation(definitions : Array(Language::Nodes::Definition), operation_name : String)
         definition = definitions.find { |definition| definition.name == operation_name }
 
         if definition
@@ -67,7 +67,7 @@ module Oxide
         end
       end
 
-      private def execute_query(context, query, schema, coerced_variable_values, initial_value) : SerializedOutput
+      private def execute_query(context : Execution::Context, query, schema, coerced_variable_values, initial_value) : SerializedOutput
         if query_type = schema.query
 
           begin
@@ -102,7 +102,7 @@ module Oxide
         errors.map &.to_h
       end
 
-      private def execute_mutation(context, mutation, schema, coerced_variable_values, initial_value)
+      private def execute_mutation(context : Execution::Context, mutation, schema, coerced_variable_values, initial_value)
         if mutation_type = schema.mutation
           begin
             result = execute_selection_set(context, mutation.selection_set.selections, mutation_type, initial_value, coerced_variable_values)
@@ -514,7 +514,7 @@ module Oxide
         end
       end
 
-      private def resolve_abstract_type(context, field_type, result)
+      private def resolve_abstract_type(context : Execution::Context, field_type, result)
         # if resolved_type = type_resolvers[field_type.name].resolve_type(result, context)
         if resolved_type = field_type.type_resolver.resolve_type(result, context.query.context)
           resolved_type
