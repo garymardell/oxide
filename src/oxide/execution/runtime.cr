@@ -340,7 +340,14 @@ module Oxide
               if schema_directive
                 directive_arguments = coerce_argument_values(schema_directive.arguments, directive.arguments, variable_values)
 
-                !schema_directive.include?(object_type, nil, directive_arguments)
+                case schema_directive.name
+                when "include"
+                  !directive_arguments["if"]
+                when "skip"
+                  !!directive_arguments["if"]
+                else
+                  false
+                end
               else
                 false
               end

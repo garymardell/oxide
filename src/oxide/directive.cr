@@ -1,5 +1,5 @@
 module Oxide
-  abstract class Directive
+  class Directive
     enum Location
       # Executeable directives
       QUERY
@@ -43,10 +43,11 @@ module Oxide
       end
     end
 
-    abstract def name : String
-    abstract def arguments : Hash(String, Oxide::Argument)
-    abstract def locations : Array(Location)
+    getter name : String
+    getter arguments : Hash(String, Oxide::Argument)
+    getter locations : Array(Location)
 
-    abstract def include?(object, context, argument_values) : Bool
+    def initialize(@name : String, @arguments = {} of String => Oxide::Argument, @locations = [] of Location)
+    end
   end
 end

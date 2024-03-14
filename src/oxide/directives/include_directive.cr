@@ -2,28 +2,16 @@ require "../directive"
 
 module Oxide
   module Directives
-    class IncludeDirective < Oxide::Directive
-      def name : String
-        "include"
-      end
-
-      def arguments : Hash(String, Oxide::Argument)
-        {
-          "if" => Oxide::Argument.new(
-            type: Oxide::Types::NonNullType.new(
-              of_type: Oxide::Types::BooleanType.new
-            )
+    IncludeDirective = Oxide::Directive.new(
+      name: "include",
+      arguments: {
+        "if" => Oxide::Argument.new(
+          type: Oxide::Types::NonNullType.new(
+            of_type: Oxide::Types::BooleanType.new
           )
-        }
-      end
-
-      def locations : Array(Directive::Location)
-        [Directive::Location::FIELD, Directive::Location::FRAGMENT_SPREAD, Directive::Location::INLINE_FRAGMENT]
-      end
-
-      def include?(object, context, argument_values) : Bool
-        !!argument_values["if"]
-      end
-    end
+        )
+      },
+      locations: [Directive::Location::FIELD, Directive::Location::FRAGMENT_SPREAD, Directive::Location::INLINE_FRAGMENT]
+    )
   end
 end

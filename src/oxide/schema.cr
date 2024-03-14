@@ -11,8 +11,10 @@ require "./error"
 module Oxide
   class Schema
     DEFAULT_DIRECTIVES = [
-      Oxide::Directives::SkipDirective.new,
-      Oxide::Directives::IncludeDirective.new
+      Oxide::Directives::SkipDirective,
+      Oxide::Directives::IncludeDirective,
+      Oxide::Directives::DeprecatedDirective,
+      Oxide::Directives::SpecifiedByDirective,
     ]
 
     getter query : Oxide::Types::ObjectType
