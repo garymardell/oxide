@@ -14,9 +14,9 @@ module Oxide
     getter deprecation_reason : String?
     getter arguments : Hash(String, Oxide::Argument)
     setter resolve : Proc(I, O) | Proc(I, ArgumentValues, O) | Proc(I, ArgumentValues, Execution::Context, O) | Proc(I, ArgumentValues, Execution::Context, Execution::ResolutionInfo, O)
-    property directives : Array(Directive)
+    property applied_directives : Array(Directive)
 
-    def initialize(@type, @resolve, @description = nil, @deprecation_reason = nil, @arguments = {} of String => Oxide::Argument, @directives = [] of Directive)
+    def initialize(@type, @resolve, @description = nil, @deprecation_reason = nil, @arguments = {} of String => Oxide::Argument, @applied_directives = [] of Directive)
     end
 
     def resolve(object, argument_values, context, resolution_info)

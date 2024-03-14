@@ -6,7 +6,7 @@ module Oxide
     getter description : String? = nil
     getter default_value : DefaultValue
     getter? has_default_value : Bool
-    property directives : Array(Directive) = [] of Directive
+    property applied_directives : Array(Directive) = [] of Directive
 
     def initialize(@type)
       @default_value = nil

@@ -6,9 +6,9 @@ module Oxide
       getter name : String
       getter description : String?
       getter values : Array(EnumValue)
-      property directives : Array(Directive)
+      property applied_directives : Array(Directive)
 
-      def initialize(@name, @values, @description = nil, @directives = [] of Directive)
+      def initialize(@name, @values, @description = nil, @applied_directives = [] of Directive)
       end
 
       def coerce(value : String) : CoercedInput
@@ -53,9 +53,9 @@ module Oxide
       getter description : String?
       getter value : String
       getter deprecation_reason : String?
-      property directives : Array(Directive)
+      property applied_directives : Array(Directive)
 
-      def initialize(@name, @description = nil, value = nil, @deprecation_reason = nil, @directives = [] of Directive)
+      def initialize(@name, @description = nil, value = nil, @deprecation_reason = nil, @applied_directives = [] of Directive)
         @value = value || @name
       end
 

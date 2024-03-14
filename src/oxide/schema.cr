@@ -20,8 +20,9 @@ module Oxide
 
     getter orphan_types : Array(Oxide::Type)
     getter directives : Array(Oxide::Directive)
+    property applied_directives : Array(Directive)
 
-    def initialize(@query, @mutation = nil, @orphan_types = [] of Oxide::Type, directives = [] of Directive)
+    def initialize(@query, @mutation = nil, @orphan_types = [] of Oxide::Type, directives = [] of Directive, @applied_directives = [] of Directive)
       @directives = DEFAULT_DIRECTIVES + directives
     end
 

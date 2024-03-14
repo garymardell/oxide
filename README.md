@@ -55,7 +55,7 @@ This library was originally built to experiment with building dynamic schemas on
     - [x] All Variables Used
     - [ ] All Variable Usages are Allowed
 - [ ] Custom directives
-  - [ ] SCHEMA
+  - [x] SCHEMA
   - [x] SCALAR
   - [x] OBJECT
   - [x] FIELD_DEFINITION
