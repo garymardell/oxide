@@ -8,23 +8,23 @@ module Oxide
     getter? has_default_value : Bool
     property applied_directives : Array(Directive) = [] of Directive
 
-    def initialize(@type)
+    def initialize(@type : Oxide::Type, @applied_directives : Array(Directive) = [] of Directive)
       @default_value = nil
       @has_default_value = false
       @description = nil
     end
 
-    def initialize(@type, @description)
+    def initialize(@type : Oxide::Type, @description, @applied_directives : Array(Directive) = [] of Directive)
       @default_value = nil
       @has_default_value = false
     end
 
-    def initialize(@type, @default_value)
+    def initialize(@type, @default_value, @applied_directives : Array(Directive) = [] of Directive)
       @has_default_value = true
       @description = nil
     end
 
-    def initialize(@type, @default_value, @description)
+    def initialize(@type, @default_value, @description, @applied_directives : Array(Directive) = [] of Directive)
       @has_default_value = true
     end
   end

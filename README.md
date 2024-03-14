@@ -59,7 +59,7 @@ This library was originally built to experiment with building dynamic schemas on
   - [x] SCALAR
   - [x] OBJECT
   - [x] FIELD_DEFINITION
-  - [ ] ARGUMENT_DEFINITION
+  - [x] ARGUMENT_DEFINITION
   - [x] INTERFACE
   - [x] UNION
   - [x] ENUM
