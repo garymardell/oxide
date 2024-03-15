@@ -5,7 +5,8 @@ module Oxide
 
     @[JSON::Field(key: "query")]
     getter query_string : String
-    getter variables : Hash(String, JSON::Any)
+
+    getter variables : Hash(String, JSON::Any) = {} of String => JSON::Any
 
     @[JSON::Field(key: "operationName")]
     getter operation_name : String?
