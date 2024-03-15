@@ -22,8 +22,8 @@ module Oxide
       def initialize(@schema : Oxide::Schema)
       end
 
-      def execute(query : Oxide::Query, initial_value = nil)
-        context = Execution::Context.new(query)
+      def execute(query : Oxide::Query, context : Oxide::Context? = nil, initial_value = nil)
+        execution_context = Execution::Context.new(query, context)
 
         begin
           definitions = query.document.definitions.select(type: Oxide::Language::Nodes::OperationDefinition)
@@ -34,16 +34,16 @@ module Oxide
 
           data = case operation.operation_type
           when "query"
-            execute_query(context, operation, schema, coerced_variable_values, initial_value)
+            execute_query(execution_context, operation, schema, coerced_variable_values, initial_value)
           when "mutation"
-            execute_mutation(context, operation, schema, coerced_variable_values, initial_value)
+            execute_mutation(execution_context, operation, schema, coerced_variable_values, initial_value)
           end
         rescue e : Error
-          context.errors << e
+          execution_context.errors << e
         end
 
-        if context.errors.any?
-          { "data" => data, "errors" => serialize_errors(context.errors) }
+        if execution_context.errors.any?
+          { "data" => data, "errors" => serialize_errors(execution_context.errors) }
         else
           { "data" => data }
         end
@@ -67,15 +67,15 @@ module Oxide
         end
       end
 
-      private def execute_query(context : Execution::Context, query, schema, coerced_variable_values, initial_value) : SerializedOutput
+      private def execute_query(execution_context : Execution::Context, query, schema, coerced_variable_values, initial_value) : SerializedOutput
         if query_type = schema.query
 
           begin
-            result = execute_selection_set(context, query.selection_set.selections, query_type, initial_value, coerced_variable_values)
+            result = execute_selection_set(execution_context, query.selection_set.selections, query_type, initial_value, coerced_variable_values)
 
             serialize(result)
           rescue e : FieldError
-            context.errors << e
+            execution_context.errors << e
             nil
           end
         end
@@ -102,21 +102,21 @@ module Oxide
         errors.map &.to_h
       end
 
-      private def execute_mutation(context : Execution::Context, mutation, schema, coerced_variable_values, initial_value)
+      private def execute_mutation(execution_context : Execution::Context, mutation, schema, coerced_variable_values, initial_value)
         if mutation_type = schema.mutation
           begin
-            result = execute_selection_set(context, mutation.selection_set.selections, mutation_type, initial_value, coerced_variable_values)
+            result = execute_selection_set(execution_context, mutation.selection_set.selections, mutation_type, initial_value, coerced_variable_values)
 
             serialize(result)
           rescue e : FieldError
-            context.errors << e
+            execution_context.errors << e
             nil
           end
         end
       end
 
-      private def execute_selection_set(context : Execution::Context, selection_set, object_type, object_value, variable_values) : Hash(String, IntermediateType)
-        grouped_field_set = collect_fields(context, object_type, selection_set, variable_values, nil)
+      private def execute_selection_set(execution_context : Execution::Context, selection_set, object_type, object_value, variable_values) : Hash(String, IntermediateType)
+        grouped_field_set = collect_fields(execution_context, object_type, selection_set, variable_values, nil)
 
         partial_results = grouped_field_set.each_with_object({} of String => IntermediateType) do |(key, fields), memo|
           field_name = fields.first.name
@@ -124,7 +124,7 @@ module Oxide
           if field = get_field(object_type, field_name)
             field_type = field.type
 
-            memo[key] = execute_field(context, object_type, object_value, field.type, fields, variable_values).as(IntermediateType)
+            memo[key] = execute_field(execution_context, object_type, object_value, field.type, fields, variable_values).as(IntermediateType)
           else
             raise "error getting field #{field_name}"
           end
@@ -161,7 +161,7 @@ module Oxide
         nil
       end
 
-      private def execute_field(context : Execution::Context, object_type, object_value, field_type, fields, variable_values) : IntermediateType
+      private def execute_field(execution_context : Execution::Context, object_type, object_value, field_type, fields, variable_values) : IntermediateType
         field = fields.first
         field_name = field.name
 
@@ -181,31 +181,31 @@ module Oxide
 
         resolution_info = ResolutionInfo.new(
           schema: schema,
-          context: context,
+          context: execution_context,
           field: schema_field,
         )
 
-        value = schema_field.try &.resolve(object_value, argument_values, context, resolution_info)
+        value = schema_field.try &.resolve(object_value, argument_values, execution_context, resolution_info)
 
         if value.is_a?(Lazy)
           Proc(IntermediateType).new {
             value.resolve
 
-            context.current_object = object_type
-            context.current_field = field
+            execution_context.current_object = object_type
+            execution_context.current_field = field
 
-            complete_value(context, field_type, fields, value.value, variable_values).as(IntermediateType)
+            complete_value(execution_context, field_type, fields, value.value, variable_values).as(IntermediateType)
           }
         else
-          context.current_object = object_type
-          context.current_field = field
+          execution_context.current_object = object_type
+          execution_context.current_field = field
 
-          complete_value(context, field_type, fields, value, variable_values).as(IntermediateType)
+          complete_value(execution_context, field_type, fields, value, variable_values).as(IntermediateType)
         end
       end
 
 
-      private def complete_value(context : Execution::Context, field_type : Oxide::Types::ObjectType, fields, result, variable_values) : IntermediateType
+      private def complete_value(execution_context : Execution::Context, field_type : Oxide::Types::ObjectType, fields, result, variable_values) : IntermediateType
         return nil if result.nil?
 
         object_type = field_type
@@ -213,35 +213,35 @@ module Oxide
         sub_selection_set = merge_selection_sets(fields)
 
         begin
-          execute_selection_set(context, sub_selection_set, object_type, result, variable_values).as(IntermediateType)
+          execute_selection_set(execution_context, sub_selection_set, object_type, result, variable_values).as(IntermediateType)
         rescue e : FieldError
-          context.errors << e
+          execution_context.errors << e
           nil
         end
       end
 
       # TODO: Merge into object above?
-      private def complete_value(context : Execution::Context, field_type : Oxide::Types::UnionType, fields, result, variable_values)
+      private def complete_value(execution_context : Execution::Context, field_type : Oxide::Types::UnionType, fields, result, variable_values)
         return nil if result.nil?
 
-        object_type = resolve_abstract_type(context, field_type, result)
+        object_type = resolve_abstract_type(execution_context, field_type, result)
 
         sub_selection_set = merge_selection_sets(fields)
 
-        execute_selection_set(context, sub_selection_set, object_type, result, variable_values)
+        execute_selection_set(execution_context, sub_selection_set, object_type, result, variable_values)
       end
 
-      private def complete_value(context : Execution::Context, field_type : Oxide::Types::InterfaceType, fields, result, variable_values)
+      private def complete_value(execution_context : Execution::Context, field_type : Oxide::Types::InterfaceType, fields, result, variable_values)
         return nil if result.nil?
 
-        object_type = resolve_abstract_type(context, field_type, result)
+        object_type = resolve_abstract_type(execution_context, field_type, result)
 
         sub_selection_set = merge_selection_sets(fields)
 
-        execute_selection_set(context, sub_selection_set, object_type, result, variable_values)
+        execute_selection_set(execution_context, sub_selection_set, object_type, result, variable_values)
       end
 
-      private def complete_value(context : Execution::Context, field_type : Oxide::Types::ScalarType, fields, result, variable_values) : IntermediateType
+      private def complete_value(execution_context : Execution::Context, field_type : Oxide::Types::ScalarType, fields, result, variable_values) : IntermediateType
         return nil if result.nil?
 
         field_type.serialize(result).as(IntermediateType)
@@ -251,7 +251,7 @@ module Oxide
       # If a List type wraps a Non-Null type, and one of the elements of that list resolves to null,
       # then the entire list must resolve to null. If the List type is also wrapped in a Non-Null,
       # the field error continues to propagate upwards.
-      private def complete_value(context : Execution::Context, field_type : Oxide::Types::ListType, fields, result, variable_values) : IntermediateType
+      private def complete_value(execution_context : Execution::Context, field_type : Oxide::Types::ListType, fields, result, variable_values) : IntermediateType
         return nil if result.nil?
 
         if result.is_a?(Array)
@@ -259,9 +259,9 @@ module Oxide
 
           partial_results = result.map do |result_item|
             if result_item.is_a?(Proc(IntermediateType))
-              complete_value(context, inner_type, fields, result_item.call, variable_values).as(IntermediateType)
+              complete_value(execution_context, inner_type, fields, result_item.call, variable_values).as(IntermediateType)
             else
-              complete_value(context, inner_type, fields, result_item, variable_values).as(IntermediateType)
+              complete_value(execution_context, inner_type, fields, result_item, variable_values).as(IntermediateType)
             end
           end
 
@@ -283,35 +283,35 @@ module Oxide
         end
       end
 
-      private def complete_value(context : Execution::Context, field_type : Oxide::Types::EnumType, fields, result, variable_values) : IntermediateType
+      private def complete_value(execution_context : Execution::Context, field_type : Oxide::Types::EnumType, fields, result, variable_values) : IntermediateType
         return nil if result.nil?
 
         if enum_value = field_type.values.find(&.value.==(result))
           enum_value.name.as(IntermediateType)
         else
-          raise FieldError.new("`#{context.current_object.try(&.name)}.#{context.current_field.try(&.name)}` returned \"#{result}\" at ``, but this isn't a valid value for `#{field_type.name}`. Update the field or resolver to return one of the `#{field_type.name}`'s values instead.")
+          raise FieldError.new("`#{execution_context.current_object.try(&.name)}.#{execution_context.current_field.try(&.name)}` returned \"#{result}\" at ``, but this isn't a valid value for `#{field_type.name}`. Update the field or resolver to return one of the `#{field_type.name}`'s values instead.")
         end
       end
 
-      private def complete_value(context : Execution::Context, field_type : Oxide::Types::NonNullType, fields, result, variable_values) : IntermediateType
-        completed_result = complete_value(context, field_type.of_type, fields, result, variable_values)
+      private def complete_value(execution_context : Execution::Context, field_type : Oxide::Types::NonNullType, fields, result, variable_values) : IntermediateType
+        completed_result = complete_value(execution_context, field_type.of_type, fields, result, variable_values)
 
         if completed_result.nil?
           field = fields.first
 
-          raise FieldError.new("Cannot return null for non-nullable field #{context.current_object.try(&.name)}.#{context.current_field.try(&.name)}")
+          raise FieldError.new("Cannot return null for non-nullable field #{execution_context.current_object.try(&.name)}.#{execution_context.current_field.try(&.name)}")
         else
           completed_result.as(IntermediateType)
         end
       end
 
-      private def complete_value(context : Execution::Context, field_type : Oxide::Types::LateBoundType, fields, result, variable_values) : IntermediateType
+      private def complete_value(execution_context : Execution::Context, field_type : Oxide::Types::LateBoundType, fields, result, variable_values) : IntermediateType
         unwrapped_type = get_type(field_type.typename)
 
-        complete_value(context, unwrapped_type, fields, result, variable_values)
+        complete_value(execution_context, unwrapped_type, fields, result, variable_values)
       end
 
-      private def complete_value(context : Execution::Context, field_type, fields, result, variable_values) : IntermediateType
+      private def complete_value(execution_context : Execution::Context, field_type, fields, result, variable_values) : IntermediateType
         raise "should not be reached"
       end
 
@@ -328,7 +328,7 @@ module Oxide
         schema.get_type_from_ast(ast)
       end
 
-      private def collect_fields(context : Execution::Context, object_type, selection_set, variable_values, visited_fragments)
+      private def collect_fields(execution_context : Execution::Context, object_type, selection_set, variable_values, visited_fragments)
         grouped_fields = {} of String => Array(Oxide::Language::Nodes::Field)
         visited_fragments ||= [] of String
 
@@ -367,7 +367,7 @@ module Oxide
 
             visited_fragments << fragment_spread_name
 
-            fragments = context.document.definitions.select(type: Oxide::Language::Nodes::FragmentDefinition)
+            fragments = execution_context.document.definitions.select(type: Oxide::Language::Nodes::FragmentDefinition)
 
             next unless fragment = fragments.find(&.name.===(fragment_spread_name))
 
@@ -376,7 +376,7 @@ module Oxide
             next unless does_fragment_type_apply(object_type, fragment_type)
 
             fragment_selection_set = fragment.selection_set.selections
-            fragment_grouped_field_set = collect_fields(context, object_type, fragment_selection_set, variable_values, visited_fragments)
+            fragment_grouped_field_set = collect_fields(execution_context, object_type, fragment_selection_set, variable_values, visited_fragments)
             fragment_grouped_field_set.each do |response_key, fields|
               grouped_fields[response_key] ||= [] of Oxide::Language::Nodes::Field
               grouped_fields[response_key].concat(fields)
@@ -388,7 +388,7 @@ module Oxide
             next if !fragment_type.nil? && !does_fragment_type_apply(object_type, fragment_type)
 
             fragment_selection_set = selection.selection_set.selections
-            fragment_grouped_field_set = collect_fields(context, object_type, fragment_selection_set, variable_values, visited_fragments)
+            fragment_grouped_field_set = collect_fields(execution_context, object_type, fragment_selection_set, variable_values, visited_fragments)
             fragment_grouped_field_set.each do |response_key, fields|
               grouped_fields[response_key] ||= [] of Oxide::Language::Nodes::Field
               grouped_fields[response_key].concat(fields)
@@ -521,9 +521,9 @@ module Oxide
         end
       end
 
-      private def resolve_abstract_type(context : Execution::Context, field_type, result)
-        # if resolved_type = type_resolvers[field_type.name].resolve_type(result, context)
-        if resolved_type = field_type.type_resolver.resolve_type(result, context.query.context)
+      private def resolve_abstract_type(execution_context : Execution::Context, field_type, result)
+        # if resolved_type = type_resolvers[field_type.name].resolve_type(result, execution_context)
+        if resolved_type = field_type.type_resolver.resolve_type(result, execution_context.context)
           resolved_type
         else
           raise "abstract type could not be resolved"
