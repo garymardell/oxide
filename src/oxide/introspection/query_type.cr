@@ -7,8 +7,8 @@ module Oxide
       fields: {
         "__schema" => Oxide::Field.new(
           type: Oxide::Types::LateBoundType.new("__Schema"),
-          resolve: ->(query : Query, arguments : ArgumentValues, context : Execution::Context, info : Execution::ResolutionInfo) {
-            info.schema
+          resolve: ->(resolution : Oxide::Resolution(Query)) {
+            resolution.schema
           }
         )
       }

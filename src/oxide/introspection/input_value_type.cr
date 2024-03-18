@@ -9,21 +9,21 @@ module Oxide
           type: Oxide::Types::NonNullType.new(
             of_type: Oxide::Types::StringType.new
           ),
-          resolve: ->(argument : ArgumentInfo) { argument.name }
+          resolve: ->(resolution : Oxide::Resolution(ArgumentInfo)) { resolution.object.name }
         ),
         "description" => Oxide::Field.new(
           type: Oxide::Types::StringType.new,
-          resolve: ->(argument : ArgumentInfo) { argument.description }
+          resolve: ->(resolution : Oxide::Resolution(ArgumentInfo)) { resolution.object.description }
         ),
         "type" => Oxide::Field.new(
           type: Oxide::Types::NonNullType.new(
             of_type: Oxide::Types::LateBoundType.new("__Type")
           ),
-          resolve: ->(argument : ArgumentInfo) { argument.type }
+          resolve: ->(resolution : Oxide::Resolution(ArgumentInfo)) { resolution.object.type }
         ),
         "defaultValue" => Oxide::Field.new(
           type: Oxide::Types::StringType.new,
-          resolve: ->(argument : ArgumentInfo) { argument.default_value }
+          resolve: ->(resolution : Oxide::Resolution(ArgumentInfo)) { resolution.object.default_value }
         )
       }
     )

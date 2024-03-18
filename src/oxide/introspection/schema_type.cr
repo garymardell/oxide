@@ -14,21 +14,21 @@ module Oxide
               )
             )
           ),
-          resolve: ->(schema : Schema) { schema.types }
+          resolve: ->(resolution : Oxide::Resolution(Oxide::Schema)) { resolution.object.types }
         ),
         "queryType" => Oxide::Field.new(
           type: Oxide::Types::NonNullType.new(
             of_type: Oxide::Types::LateBoundType.new("__Type")
           ),
-          resolve: ->(schema : Schema) { schema.query }
+          resolve: ->(resolution : Oxide::Resolution(Oxide::Schema)) { resolution.object.query }
         ),
         "mutationType" => Oxide::Field.new(
           type: Oxide::Types::LateBoundType.new("__Type"),
-          resolve: ->(schema : Schema) { schema.mutation }
+          resolve: ->(resolution : Oxide::Resolution(Oxide::Schema)) { resolution.object.mutation }
         ),
         "subscriptionType" => Oxide::Field.new(
           type: Oxide::Types::LateBoundType.new("__Type"),
-          resolve: ->(schema : Schema) { nil }
+          resolve: ->(resolution : Oxide::Resolution(Oxide::Schema)) { nil }
         ),
         "directives" => Oxide::Field.new(
           type: Oxide::Types::NonNullType.new(
@@ -38,7 +38,7 @@ module Oxide
               )
             )
           ),
-          resolve: ->(schema : Schema) { schema.directives }
+          resolve: ->(resolution : Oxide::Resolution(Oxide::Schema)) { resolution.object.directives }
         )
       }
     )

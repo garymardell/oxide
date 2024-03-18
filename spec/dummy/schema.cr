@@ -21,13 +21,13 @@ TransactionInterface = Oxide::Types::InterfaceType.new(
   fields: {
     "id" => Oxide::Field.new(
       type: Oxide::Types::IdType.new,
-      resolve: ->(transaction : Charge | Refund){
-        transaction.id
+      resolve: ->(resolution : Oxide::Resolution(Charge | Refund)){
+        resolution.object.id
       }
     ),
     "reference" => Oxide::Field.new(
       type: Oxide::Types::StringType.new,
-      resolve: ->(transaction : Charge | Refund){ transaction.reference }
+      resolve: ->(resolution : Oxide::Resolution(Charge | Refund)) { resolution.object.reference }
     )
   }
 )
@@ -46,11 +46,11 @@ ChargeType = Oxide::Types::ObjectType.new(
           ]
         )
       ),
-      resolve: ->(charge : Charge) { charge.status }
+      resolve: ->(resolution : Oxide::Resolution(Charge)) { resolution.object.status }
     ),
     "refund" => Oxide::Field.new(
       type: RefundType,
-      resolve: ->(charge : Charge) { Refund.new(charge.id, "pending", "r_12345", false) }
+      resolve: ->(resolution : Oxide::Resolution(Charge)) { Refund.new(resolution.object.id, "pending", "r_12345", false) }
     )
   }
 )
@@ -67,15 +67,15 @@ RefundType = Oxide::Types::ObjectType.new(
           Oxide::Types::EnumValue.new(name: "REFUNDED", value: "refunded")
         ]
       ),
-      resolve: ->(refund : Refund) { refund.status }
+      resolve: ->(resolution : Oxide::Resolution(Refund)) { resolution.object.status }
     ),
     "partial" => Oxide::Field.new(
       type: Oxide::Types::BooleanType.new,
-      resolve: ->(refund : Refund) { refund.partial }
+      resolve: ->(resolution : Oxide::Resolution(Refund)) { resolution.object.partial }
     ),
     "payment_method" => Oxide::Field.new(
       type: PaymentMethodType,
-      resolve: ->(refund : Refund) { BankAccount.new(1, "1234578") }
+      resolve: ->(resolution : Oxide::Resolution(Refund)) { BankAccount.new(1, "1234578") }
     )
   }
 )
@@ -85,11 +85,11 @@ CreditCardType = Oxide::Types::ObjectType.new(
   fields: {
     "id" => Oxide::Field.new(
       type: Oxide::Types::IdType.new,
-      resolve: ->(credit_card : CreditCard) { credit_card.id }
+      resolve: ->(resolution : Oxide::Resolution(CreditCard)) { resolution.object.id }
     ),
     "last4" => Oxide::Field.new(
       type: Oxide::Types::StringType.new,
-      resolve: ->(credit_card : CreditCard) { credit_card.last4 }
+      resolve: ->(resolution : Oxide::Resolution(CreditCard)) { resolution.object.last4 }
     )
   }
 )
@@ -99,11 +99,11 @@ BankAccountType = Oxide::Types::ObjectType.new(
   fields: {
     "id" => Oxide::Field.new(
       type: Oxide::Types::IdType.new,
-      resolve: ->(bank_account : BankAccount) { bank_account.id }
+      resolve: ->(resolution : Oxide::Resolution(BankAccount)) { resolution.object.id }
     ),
     "accountNumber" => Oxide::Field.new(
       type: Oxide::Types::StringType.new,
-      resolve: ->(bank_account : BankAccount) { bank_account.account_number }
+      resolve: ->(resolution : Oxide::Resolution(BankAccount)) { resolution.object.account_number }
     )
   }
 )
@@ -146,8 +146,8 @@ DummySchema = Oxide::Schema.new(
     fields: {
       "charge" => Oxide::Field.new(
         type: Oxide::Types::NonNullType.new(of_type: ChargeType),
-        resolve: ->(query : Query, arguments : Oxide::ArgumentValues){
-          Charge.new(id: arguments["id"].to_s.to_i32, status: "pending", reference: "ch_1234")
+        resolve: ->(resolution : Oxide::Resolution(Query)){
+          Charge.new(id: resolution.arguments["id"].to_s.to_i32, status: "pending", reference: "ch_1234")
         },
         arguments: {
           "id" => Oxide::Argument.new(
@@ -155,11 +155,11 @@ DummySchema = Oxide::Schema.new(
           )
         }
       ),
-      "charges" => Oxide::Field(Query, Array(Charge)).new(
+      "charges" => Oxide::Field.new(
         type: Oxide::Types::NonNullType.new(
           of_type: Oxide::Types::ListType.new(of_type: ChargeType)
         ),
-        resolve: ->(query : Query){
+        resolve: ->(resolution : Oxide::Resolution(Query)){
           [
             Charge.new(id: 1, status: nil, reference: "ch_1234"),
             Charge.new(id: 2, status: "pending", reference: "ch_5678"),
@@ -167,22 +167,22 @@ DummySchema = Oxide::Schema.new(
           ]
         },
       ),
-      "transactions" => Oxide::Field(Query, Array(Charge | Refund)).new(
+      "transactions" => Oxide::Field.new(
         type: Oxide::Types::NonNullType.new(
           of_type: Oxide::Types::ListType.new(of_type: TransactionInterface)
         ),
-        resolve: ->(query : Query){
+        resolve: ->(resolution : Oxide::Resolution(Query)){
           [
             Charge.new(id: 1, status: "paid", reference: "ch_1234"),
             Refund.new(id: 32, status: "refunded", reference: "r_5678", partial: true)
           ]
         }
       ),
-      "paymentMethods" => Oxide::Field(Query, Array(BankAccount | CreditCard)).new(
+      "paymentMethods" => Oxide::Field.new(
         type: Oxide::Types::NonNullType.new(
           of_type: Oxide::Types::ListType.new(of_type: PaymentMethodType)
         ),
-        resolve: ->(query : Query) {
+        resolve: ->(resolution : Oxide::Resolution(Query)){
           [
             CreditCard.new(id: 1, last4: "4242"),
             BankAccount.new(id: 32, account_number: "1234567")
@@ -193,7 +193,7 @@ DummySchema = Oxide::Schema.new(
         type: Oxide::Types::ListType.new(
           of_type: Oxide::Types::NonNullType.new(of_type: ChargeType)
         ),
-        resolve: ->(query : Query) {
+        resolve: ->(resolution : Oxide::Resolution(Query)){
           [nil]
         }
       )
@@ -209,7 +209,7 @@ DummySchema = Oxide::Schema.new(
             type: CreateChargeInputObject
           )
         },
-        resolve: ->(query : Query) {
+        resolve: ->(resolution : Oxide::Resolution(Query)){
           nil
         }
       )

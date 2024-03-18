@@ -247,7 +247,7 @@ describe Oxide do
       fields: fields.each_with_object({} of String => Oxide::BaseField) do |field_name, memo|
         memo[field_name] = Oxide::Field.new(
           type: Oxide::Types::StringType.new,
-          resolve: -> (query : Query) { field_name }
+          resolve: ->(resolution : Oxide::Resolution(Query)) { field_name }
         )
       end
     )
