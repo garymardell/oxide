@@ -10,7 +10,12 @@ module Oxide
           default_value: "No longer supported"
         )
       },
-      locations: [Directive::Location::FIELD_DEFINITION, Directive::Location::ENUM_VALUE]
+      locations: [
+        Directive::Location::FIELD_DEFINITION,
+        Directive::Location::ARGUMENT_DEFINITION,
+        Directive::Location::INPUT_FIELD_DEFINITION,
+        Directive::Location::ENUM_VALUE
+      ]
     )
   end
 end
