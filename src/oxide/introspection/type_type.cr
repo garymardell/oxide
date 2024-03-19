@@ -130,6 +130,12 @@ module Oxide
           }
         ),
         "inputFields" => Oxide::Field.new(
+          arguments: {
+            "includeDeprecated" => Oxide::Argument.new(
+              type: Oxide::Types::BooleanType.new,
+              default_value: false
+            )
+          },
           type: Oxide::Types::ListType.new(
             of_type: Oxide::Types::NonNullType.new(
               of_type: Oxide::Types::LateBoundType.new("__InputValue") # Introspection::InputValue
@@ -140,7 +146,15 @@ module Oxide
 
             case type
             when Types::InputObjectType
-              type.input_fields.map { |name, argument| ArgumentInfo.new(name, argument) }
+              if resolution.arguments["includeDeprecated"]?
+                type.input_fields.map do |name, argument|
+                  Introspection::ArgumentInfo.new(name, argument)
+                end
+              else
+                type.input_fields.reject { |_, argument| argument.deprecated? }.map do |name, argument|
+                  Introspection::ArgumentInfo.new(name, argument)
+                end
+              end
             end
           }
         ),
@@ -153,6 +167,12 @@ module Oxide
             when Types::NonNullType, Types::ListType
               type.of_type
             end
+          }
+        ),
+        "specifiedByURL" => Oxide::Field.new(
+          type: Oxide::Types::StringType.new,
+          resolve: ->(resolution : Oxide::Resolution(Type)) {
+            nil # TODO: Specified by
           }
         )
       }

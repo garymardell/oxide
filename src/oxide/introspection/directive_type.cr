@@ -57,7 +57,29 @@ module Oxide
               )
             )
           ),
-          resolve: ->(resolution : Oxide::Resolution(Directive)) { resolution.object.arguments.map { |name, argument| Introspection::ArgumentInfo.new(name, argument) } }
+          arguments: {
+            "includeDeprecated" => Oxide::Argument.new(
+              type: Oxide::Types::BooleanType.new,
+              default_value: false
+            )
+          },
+          resolve: ->(resolution : Oxide::Resolution(Directive)) {
+            if resolution.arguments["includeDeprecated"]?
+              resolution.object.arguments.map do |name, argument|
+                Introspection::ArgumentInfo.new(name, argument)
+              end
+            else
+              resolution.object.arguments.reject { |_, argument| argument.deprecated? }.map do |name, argument|
+                Introspection::ArgumentInfo.new(name, argument)
+              end
+            end
+          }
+        ),
+        "isRepeatable" => Oxide::Field.new(
+          type: Oxide::Types::NonNullType.new(
+            of_type: Oxide::Types::BooleanType.new
+          ),
+          resolve: ->(resolution : Oxide::Resolution(Directive)) { resolution.object.repeatable }
         )
       }
     )

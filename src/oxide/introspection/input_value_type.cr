@@ -24,6 +24,16 @@ module Oxide
         "defaultValue" => Oxide::Field.new(
           type: Oxide::Types::StringType.new,
           resolve: ->(resolution : Oxide::Resolution(ArgumentInfo)) { resolution.object.default_value }
+        ),
+        "isDeprecated" => Oxide::Field.new(
+          type: Oxide::Types::NonNullType.new(
+            of_type: Oxide::Types::BooleanType.new
+          ),
+          resolve: ->(resolution : Oxide::Resolution(ArgumentInfo)) { resolution.object.deprecated? }
+        ),
+        "deprecationReason" => Oxide::Field.new(
+          type: Oxide::Types::StringType.new,
+          resolve: ->(resolution : Oxide::Resolution(ArgumentInfo)) { resolution.object.deprecation_reason }
         )
       }
     )

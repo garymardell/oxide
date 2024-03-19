@@ -6,6 +6,10 @@ module Oxide
     SchemaType = Oxide::Types::ObjectType.new(
       name: "__Schema",
       fields: {
+        "description" => Oxide::Field.new(
+          type: Oxide::Types::StringType.new,
+          resolve: ->(resolution : Oxide::Resolution(Oxide::Schema)) { nil } # TODO: Support descriptions
+        ),
         "types" => Oxide::Field.new(
           type: Oxide::Types::NonNullType.new(
             of_type: Oxide::Types::ListType.new(

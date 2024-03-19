@@ -17,6 +17,12 @@ module Oxide
           resolve: ->(resolution : Oxide::Resolution(FieldInfo)) { resolution.object.description }
         ),
         "args" => Oxide::Field.new(
+          arguments: {
+            "includeDeprecated" => Oxide::Argument.new(
+              type: Oxide::Types::BooleanType.new,
+              default_value: false
+            )
+          },
           type: Oxide::Types::NonNullType.new(
             of_type: Oxide::Types::ListType.new(
               of_type: Oxide::Types::NonNullType.new(
@@ -24,7 +30,17 @@ module Oxide
               )
             )
           ),
-          resolve: ->(resolution : Oxide::Resolution(FieldInfo)) { resolution.object.arguments.map { |name, argument| Introspection::ArgumentInfo.new(name, argument) } }
+          resolve: ->(resolution : Oxide::Resolution(FieldInfo)) {
+            if resolution.arguments["includeDeprecated"]?
+              resolution.object.arguments.map do |name, argument|
+                Introspection::ArgumentInfo.new(name, argument)
+              end
+            else
+              resolution.object.arguments.reject { |_, argument| argument.deprecated? }.map do |name, argument|
+                Introspection::ArgumentInfo.new(name, argument)
+              end
+            end
+          }
         ),
         "type" => Oxide::Field.new(
           type: Oxide::Types::NonNullType.new(
