@@ -23,7 +23,17 @@ module Oxide
         ),
         "defaultValue" => Oxide::Field.new(
           type: Oxide::Types::StringType.new,
-          resolve: ->(resolution : Oxide::Resolution(ArgumentInfo)) { resolution.object.default_value }
+          resolve: ->(resolution : Oxide::Resolution(ArgumentInfo)) {
+            # TODO: Support printing all types
+            if default_value = resolution.object.default_value
+              case default_value
+              when String
+                "\"#{default_value}\""
+              else
+                default_value
+              end
+            end
+          }
         ),
         "isDeprecated" => Oxide::Field.new(
           type: Oxide::Types::NonNullType.new(
