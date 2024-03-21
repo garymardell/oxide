@@ -6,7 +6,7 @@ module Oxide
       getter name : String
       getter description : String?
       getter values : Array(EnumValue)
-      property applied_directives : Array(AppliedDirective)
+      getter applied_directives : Array(AppliedDirective)
 
       def initialize(@name, @values, @description = nil, @applied_directives = [] of AppliedDirective)
       end
@@ -53,7 +53,7 @@ module Oxide
       getter description : String?
       getter value : String
       getter deprecation_reason : String?
-      property applied_directives : Array(AppliedDirective)
+      getter applied_directives : Array(AppliedDirective)
 
       def initialize(@name, @description = nil, value = nil, @deprecation_reason = nil, @applied_directives = [] of AppliedDirective)
         @value = value || @name

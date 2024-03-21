@@ -1,6 +1,6 @@
 module Oxide
   abstract class Loader(Q, R)
-    property queue : Array(Q)
+    getter queue : Array(Q)
 
     def initialize
       @queue = [] of Q

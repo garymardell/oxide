@@ -1,7 +1,7 @@
 module Oxide
   module Validation
     class ContextVisitor < Oxide::Language::Visitor
-      property context : Validation::Context
+      getter context : Validation::Context
 
       def initialize(@context : Validation::Context)
       end

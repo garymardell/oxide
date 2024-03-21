@@ -9,7 +9,7 @@ module Oxide
       getter name : String
       getter description : String?
       getter interfaces : Array(Oxide::Types::InterfaceType)
-      property applied_directives : Array(AppliedDirective)
+      getter applied_directives : Array(AppliedDirective)
 
       def initialize(
         @name,

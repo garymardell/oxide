@@ -3,14 +3,14 @@ module Oxide
     class Context
       delegate document, to: query
 
-      property query : Oxide::Query
-      property context : Oxide::Context?
+      getter query : Oxide::Query
+      getter context : Oxide::Context?
 
       property current_path : Array(String)
       property current_object : Oxide::Types::ObjectType?
       property current_field : Oxide::Language::Nodes::Field?
 
-      property errors : Set(Error)
+      getter errors : Set(Error)
 
       def initialize(@query : Oxide::Query, @context : Oxide::Context? = nil)
         @current_path = [] of String

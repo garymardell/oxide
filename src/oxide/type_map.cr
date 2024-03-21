@@ -2,8 +2,8 @@ require "./visitor"
 
 module Oxide
   class TypeMap < Visitor
-    private property schema : Oxide::Schema
-    private property type_map : Hash(String, Oxide::Type)
+    private getter schema : Oxide::Schema
+    private getter type_map : Hash(String, Oxide::Type)
 
     def initialize(@schema)
       @type_map = {} of String => Oxide::Type

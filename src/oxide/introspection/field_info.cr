@@ -1,8 +1,8 @@
 module Oxide
   module Introspection
     struct FieldInfo
-      property name : String
-      property field : Oxide::BaseField
+      getter name : String
+      getter field : Oxide::BaseField
 
       delegate arguments, type, deprecated?, deprecation_reason, to: field
 

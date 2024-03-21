@@ -7,7 +7,7 @@ module Oxide
     getter default_value : DefaultValue
     getter? has_default_value : Bool
     getter deprecation_reason : String?
-    property applied_directives : Array(AppliedDirective)
+    getter applied_directives : Array(AppliedDirective)
 
     def initialize(@type : Oxide::Type, @description = nil, @deprecation_reason = nil, @applied_directives : Array(AppliedDirective) = [] of AppliedDirective)
       @default_value = nil

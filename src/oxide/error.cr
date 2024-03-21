@@ -15,8 +15,8 @@ module Oxide
   end
 
   class ParseException < Exception
-    property line_number : Int32?
-    property column_number : Int32?
+    getter line_number : Int32?
+    getter column_number : Int32?
 
     def initialize(message, @line_number, @column_number)
       super(message)
@@ -24,7 +24,7 @@ module Oxide
   end
 
   class Error < Exception
-    property locations : Array(Location) = [] of Location
+    getter locations : Array(Location) = [] of Location
 
     def initialize(message, @locations = [] of Location)
       super(message)

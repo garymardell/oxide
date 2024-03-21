@@ -1,8 +1,8 @@
 module Oxide
   module Introspection
     struct ArgumentInfo
-      property name : String
-      property argument : Oxide::Argument
+      getter name : String
+      getter argument : Oxide::Argument
 
       delegate description, type, default_value, deprecation_reason, deprecated?, to: argument
 

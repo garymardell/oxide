@@ -6,7 +6,7 @@ module Oxide
       getter name : String
       getter description : String?
       getter input_fields : Hash(String, Argument)
-      property applied_directives : Array(AppliedDirective)
+      getter applied_directives : Array(AppliedDirective)
 
       def initialize(@name, @description = nil, @input_fields = {} of String => Argument, @applied_directives = [] of AppliedDirective)
       end

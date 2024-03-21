@@ -1,7 +1,7 @@
 module Oxide
   module Validation
     class AllVariablesUsed < Rule
-      property fragment_definitions : Hash(String, Oxide::Language::Nodes::FragmentDefinition) = {} of String => Oxide::Language::Nodes::FragmentDefinition
+      getter fragment_definitions : Hash(String, Oxide::Language::Nodes::FragmentDefinition) = {} of String => Oxide::Language::Nodes::FragmentDefinition
 
       def enter(node : Oxide::Language::Nodes::Document, context)
         node.definitions.each do |definition|

@@ -188,7 +188,7 @@ module Oxide
       getter name : String
       getter description : String?
       getter specified_by_url : String?
-      property applied_directives : Array(AppliedDirective)
+      getter applied_directives : Array(AppliedDirective)
 
       def initialize(@name : String, @description : String? = nil, @specified_by_url : String? = nil, @applied_directives = [] of AppliedDirective)
       end
