@@ -30,16 +30,6 @@ module Oxide
       @directives = DEFAULT_DIRECTIVES + directives
     end
 
-    def validate(query : Oxide::Query)
-      pipeline = Oxide::Validation::Pipeline.new(self, query)
-      pipeline.execute
-    end
-
-    def execute(query : Oxide::Query)
-      runtime = Oxide::Execution::Runtime.new(self, query)
-      runtime.execute
-    end
-
     def type_map
       traversal = TypeMap.new(self)
       traversal.generate
