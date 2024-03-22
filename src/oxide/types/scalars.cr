@@ -110,13 +110,24 @@ module Oxide
       def serialize(value) : SerializedOutput
         return value if value.nil?
 
-        if value.responds_to?(:to_i32)
+        case value
+        when String, Int
           value.to_i32
-        elsif value.responds_to?(:as_i)
-          value.as_i
+        when Float
+          if value % 1 == 0
+            value.to_i32
+          else
+            raise SerializationError.new("#{value} cannot be serialized as Int")
+          end
         else
-          raise "Could not serialize value to Int"
+          if value.responds_to?(:as_i)
+            value.as_i
+          else
+            raise SerializationError.new("#{value} cannot be serialized as Int")
+          end
         end
+      rescue ex : Exception
+        raise SerializationError.new("#{value} cannot be serialized as Int")
       end
     end
 

@@ -34,4 +34,38 @@ describe Oxide::Types::IntType do
       end
     end
   end
+
+  describe "#serialize" do
+    it "converts string numbers into integer" do
+      build_int_type.serialize("123").should eq(123)
+    end
+
+    it "raises an error if can't serialize to int" do
+      expect_raises(Oxide::SerializationError) do
+        build_int_type.serialize("hello")
+      end
+    end
+
+    it "converts floats into integer" do
+      build_int_type.serialize(1.0).should eq(1)
+    end
+
+    it "raises an error if float cannot be converted without precision loss" do
+      expect_raises(Oxide::SerializationError) do
+        build_int_type.serialize(1.2)
+      end
+    end
+
+    it "raises an error if values is greater than Int32::MAX" do
+      expect_raises(Oxide::SerializationError) do
+        build_int_type.serialize(Int32::MAX.to_i64 + 1)
+      end
+    end
+
+    it "raises an error if values is less than Int32::MIN" do
+      expect_raises(Oxide::SerializationError) do
+        build_int_type.serialize(Int32::MIN.to_i64 - 1)
+      end
+    end
+  end
 end

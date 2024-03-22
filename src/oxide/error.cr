@@ -61,4 +61,7 @@ module Oxide
 
   class InputCoercionError < FieldError
   end
+
+  class SerializationError < FieldError
+  end
 end
