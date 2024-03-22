@@ -98,10 +98,6 @@ module Oxide
         end
       end
 
-      def serialize_errors(errors : Set(Error))
-        errors.map &.to_h
-      end
-
       private def execute_mutation(execution_context : Execution::Context, mutation, schema, coerced_variable_values, initial_value)
         if mutation_type = schema.mutation
           begin
