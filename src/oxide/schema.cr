@@ -7,7 +7,6 @@ require "./loader"
 require "./context"
 require "./type_map"
 require "./error"
-require "./response"
 
 module Oxide
   class Schema

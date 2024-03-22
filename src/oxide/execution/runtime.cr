@@ -7,6 +7,7 @@ require "../introspection/*"
 require "../error"
 require "./resolution_info"
 require "./context"
+require "./response"
 
 module Oxide
   alias ArgumentValues = Hash(String, SerializedOutput)
@@ -43,9 +44,9 @@ module Oxide
         end
 
         if execution_context.errors.any?
-          Oxide::Response.new(data, execution_context.errors)
+          Response.new(data, execution_context.errors)
         else
-          Oxide::Response.new(data, nil)
+          Response.new(data, nil)
         end
       end
 
