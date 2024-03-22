@@ -19,7 +19,16 @@ module Oxide
 
       def coerce(value : Array) : CoercedInput
         value.map do |item|
-          of_type.coerce(item).as(CoercedInput)
+          case of_type
+          when ListType
+            unless item.is_a?(Array)
+              raise InputCoercionError.new("Incorrect item value")
+            end
+
+            of_type.coerce(item).as(CoercedInput)
+          else
+            of_type.coerce(item).as(CoercedInput)
+          end
         end
       end
 
