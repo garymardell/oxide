@@ -50,15 +50,15 @@ module Oxide
     def_equals_and_hash @message, @locations
   end
 
-  class InputCoercionError < Error
+  class RequestError < Error
   end
 
-  class InvalidOperationError < Error
+  class InvalidOperationError < RequestError
   end
 
   class FieldError < Error
   end
 
-  class NullError < FieldError
+  class InputCoercionError < FieldError
   end
 end
