@@ -12,7 +12,7 @@ describe Oxide do
 
     runtime = Oxide::Execution::Runtime.new(DummySchema)
 
-    result = runtime.execute(query: Oxide::Query.new(query_string), initial_value: Query.new)["data"]
+    result = runtime.execute(query: Oxide::Query.new(query_string), initial_value: Query.new).data
 
     result.should eq({ "charges" => [{ "id" => "1" }, { "id" => "2" }, { "id" => "3" }] })
   end
@@ -28,7 +28,7 @@ describe Oxide do
 
     runtime = Oxide::Execution::Runtime.new(DummySchema)
 
-    result = runtime.execute(query: Oxide::Query.new(query_string), initial_value: Query.new)["data"]
+    result = runtime.execute(query: Oxide::Query.new(query_string), initial_value: Query.new).data
 
     result.should eq({ "charges" => [{ "id" => "1" }, { "id" => "2" }, { "id" => "3" }] })
   end
@@ -44,7 +44,7 @@ describe Oxide do
 
     runtime = Oxide::Execution::Runtime.new(DummySchema)
 
-    result = runtime.execute(query: Oxide::Query.new(query_string), initial_value: Query.new)["data"]
+    result = runtime.execute(query: Oxide::Query.new(query_string), initial_value: Query.new).data
 
     result.should eq({ "allCharges" => [{ "id" => "1" }, { "id" => "2" }, { "id" => "3" }] })
   end
@@ -63,12 +63,9 @@ describe Oxide do
 
     result = runtime.execute(query: Oxide::Query.new(query_string), initial_value: Query.new)
 
-    expected_errors = [
-      {
-        "message" => "Cannot return null for non-nullable field Charge.status",
-        "locations" => [] of Oxide::Location
-      }
-    ]
+    expected_errors = Set.new([
+      Oxide::FieldError.new("Cannot return null for non-nullable field Charge.status")
+    ])
 
     expected_data = {
       "charges" => [
@@ -78,8 +75,8 @@ describe Oxide do
       ]
     }
 
-    result["data"].should eq(expected_data)
-    result["errors"].should eq(expected_errors)
+    result.data.should eq(expected_data)
+    result.errors.should eq(expected_errors)
   end
 
   it "executes with loader" do
@@ -102,7 +99,7 @@ describe Oxide do
 
     runtime = Oxide::Execution::Runtime.new(DummySchema)
 
-    result = runtime.execute(query: Oxide::Query.new(query_string), initial_value: Query.new)["data"]
+    result = runtime.execute(query: Oxide::Query.new(query_string), initial_value: Query.new).data
 
     expected_response = {
       "charges" => [
@@ -131,7 +128,7 @@ describe Oxide do
 
     runtime = Oxide::Execution::Runtime.new(DummySchema)
 
-    result = runtime.execute(query: Oxide::Query.new(query_string), initial_value: Query.new)["data"]
+    result = runtime.execute(query: Oxide::Query.new(query_string), initial_value: Query.new).data
 
     result.should eq({
       "transactions" => [
@@ -160,7 +157,7 @@ describe Oxide do
 
     runtime = Oxide::Execution::Runtime.new(DummySchema)
 
-    result = runtime.execute(query: Oxide::Query.new(query_string), initial_value: Query.new)["data"]
+    result = runtime.execute(query: Oxide::Query.new(query_string), initial_value: Query.new).data
 
     result.should eq({
       "paymentMethods" => [
@@ -185,7 +182,7 @@ describe Oxide do
 
     runtime = Oxide::Execution::Runtime.new(DummySchema)
 
-    result = runtime.execute(query: Oxide::Query.new(query_string), initial_value: Query.new)["data"]
+    result = runtime.execute(query: Oxide::Query.new(query_string), initial_value: Query.new).data
 
     result.should eq({ "charge" => { "id" => "1" } })
   end
@@ -207,7 +204,7 @@ describe Oxide do
 
     runtime = Oxide::Execution::Runtime.new(DummySchema)
 
-    result = runtime.execute(query: Oxide::Query.new(query_string, variables: variables.as_h), initial_value: Query.new)["data"]
+    result = runtime.execute(query: Oxide::Query.new(query_string, variables: variables.as_h), initial_value: Query.new).data
 
     result.should eq({ "charge" => { "id" => "10" } })
   end
@@ -231,7 +228,7 @@ describe Oxide do
         variables: variables
       ),
       initial_value: Query.new
-    )["data"]
+    ).data
 
     result.should eq({ "charge" => { "id" => "1" } })
   end
@@ -266,7 +263,7 @@ describe Oxide do
     result = runtime.execute(
       query: Oxide::Query.new(query_string),
       initial_value: Query.new
-    )["data"]
+    ).data
 
     result.should eq({ "foo" => "foo", "bar" => "bar" })
   end
@@ -291,7 +288,7 @@ describe Oxide do
     result = runtime.execute(
       query: Oxide::Query.new(query_string, operation_name: "allCharges"),
       initial_value: Query.new
-    )["data"]
+    ).data
 
     result.should eq({ "charges" => [{ "id" => "1" }, { "id" => "2" }, { "id" => "3" }] })
   end

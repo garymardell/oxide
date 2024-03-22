@@ -27,7 +27,7 @@ describe Oxide::Execution::Runtime do
       { "id" => "32", "reference" => "r_5678" },
     ]
 
-    result["errors"]?.should be_nil
-    result["data"].should eq({ "transactions" => expected_transactions })
+    result.errors.should be_nil
+    result.data.should eq({ "transactions" => expected_transactions })
   end
 end

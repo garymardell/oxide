@@ -16,7 +16,7 @@ describe Oxide do
     result = runtime.execute(
       query: Oxide::Query.new(query_string),
       initial_value: Query.new
-    )["data"]
+    ).data
 
     result.should eq({ "charges" => [{ "id" => "1", "__typename" => "Charge" }, { "id" => "2", "__typename" => "Charge" }, { "id" => "3", "__typename" => "Charge" }] })
   end
@@ -35,7 +35,7 @@ describe Oxide do
 
     runtime = Oxide::Execution::Runtime.new(DummySchema)
 
-    result = runtime.execute(query: Oxide::Query.new(query_string))["data"]
+    result = runtime.execute(query: Oxide::Query.new(query_string)).data
 
     pp result
   end
@@ -134,7 +134,7 @@ describe Oxide do
 
     runtime = Oxide::Execution::Runtime.new(DummySchema)
 
-    result = runtime.execute(query: Oxide::Query.new(query_string))["data"]
+    result = runtime.execute(query: Oxide::Query.new(query_string)).data
 
     pp result
   end

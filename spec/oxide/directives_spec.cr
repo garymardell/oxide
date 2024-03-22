@@ -22,7 +22,7 @@ describe Oxide do
     result = runtime.execute(
       query: Oxide::Query.new(query_string, variables: variables.as_h),
       initial_value: Query.new
-    )["data"]
+    ).data
 
     result.should eq({
       "transactions" => [
@@ -53,7 +53,7 @@ describe Oxide do
     result = runtime.execute(
       query: Oxide::Query.new(query_string, variables: variables.as_h),
       initial_value: Query.new
-    )["data"]
+    ).data
 
     result.should eq({
       "transactions" => [
@@ -84,7 +84,7 @@ describe Oxide do
     result = runtime.execute(
       query: Oxide::Query.new(query_string, variables: variables.as_h),
       initial_value: Query.new
-    )["data"]
+    ).data
 
     result.should eq({
       "transactions" => [
@@ -115,7 +115,7 @@ describe Oxide do
     result = runtime.execute(
       query: Oxide::Query.new(query_string, variables: variables.as_h),
       initial_value: Query.new
-    )["data"]
+    ).data
 
     result.should eq({
       "transactions" => [

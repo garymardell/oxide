@@ -43,9 +43,9 @@ module Oxide
         end
 
         if execution_context.errors.any?
-          { "data" => data, "errors" => serialize_errors(execution_context.errors) }
+          Oxide::Response.new(data, execution_context.errors)
         else
-          { "data" => data }
+          Oxide::Response.new(data, nil)
         end
       end
 
