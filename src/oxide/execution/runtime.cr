@@ -155,7 +155,7 @@ module Oxide
           end
         end
 
-        nil
+        raise FieldError.new("Field name #{field_name} could not be found")
       end
 
       private def execute_field(execution_context : Execution::Context, object_type, object_value, field_type, fields, variable_values) : IntermediateType
@@ -168,21 +168,17 @@ module Oxide
 
         schema_field = get_field(object_type, field_name)
 
-        argument_definitions = if schema_field
-          schema_field.arguments
-        else
-          {} of String => Oxide::Argument
-        end
-
+        argument_definitions = schema_field.arguments
         argument_values = coerce_argument_values(argument_definitions, field.arguments, variable_values)
 
         resolution_info = ResolutionInfo.new(
           schema: schema,
           context: execution_context,
           field: schema_field,
+          field_name: field_name,
         )
 
-        value = schema_field.try &.resolve(object_value, argument_values, execution_context, resolution_info)
+        value = schema_field.resolve(object_value, argument_values, execution_context, resolution_info)
 
         if value.is_a?(Lazy)
           Proc(IntermediateType).new {

@@ -1,5 +1,5 @@
 module Oxide
-  class Query
+  struct Query
     include JSON::Serializable
     include Language::Visitable
 

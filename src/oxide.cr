@@ -10,7 +10,7 @@ module Oxide
     getter execution_context : Execution::Context
     getter resolution_info : Execution::ResolutionInfo
 
-    delegate schema, to: resolution_info
+    delegate schema, field_name, to: resolution_info
     delegate context, to: execution_context
 
     def initialize(@object : O, @execution_context, @resolution_info, @arguments = {} of String => SerializedOutput)
