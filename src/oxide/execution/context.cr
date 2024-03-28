@@ -4,7 +4,7 @@ module Oxide
       delegate document, to: query
 
       getter query : Oxide::Query
-      getter context : Oxide::Context?
+      getter! context : Oxide::Context
 
       property current_path : Array(String)
       property current_object : Oxide::Types::ObjectType?

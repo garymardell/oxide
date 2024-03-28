@@ -516,7 +516,7 @@ module Oxide
 
       private def resolve_abstract_type(execution_context : Execution::Context, field_type, result)
         # if resolved_type = type_resolvers[field_type.name].resolve_type(result, execution_context)
-        if resolved_type = field_type.type_resolver.resolve_type(result, execution_context.context)
+        if resolved_type = field_type.type_resolver.resolve_type(result, execution_context.context?)
           resolved_type
         else
           raise "abstract type could not be resolved"
