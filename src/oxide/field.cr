@@ -30,7 +30,7 @@ module Oxide
 
         @resolve.call(object.as(I), execution)
       else
-        raise "Invalid type received to resolution"
+        raise SchemaException.new("Expected object to be #{I} but received #{object.class}")
       end
     end
 

@@ -23,6 +23,9 @@ module Oxide
     end
   end
 
+  class SchemaException < Exception
+  end
+
   class Error < Exception
     getter locations : Array(Location) = [] of Location
 
