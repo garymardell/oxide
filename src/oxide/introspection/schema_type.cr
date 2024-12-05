@@ -8,7 +8,7 @@ module Oxide
       fields: {
         "description" => Oxide::Field.new(
           type: Oxide::Types::StringType.new,
-          resolve: ->(resolution : Oxide::Resolution(Oxide::Schema)) { nil } # TODO: Support descriptions
+          resolve: ->(object : Oxide::Schema, resolution : Oxide::Resolution) { nil } # TODO: Support descriptions
         ),
         "types" => Oxide::Field.new(
           type: Oxide::Types::NonNullType.new(
@@ -18,21 +18,21 @@ module Oxide
               )
             )
           ),
-          resolve: ->(resolution : Oxide::Resolution(Oxide::Schema)) { resolution.object.types }
+          resolve: ->(object : Oxide::Schema, resolution : Oxide::Resolution) { object.types }
         ),
         "queryType" => Oxide::Field.new(
           type: Oxide::Types::NonNullType.new(
             of_type: Oxide::Types::LateBoundType.new("__Type")
           ),
-          resolve: ->(resolution : Oxide::Resolution(Oxide::Schema)) { resolution.object.query }
+          resolve: ->(object : Oxide::Schema, resolution : Oxide::Resolution) { object.query }
         ),
         "mutationType" => Oxide::Field.new(
           type: Oxide::Types::LateBoundType.new("__Type"),
-          resolve: ->(resolution : Oxide::Resolution(Oxide::Schema)) { resolution.object.mutation }
+          resolve: ->(object : Oxide::Schema, resolution : Oxide::Resolution) { object.mutation }
         ),
         "subscriptionType" => Oxide::Field.new(
           type: Oxide::Types::LateBoundType.new("__Type"),
-          resolve: ->(resolution : Oxide::Resolution(Oxide::Schema)) { nil }
+          resolve: ->(object : Oxide::Schema, resolution : Oxide::Resolution) { nil }
         ),
         "directives" => Oxide::Field.new(
           type: Oxide::Types::NonNullType.new(
@@ -42,7 +42,7 @@ module Oxide
               )
             )
           ),
-          resolve: ->(resolution : Oxide::Resolution(Oxide::Schema)) { resolution.object.directives }
+          resolve: ->(object : Oxide::Schema, resolution : Oxide::Resolution) { object.directives }
         )
       }
     )

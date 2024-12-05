@@ -10,11 +10,11 @@ module Oxide
           type: Oxide::Types::NonNullType.new(
             of_type: Oxide::Types::StringType.new
           ),
-          resolve: ->(resolution : Oxide::Resolution(FieldInfo)) { resolution.object.name }
+          resolve: ->(object : FieldInfo, resolution : Oxide::Resolution) { object.name }
         ),
         "description" => Oxide::Field.new(
           type: Oxide::Types::StringType.new,
-          resolve: ->(resolution : Oxide::Resolution(FieldInfo)) { resolution.object.description }
+          resolve: ->(object : FieldInfo, resolution : Oxide::Resolution) { object.description }
         ),
         "args" => Oxide::Field.new(
           arguments: {
@@ -30,13 +30,13 @@ module Oxide
               )
             )
           ),
-          resolve: ->(resolution : Oxide::Resolution(FieldInfo)) {
+          resolve: ->(object : FieldInfo, resolution : Oxide::Resolution) {
             if resolution.arguments["includeDeprecated"]?
-              resolution.object.arguments.map do |name, argument|
+              object.arguments.map do |name, argument|
                 Introspection::ArgumentInfo.new(name, argument)
               end
             else
-              resolution.object.arguments.reject { |_, argument| argument.deprecated? }.map do |name, argument|
+              object.arguments.reject { |_, argument| argument.deprecated? }.map do |name, argument|
                 Introspection::ArgumentInfo.new(name, argument)
               end
             end
@@ -46,17 +46,17 @@ module Oxide
           type: Oxide::Types::NonNullType.new(
             of_type: Oxide::Types::LateBoundType.new("__Type")
           ),
-          resolve: ->(resolution : Oxide::Resolution(FieldInfo)) { resolution.object.type }
+          resolve: ->(object : FieldInfo, resolution : Oxide::Resolution) { object.type }
         ),
         "isDeprecated" => Oxide::Field.new(
           type: Oxide::Types::NonNullType.new(
             of_type: Oxide::Types::BooleanType.new
           ),
-          resolve: ->(resolution : Oxide::Resolution(FieldInfo)) { resolution.object.deprecated? }
+          resolve: ->(object : FieldInfo, resolution : Oxide::Resolution) { object.deprecated? }
         ),
         "deprecationReason" => Oxide::Field.new(
           type: Oxide::Types::StringType.new,
-          resolve: ->(resolution : Oxide::Resolution(FieldInfo)) { resolution.object.deprecation_reason }
+          resolve: ->(object : FieldInfo, resolution : Oxide::Resolution) { object.deprecation_reason }
         )
       }
     )

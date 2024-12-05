@@ -132,12 +132,12 @@ module Oxide
         if schema.query == object_type && field_name == "__schema"
           Oxide::Field.new(
             type: Oxide::Introspection::SchemaType,
-            resolve: ->(resolution : Oxide::Resolution(Nil)) { resolution.schema }
+            resolve: ->(object : Nil, resolution : Oxide::Resolution) { resolution.schema }
           )
         elsif field_name == "__typename"
           Oxide::Field.new(
             type: Oxide::Types::StringType.new,
-            resolve: ->(resolution : Oxide::Resolution(Type)) { resolution.object.name }
+            resolve: ->(object : Type, resolution : Oxide::Resolution) { object.name }
           )
         else
           get_field_from_object_type(object_type, field_name)

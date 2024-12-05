@@ -95,7 +95,7 @@ SentientInterface = Oxide::Types::InterfaceType.new(
       type: Oxide::Types::NonNullType.new(
         of_type: Oxide::Types::StringType.new
       ),
-      resolve: ->(resolution : Oxide::Resolution(Sentient)) { resolution.object.name }
+      resolve: ->(object : Sentient, resolution : Oxide::Resolution) { object.name }
     )
   }
 )
@@ -106,7 +106,7 @@ AlienType = Oxide::Types::ObjectType.new(
   fields: {
     "homePlanet" => Oxide::Field.new(
       type: Oxide::Types::StringType.new,
-      resolve: ->(resolution : Oxide::Resolution(Alien)) { resolution.object.home_planet }
+      resolve: ->(object : Alien, resolution : Oxide::Resolution) { object.home_planet }
     )
   }
 )
@@ -124,7 +124,7 @@ PetInterface = Oxide::Types::InterfaceType.new(
       type: Oxide::Types::NonNullType.new(
         of_type: Oxide::Types::StringType.new
       ),
-      resolve: ->(resolution : Oxide::Resolution(Pet)) { resolution.object.name }
+      resolve: ->(object : Pet, resolution : Oxide::Resolution) { object.name }
     )
   }
 )
@@ -144,11 +144,11 @@ CatType = Oxide::Types::ObjectType.new(
       type: Oxide::Types::NonNullType.new(
         of_type: Oxide::Types::StringType.new
       ),
-      resolve: ->(resolution : Oxide::Resolution(Cat)) { resolution.object.name }
+      resolve: ->(object : Cat, resolution : Oxide::Resolution) { object.name }
     ),
     "nickname" => Oxide::Field.new(
       type: Oxide::Types::StringType.new,
-      resolve: ->(resolution : Oxide::Resolution(Cat)) { resolution.object.nickname }
+      resolve: ->(object : Cat, resolution : Oxide::Resolution) { object.nickname }
     ),
     "doesKnowCommand" => Oxide::Field.new(
       arguments: {
@@ -161,11 +161,11 @@ CatType = Oxide::Types::ObjectType.new(
       type: Oxide::Types::NonNullType.new(
         of_type: Oxide::Types::BooleanType.new
       ),
-      resolve: ->(resolution : Oxide::Resolution(Cat)) { resolution.object.knows_command? }
+      resolve: ->(object : Cat, resolution : Oxide::Resolution) { object.knows_command? }
     ),
     "meowVolume" => Oxide::Field.new(
       type: Oxide::Types::IntType.new,
-      resolve: ->(resolution : Oxide::Resolution(Cat)) { resolution.object.meow_volume }
+      resolve: ->(object : Cat, resolution : Oxide::Resolution) { object.meow_volume }
     )
   }
 )
@@ -205,15 +205,15 @@ DogType = Oxide::Types::ObjectType.new(
       type: Oxide::Types::NonNullType.new(
         of_type: Oxide::Types::StringType.new
       ),
-      resolve: ->(resolution : Oxide::Resolution(Dog)) { resolution.object.name }
+      resolve: ->(object : Dog, resolution : Oxide::Resolution) { object.name }
     ),
     "nickname" => Oxide::Field.new(
       type: Oxide::Types::StringType.new,
-      resolve: ->(resolution : Oxide::Resolution(Dog)) { resolution.object.nickname }
+      resolve: ->(object : Dog, resolution : Oxide::Resolution) { object.nickname }
     ),
     "barkVolume" => Oxide::Field.new(
       type: Oxide::Types::IntType.new,
-      resolve: ->(resolution : Oxide::Resolution(Dog)) { resolution.object.bark_volume }
+      resolve: ->(object : Dog, resolution : Oxide::Resolution) { object.bark_volume }
     ),
     "doesKnowCommand" => Oxide::Field.new(
       arguments: {
@@ -226,7 +226,7 @@ DogType = Oxide::Types::ObjectType.new(
       type: Oxide::Types::NonNullType.new(
         of_type: Oxide::Types::BooleanType.new
       ),
-      resolve: ->(resolution : Oxide::Resolution(Dog)) { resolution.object.knows_command? }
+      resolve: ->(object : Dog, resolution : Oxide::Resolution) { object.knows_command? }
     ),
     "isHousetrained" => Oxide::Field.new(
       arguments: {
@@ -237,11 +237,11 @@ DogType = Oxide::Types::ObjectType.new(
       type: Oxide::Types::NonNullType.new(
         of_type: Oxide::Types::BooleanType.new
       ),
-      resolve: ->(resolution : Oxide::Resolution(Dog)) { resolution.object.house_trained? }
+      resolve: ->(object : Dog, resolution : Oxide::Resolution) { object.house_trained? }
     ),
     "owner" => Oxide::Field.new(
       type: HumanType,
-      resolve: ->(resolution : Oxide::Resolution(Dog)) { resolution.object.owner }
+      resolve: ->(object : Dog, resolution : Oxide::Resolution) { object.owner }
     ),
   }
 )
@@ -271,28 +271,28 @@ ArgumentsType = Oxide::Types::ObjectType.new(
         )
       },
       type: Oxide::Types::NonNullType.new(of_type: Oxide::Types::IntType.new),
-      resolve: ->(resolution : Oxide::Resolution(Query)) { nil }
+      resolve: ->(object : Query, resolution : Oxide::Resolution) { nil }
     ),
     "booleanArgField" => Oxide::Field.new(
       arguments: {
         "booleanArg" => Oxide::Argument.new(type: Oxide::Types::BooleanType.new)
       },
       type: Oxide::Types::BooleanType.new,
-      resolve: ->(resolution : Oxide::Resolution(Query)) { nil }
+      resolve: ->(object : Query, resolution : Oxide::Resolution) { nil }
     ),
     "floatArgField" => Oxide::Field.new(
       arguments: {
         "floatArg" => Oxide::Argument.new(type: Oxide::Types::FloatType.new)
       },
       type: Oxide::Types::FloatType.new,
-      resolve: ->(resolution : Oxide::Resolution(Query)) { nil }
+      resolve: ->(object : Query, resolution : Oxide::Resolution) { nil }
     ),
     "intArgField" => Oxide::Field.new(
       arguments: {
         "intArg" => Oxide::Argument.new(type: Oxide::Types::IntType.new)
       },
       type: Oxide::Types::IntType.new,
-      resolve: ->(resolution : Oxide::Resolution(Query)) { nil }
+      resolve: ->(object : Query, resolution : Oxide::Resolution) { nil }
     ),
     "nonNullBooleanArgField" => Oxide::Field.new(
       arguments: {
@@ -301,7 +301,7 @@ ArgumentsType = Oxide::Types::ObjectType.new(
         )
       },
       type: Oxide::Types::NonNullType.new(of_type: Oxide::Types::BooleanType.new),
-      resolve: ->(resolution : Oxide::Resolution(Query)) { nil }
+      resolve: ->(object : Query, resolution : Oxide::Resolution) { nil }
     ),
     "booleanListArgField" => Oxide::Field.new(
       arguments: {
@@ -310,7 +310,7 @@ ArgumentsType = Oxide::Types::ObjectType.new(
         )
       },
       type: Oxide::Types::ListType.new(of_type: Oxide::Types::BooleanType.new),
-      resolve: ->(resolution : Oxide::Resolution(Query)) { nil }
+      resolve: ->(object : Query, resolution : Oxide::Resolution) { nil }
     ),
     "optionalNonNullBooleanArgField" => Oxide::Field.new(
       arguments: {
@@ -320,7 +320,7 @@ ArgumentsType = Oxide::Types::ObjectType.new(
         )
       },
       type: Oxide::Types::NonNullType.new(of_type: Oxide::Types::BooleanType.new),
-      resolve: ->(resolution : Oxide::Resolution(Query)) { nil }
+      resolve: ->(object : Query, resolution : Oxide::Resolution) { nil }
     )
   }
 )
@@ -331,7 +331,7 @@ ValidationsSchema = Oxide::Schema.new(
     fields: {
       "dog" => Oxide::Field.new(
         type: DogType,
-        resolve: ->(resolution : Oxide::Resolution(Query)) { nil }
+        resolve: ->(object : Query, resolution : Oxide::Resolution) { nil }
       ),
       "findDog" => Oxide::Field.new(
         arguments: {
@@ -340,20 +340,20 @@ ValidationsSchema = Oxide::Schema.new(
           )
         },
         type: DogType,
-        resolve: ->(resolution : Oxide::Resolution(Query)) { nil }
+        resolve: ->(object : Query, resolution : Oxide::Resolution) { nil }
       ),
       # Extended for LeafFieldSelections test
       "human" => Oxide::Field.new(
         type: HumanType,
-        resolve: ->(resolution : Oxide::Resolution(Query)) { nil }
+        resolve: ->(object : Query, resolution : Oxide::Resolution) { nil }
       ),
       "pet" => Oxide::Field.new(
         type: PetInterface,
-        resolve: ->(resolution : Oxide::Resolution(Query)) { nil }
+        resolve: ->(object : Query, resolution : Oxide::Resolution) { nil }
       ),
       "catOrDog" => Oxide::Field.new(
         type: CatOrDogUnion,
-        resolve: ->(resolution : Oxide::Resolution(Query)) { nil }
+        resolve: ->(object : Query, resolution : Oxide::Resolution) { nil }
       ),
       "booleanList" => Oxide::Field.new(
         arguments: {
@@ -364,12 +364,12 @@ ValidationsSchema = Oxide::Schema.new(
           )
         },
         type: Oxide::Types::BooleanType.new,
-        resolve: ->(resolution : Oxide::Resolution(Query)) { nil }
+        resolve: ->(object : Query, resolution : Oxide::Resolution) { nil }
       ),
       # Extended for Argument Names
       "arguments" => Oxide::Field.new(
         type: ArgumentsType,
-        resolve: ->(resolution : Oxide::Resolution(Query)) { nil }
+        resolve: ->(object : Query, resolution : Oxide::Resolution) { nil }
       )
     }
   ),

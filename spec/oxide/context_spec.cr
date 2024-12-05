@@ -12,14 +12,14 @@ describe Oxide::Context do
         fields: {
           "increment" => Oxide::Field.new(
             type: Oxide::Types::BooleanType.new,
-            resolve: ->(resolution : Oxide::Resolution(Nil)) {
+            resolve: ->(object : Nil, resolution : Oxide::Resolution) {
               resolution.context.as(ContextTestContext).value += 1
               true
             }
           ),
           "decrement" => Oxide::Field.new(
             type: Oxide::Types::BooleanType.new,
-            resolve: ->(resolution : Oxide::Resolution(Nil)) {
+            resolve: ->(object : Nil, resolution : Oxide::Resolution) {
               resolution.context.as(ContextTestContext).value -= 1
               true
             }

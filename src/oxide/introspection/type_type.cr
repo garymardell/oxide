@@ -23,20 +23,20 @@ module Oxide
       fields: {
         "kind" => Oxide::Field.new(
           type: Oxide::Types::NonNullType.new(of_type: TypeKindType),
-          resolve: ->(resolution : Oxide::Resolution(Type)){
-            resolution.object.unwrap(resolution.schema).kind
+          resolve: ->(object : Type, resolution : Oxide::Resolution){
+            object.unwrap(resolution.schema).kind
           }
         ),
         "name" => Oxide::Field.new(
           type: Oxide::Types::StringType.new,
-          resolve: ->(resolution : Oxide::Resolution(Type)){
-            resolution.object.unwrap(resolution.schema).name
+          resolve: ->(object : Type, resolution : Oxide::Resolution){
+            object.unwrap(resolution.schema).name
           }
         ),
         "description" => Oxide::Field.new(
           type: Oxide::Types::StringType.new,
-          resolve: ->(resolution : Oxide::Resolution(Type)){
-            resolution.object.unwrap(resolution.schema).description
+          resolve: ->(object : Type, resolution : Oxide::Resolution){
+            object.unwrap(resolution.schema).description
           }
         ),
         "fields" => Oxide::Field.new(
@@ -51,8 +51,8 @@ module Oxide
               of_type: Oxide::Types::LateBoundType.new("__Field") # Introspection::Field
             )
           ),
-          resolve: ->(resolution : Oxide::Resolution(Type)){
-            type = resolution.object.unwrap(resolution.schema)
+          resolve: ->(object : Type, resolution : Oxide::Resolution){
+            type = object.unwrap(resolution.schema)
 
             case type
             when Types::ObjectType, Types::InterfaceType
@@ -74,8 +74,8 @@ module Oxide
               of_type: Oxide::Types::LateBoundType.new("__Type")  # Introspection::Type
             )
           ),
-          resolve: ->(resolution : Oxide::Resolution(Type)) {
-            type = resolution.object.unwrap(resolution.schema)
+          resolve: ->(object : Type, resolution : Oxide::Resolution) {
+            type = object.unwrap(resolution.schema)
 
             case type
             when Types::ObjectType, Types::InterfaceType
@@ -89,8 +89,8 @@ module Oxide
               of_type: Oxide::Types::LateBoundType.new("__Type")
             )
           ),
-          resolve: ->(resolution : Oxide::Resolution(Type)) {
-            type = resolution.object.unwrap(resolution.schema)
+          resolve: ->(object : Type, resolution : Oxide::Resolution) {
+            type = object.unwrap(resolution.schema)
 
             case type
             when Types::UnionType
@@ -116,8 +116,8 @@ module Oxide
               of_type: Introspection::EnumValueType
             )
           ),
-          resolve: ->(resolution : Oxide::Resolution(Type)) {
-            type = resolution.object.unwrap(resolution.schema)
+          resolve: ->(object : Type, resolution : Oxide::Resolution) {
+            type = object.unwrap(resolution.schema)
 
             case type
             when Types::EnumType
@@ -141,8 +141,8 @@ module Oxide
               of_type: Oxide::Types::LateBoundType.new("__InputValue") # Introspection::InputValue
             )
           ),
-          resolve: ->(resolution : Oxide::Resolution(Type)) {
-            type = resolution.object.unwrap(resolution.schema)
+          resolve: ->(object : Type, resolution : Oxide::Resolution) {
+            type = object.unwrap(resolution.schema)
 
             case type
             when Types::InputObjectType
@@ -160,8 +160,8 @@ module Oxide
         ),
         "ofType" => Oxide::Field.new(
           type: Oxide::Types::LateBoundType.new("__Type"),
-          resolve: ->(resolution : Oxide::Resolution(Type)) {
-            type = resolution.object.unwrap(resolution.schema)
+          resolve: ->(object : Type, resolution : Oxide::Resolution) {
+            type = object.unwrap(resolution.schema)
 
             case type
             when Types::NonNullType, Types::ListType
@@ -171,7 +171,7 @@ module Oxide
         ),
         "specifiedByURL" => Oxide::Field.new(
           type: Oxide::Types::StringType.new,
-          resolve: ->(resolution : Oxide::Resolution(Type)) {
+          resolve: ->(object : Type, resolution : Oxide::Resolution) {
             nil # TODO: Specified by
           }
         )

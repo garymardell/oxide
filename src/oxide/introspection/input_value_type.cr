@@ -9,23 +9,23 @@ module Oxide
           type: Oxide::Types::NonNullType.new(
             of_type: Oxide::Types::StringType.new
           ),
-          resolve: ->(resolution : Oxide::Resolution(ArgumentInfo)) { resolution.object.name }
+          resolve: ->(object : ArgumentInfo, resolution : Oxide::Resolution) { object.name }
         ),
         "description" => Oxide::Field.new(
           type: Oxide::Types::StringType.new,
-          resolve: ->(resolution : Oxide::Resolution(ArgumentInfo)) { resolution.object.description }
+          resolve: ->(object : ArgumentInfo, resolution : Oxide::Resolution) { object.description }
         ),
         "type" => Oxide::Field.new(
           type: Oxide::Types::NonNullType.new(
             of_type: Oxide::Types::LateBoundType.new("__Type")
           ),
-          resolve: ->(resolution : Oxide::Resolution(ArgumentInfo)) { resolution.object.type }
+          resolve: ->(object : ArgumentInfo, resolution : Oxide::Resolution) { object.type }
         ),
         "defaultValue" => Oxide::Field.new(
           type: Oxide::Types::StringType.new,
-          resolve: ->(resolution : Oxide::Resolution(ArgumentInfo)) {
+          resolve: ->(object : ArgumentInfo, resolution : Oxide::Resolution) {
             # TODO: Support printing all types
-            if default_value = resolution.object.default_value
+            if default_value = object.default_value
               case default_value
               when String
                 "\"#{default_value}\""
@@ -39,11 +39,11 @@ module Oxide
           type: Oxide::Types::NonNullType.new(
             of_type: Oxide::Types::BooleanType.new
           ),
-          resolve: ->(resolution : Oxide::Resolution(ArgumentInfo)) { resolution.object.deprecated? }
+          resolve: ->(object : ArgumentInfo, resolution : Oxide::Resolution) { object.deprecated? }
         ),
         "deprecationReason" => Oxide::Field.new(
           type: Oxide::Types::StringType.new,
-          resolve: ->(resolution : Oxide::Resolution(ArgumentInfo)) { resolution.object.deprecation_reason }
+          resolve: ->(object : ArgumentInfo, resolution : Oxide::Resolution) { object.deprecation_reason }
         )
       }
     )

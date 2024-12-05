@@ -33,11 +33,11 @@ module Oxide
           type: Oxide::Types::NonNullType.new(
             of_type: Oxide::Types::StringType.new
           ),
-          resolve: ->(resolution : Oxide::Resolution(Directive)) { resolution.object.name }
+          resolve: ->(object : Directive, resolution : Oxide::Resolution) { object.name }
         ),
         "description" => Oxide::Field.new(
           type: Oxide::Types::StringType.new,
-          resolve: ->(resolution : Oxide::Resolution(Directive)) { nil }
+          resolve: ->(object : Directive, resolution : Oxide::Resolution) { nil }
         ),
         "locations" => Oxide::Field.new(
           type: Oxide::Types::NonNullType.new(
@@ -47,7 +47,7 @@ module Oxide
               )
             )
           ),
-          resolve: ->(resolution : Oxide::Resolution(Directive)) { resolution.object.locations.map(&.to_s) }
+          resolve: ->(object : Directive, resolution : Oxide::Resolution) { object.locations.map(&.to_s) }
         ),
         "args" => Oxide::Field.new(
           type: Oxide::Types::NonNullType.new(
@@ -63,13 +63,13 @@ module Oxide
               default_value: false
             )
           },
-          resolve: ->(resolution : Oxide::Resolution(Directive)) {
+          resolve: ->(object : Directive, resolution : Oxide::Resolution) {
             if resolution.arguments["includeDeprecated"]?
-              resolution.object.arguments.map do |name, argument|
+              object.arguments.map do |name, argument|
                 Introspection::ArgumentInfo.new(name, argument)
               end
             else
-              resolution.object.arguments.reject { |_, argument| argument.deprecated? }.map do |name, argument|
+              object.arguments.reject { |_, argument| argument.deprecated? }.map do |name, argument|
                 Introspection::ArgumentInfo.new(name, argument)
               end
             end
@@ -79,7 +79,7 @@ module Oxide
           type: Oxide::Types::NonNullType.new(
             of_type: Oxide::Types::BooleanType.new
           ),
-          resolve: ->(resolution : Oxide::Resolution(Directive)) { resolution.object.repeatable }
+          resolve: ->(object : Directive, resolution : Oxide::Resolution) { object.repeatable }
         )
       }
     )
