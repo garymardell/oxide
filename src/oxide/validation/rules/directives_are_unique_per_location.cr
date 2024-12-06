@@ -11,7 +11,7 @@ module Oxide
             named_directives = directives.select { |directive| directive.name == directive_name }
 
             unless named_directives.one?
-              context.errors << Error.new("The directive \"#{directive_name}\" can only be used once at this location.")
+              context.errors << ValidationError.new("The directive \"#{directive_name}\" can only be used once at this location.")
             end
           end
         end

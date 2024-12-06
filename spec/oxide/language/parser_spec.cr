@@ -195,7 +195,7 @@ describe Oxide::Language::Parser do
       }
     INPUT
 
-    expect_raises Oxide::ParseException, "Expected (query, mutation, subscription, fragment), found notAnOperation" do
+    expect_raises Oxide::ParseError, "Expected (query, mutation, subscription, fragment), found notAnOperation" do
       parser = Oxide::Language::Parser.new(input)
       parser.parse
     end

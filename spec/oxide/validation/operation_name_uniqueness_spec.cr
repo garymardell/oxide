@@ -59,7 +59,7 @@ describe Oxide::Validation::OperationNameUniqueness do
     pipeline.execute
 
     pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Oxide::Error.new("Operation name \"getName\" must be unique"))
+    pipeline.errors.should contain(Oxide::ValidationError.new("Operation name \"getName\" must be unique"))
   end
 
   it "counter example #107" do
@@ -88,6 +88,6 @@ describe Oxide::Validation::OperationNameUniqueness do
     pipeline.execute
 
     pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Oxide::Error.new("Operation name \"dogOperation\" must be unique"))
+    pipeline.errors.should contain(Oxide::ValidationError.new("Operation name \"dogOperation\" must be unique"))
   end
 end

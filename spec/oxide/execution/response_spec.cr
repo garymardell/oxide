@@ -18,7 +18,7 @@ describe Oxide::Execution::Response do
 
     Oxide::Execution::Response.new(
       errors: Set.new(
-        [Oxide::Error.new("Error occurred")]
+        [Oxide::RuntimeError.new("Error occurred")]
       )
     ).to_json.should eq(expected)
   end

@@ -19,6 +19,6 @@ describe Oxide::Validation::InputObjectFieldUniqueness do
     pipeline.execute
 
     pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Oxide::Error.new("There can be only one input field named \"field\""))
+    pipeline.errors.should contain(Oxide::ValidationError.new("There can be only one input field named \"field\""))
   end
 end

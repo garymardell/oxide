@@ -15,7 +15,7 @@ module Oxide
           input_field_definition = input_type.input_fields[input_field_name]?
 
           if input_field_definition.nil?
-            context.errors << Error.new("InputObject '#{input_type.name}' doesn't accept argument '#{input_field_name}'")
+            context.errors << ValidationError.new("InputObject '#{input_type.name}' doesn't accept argument '#{input_field_name}'")
           end
         end
       end

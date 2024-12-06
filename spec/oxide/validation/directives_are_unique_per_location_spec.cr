@@ -19,7 +19,7 @@ describe Oxide::Validation::DirectivesAreUniquePerLocation do
     pipeline.execute
 
     pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Oxide::Error.new("The directive \"skip\" can only be used once at this location."))
+    pipeline.errors.should contain(Oxide::ValidationError.new("The directive \"skip\" can only be used once at this location."))
   end
 
   it "example #167" do

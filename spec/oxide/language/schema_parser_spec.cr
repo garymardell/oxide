@@ -38,7 +38,7 @@ describe Oxide::Language::Parser do
         directive @example repeatable on INVALID
       QUERY
 
-      expect_raises Oxide::ParseException, "Invalid directive location \"INVALID\"" do
+      expect_raises Oxide::ParseError, "Invalid directive location \"INVALID\"" do
         Oxide::Language::Parser.parse(schema)
       end
     end

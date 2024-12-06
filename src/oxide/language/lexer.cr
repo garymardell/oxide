@@ -280,7 +280,7 @@ module Oxide
       end
 
       private def raise(message)
-        ::raise ParseException.new("Syntax Error: #{message}", @line_number, @column_number)
+        ::raise ParseError.new("Syntax Error: #{message}", @line_number, @column_number)
       end
     end
   end

@@ -8,7 +8,7 @@ module Oxide
       def enter(node : Oxide::Language::Nodes::OperationDefinition, context)
         if name = node.name
           if @operation_names.includes?(name)
-            context.errors << Error.new("Operation name \"#{name}\" must be unique")
+            context.errors << ValidationError.new("Operation name \"#{name}\" must be unique")
           else
             @operation_names << name
           end

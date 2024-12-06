@@ -7,7 +7,7 @@ module Oxide
 
         grouped_arguments.each do |name, arguments|
           if arguments.size > 1
-            context.errors << Error.new("There can be only one argument named \"#{name}\"")
+            context.errors << ValidationError.new("There can be only one argument named \"#{name}\"")
           end
         end
       end

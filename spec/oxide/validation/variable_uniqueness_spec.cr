@@ -21,7 +21,7 @@ describe Oxide::Validation::VariableUniqueness do
     pipeline.execute
 
     pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Oxide::Error.new("There can only be one variable named \"atOtherHomes\""))
+    pipeline.errors.should contain(Oxide::ValidationError.new("There can only be one variable named \"atOtherHomes\""))
   end
 
   it "example #169" do

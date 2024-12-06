@@ -63,9 +63,9 @@ describe Oxide::Validation::VariablesAreInputTypes do
     pipeline.execute
 
     pipeline.errors.size.should eq(4)
-    pipeline.errors.should contain(Oxide::Error.new("Cat isn't a valid input type (on $cat)"))
-    pipeline.errors.should contain(Oxide::Error.new("Dog isn't a valid input type (on $dog)"))
-    pipeline.errors.should contain(Oxide::Error.new("Pet isn't a valid input type (on $pets)"))
-    pipeline.errors.should contain(Oxide::Error.new("CatOrDog isn't a valid input type (on $catOrDog)"))
+    pipeline.errors.should contain(Oxide::ValidationError.new("Cat isn't a valid input type (on $cat)"))
+    pipeline.errors.should contain(Oxide::ValidationError.new("Dog isn't a valid input type (on $dog)"))
+    pipeline.errors.should contain(Oxide::ValidationError.new("Pet isn't a valid input type (on $pets)"))
+    pipeline.errors.should contain(Oxide::ValidationError.new("CatOrDog isn't a valid input type (on $catOrDog)"))
   end
 end

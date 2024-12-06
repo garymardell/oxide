@@ -51,6 +51,6 @@ describe Oxide::Validation::LoneAnonymousOperation do
     pipeline.execute
 
     pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Oxide::Error.new("Operation name is required when multiple operations are present"))
+    pipeline.errors.should contain(Oxide::ValidationError.new("Operation name is required when multiple operations are present"))
   end
 end

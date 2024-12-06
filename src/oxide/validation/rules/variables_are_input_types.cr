@@ -10,7 +10,7 @@ module Oxide
           end
 
           if type && !type.input_type?
-            context.errors << Error.new("#{type.name} isn't a valid input type (on $#{variable.name})")
+            context.errors << ValidationError.new("#{type.name} isn't a valid input type (on $#{variable.name})")
           end
         end
       end

@@ -12,7 +12,7 @@ This library was originally built to experiment with building dynamic schemas on
   - [ ] Fully support block strings
   - [ ] Add tests for parsing errors
 - [ ] Error handling
-  - [ ] Raise appropriate classes of exceptions within runtime
+  - [x] Raise appropriate classes of exceptions within runtime
   - [ ] Raise errors during validation phase
   - [ ] Handle exceptions to generate an errored response
 - Static validation (https://spec.graphql.org/October2021/#sec-Validation)

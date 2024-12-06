@@ -39,7 +39,7 @@ module Oxide
           when "mutation"
             execute_mutation(execution_context, operation, schema, coerced_variable_values, initial_value)
           end
-        rescue e : Error
+        rescue e : RuntimeError
           execution_context.errors << e
         end
 
@@ -54,7 +54,7 @@ module Oxide
         if definitions.one?
           definitions.first
         else
-          raise InvalidOperationError.new("operation definition not found")
+          raise RuntimeError.new("operation definition not found")
         end
       end
 
@@ -64,7 +64,7 @@ module Oxide
         if definition
           definition
         else
-          raise InvalidOperationError.new("operation definition not found")
+          raise RuntimeError.new("operation definition not found")
         end
       end
 
@@ -123,7 +123,7 @@ module Oxide
 
             memo[key] = execute_field(execution_context, object_type, object_value, field.type, fields, variable_values).as(IntermediateType)
           else
-            raise "error getting field #{field_name}"
+            raise SchemaError.new("error getting field #{field_name}")
           end
         end
       end
@@ -305,7 +305,7 @@ module Oxide
       end
 
       private def complete_value(execution_context : Execution::Context, field_type, fields, result, variable_values) : IntermediateType
-        raise "should not be reached"
+        raise SchemaError.new("Unexpected field type: #{field_type.class}")
       end
 
       private def get_type(typename)
@@ -440,7 +440,7 @@ module Oxide
             # TODO: Something wrong with this conversion?
             coerced_values[argument_name] = argument_definition.default_value.as(SerializedOutput)
           elsif argument_type.is_a?(Oxide::Types::NonNullType) && (!has_value || value.nil?)
-            raise "non nullable argument has null value"
+            raise RuntimeError.new("Argument '#{argument_name}' received null value for non null type")
           elsif has_value
             if value.nil?
               coerced_values[argument_name] = nil
@@ -478,7 +478,7 @@ module Oxide
           if !has_value && !variable_definition.default_value.nil?
             coerced_variables[variable_name] = variable_definition.default_value.not_nil!.value.as(CoercedInput)
           elsif variable_type.is_a?(Oxide::Language::Nodes::NonNullType) && (!has_value || value.nil?)
-            raise "Variable is marked as non null but received a null value"
+            raise RuntimeError.new("Variable '#{variable_name}' received null value for non null type")
           elsif has_value
             if value.nil?
               coerced_variables[variable_name] = nil

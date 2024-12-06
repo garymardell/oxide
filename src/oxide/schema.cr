@@ -60,7 +60,7 @@ module Oxide
 
         inner_type && Oxide::Types::ListType.new(of_type: inner_type)
       else
-        raise "Couldn't get type #{ast_node}"
+        raise SchemaError.new("#{ast_node.class} is not supported")
       end
     end
   end

@@ -7,7 +7,7 @@ module Oxide
 
       @[JSON::Field(emit_null: true)]
       getter data : SerializedOutput?
-      getter errors : Set(Error)?
+      getter errors : Set(RuntimeError)?
 
       def initialize(@data = nil, @errors = nil)
       end

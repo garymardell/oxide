@@ -1,4 +1,22 @@
 module Oxide
+  # Base error for all oxide errors to extend from
+  class Error < Exception
+  end
+
+  # When there is an issue with the schema such as incorrecy resolver types
+  class SchemaError < Error
+  end
+
+  # When there is an issue lexing / parsing the query
+  class ParseError < Error
+    getter line_number : Int32?
+    getter column_number : Int32?
+
+    def initialize(message, @line_number, @column_number)
+      super(message)
+    end
+  end
+
   record Location, line : Int32, column : Int32 do
     def to_json(builder : JSON::Builder)
       builder.object do
@@ -14,19 +32,8 @@ module Oxide
     def_equals_and_hash line, column
   end
 
-  class ParseException < Exception
-    getter line_number : Int32?
-    getter column_number : Int32?
-
-    def initialize(message, @line_number, @column_number)
-      super(message)
-    end
-  end
-
-  class SchemaException < Exception
-  end
-
-  class Error < Exception
+  # Base for all issues that occur during runtime to provide accurate location responses
+  class RuntimeError < Error
     getter locations : Array(Location) = [] of Location
 
     def initialize(message, @locations = [] of Location)
@@ -53,18 +60,15 @@ module Oxide
     def_equals_and_hash @message, @locations
   end
 
-  class RequestError < Error
+  class ValidationError < RuntimeError
   end
 
-  class InvalidOperationError < RequestError
+  class FieldError < RuntimeError
   end
 
-  class FieldError < Error
+  class InputCoercionError < RuntimeError
   end
 
-  class InputCoercionError < FieldError
-  end
-
-  class SerializationError < FieldError
+  class SerializationError < RuntimeError
   end
 end

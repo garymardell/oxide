@@ -23,8 +23,8 @@ describe Oxide::Validation::FieldSelections do
     pipeline.execute
 
     pipeline.errors.size.should eq(2)
-    pipeline.errors.should contain(Oxide::Error.new("Field 'meowVolume' doesn't exist on type 'Dog'"))
-    pipeline.errors.should contain(Oxide::Error.new("Field 'kawVolume' doesn't exist on type 'Dog'"))
+    pipeline.errors.should contain(Oxide::ValidationError.new("Field 'meowVolume' doesn't exist on type 'Dog'"))
+    pipeline.errors.should contain(Oxide::ValidationError.new("Field 'kawVolume' doesn't exist on type 'Dog'"))
   end
 
   it "example #116" do
@@ -65,7 +65,7 @@ describe Oxide::Validation::FieldSelections do
     pipeline.execute
 
     pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Oxide::Error.new("Field 'nickname' doesn't exist on type 'Pet'"))
+    pipeline.errors.should contain(Oxide::ValidationError.new("Field 'nickname' doesn't exist on type 'Pet'"))
   end
 
   it "example #118" do
@@ -113,6 +113,6 @@ describe Oxide::Validation::FieldSelections do
     pipeline.execute
 
     pipeline.errors.size.should eq(2)
-    pipeline.errors.should contain(Oxide::Error.new("Selections can't be made directly on unions (see selections on CatOrDog)"))
+    pipeline.errors.should contain(Oxide::ValidationError.new("Selections can't be made directly on unions (see selections on CatOrDog)"))
   end
 end

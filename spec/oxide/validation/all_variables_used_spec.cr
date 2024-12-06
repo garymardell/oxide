@@ -21,7 +21,7 @@ describe Oxide::Validation::AllVariablesUsed do
     pipeline.execute
 
     pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Oxide::Error.new("Variable $atOtherHomes is declared by variableUnused but not used"))
+    pipeline.errors.should contain(Oxide::ValidationError.new("Variable $atOtherHomes is declared by variableUnused but not used"))
   end
 
   it "example #181" do
@@ -74,7 +74,7 @@ describe Oxide::Validation::AllVariablesUsed do
     pipeline.execute
 
     pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Oxide::Error.new("Variable $atOtherHomes is declared by variableNotUsedWithinFragment but not used"))
+    pipeline.errors.should contain(Oxide::ValidationError.new("Variable $atOtherHomes is declared by variableNotUsedWithinFragment but not used"))
   end
 
   it "counter example #183" do
@@ -107,6 +107,6 @@ describe Oxide::Validation::AllVariablesUsed do
     pipeline.execute
 
     pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Oxide::Error.new("Variable $extra is declared by queryWithExtraVar but not used"))
+    pipeline.errors.should contain(Oxide::ValidationError.new("Variable $extra is declared by queryWithExtraVar but not used"))
   end
 end

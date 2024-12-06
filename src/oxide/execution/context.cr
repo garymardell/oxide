@@ -10,11 +10,11 @@ module Oxide
       property current_object : Oxide::Types::ObjectType?
       property current_field : Oxide::Language::Nodes::Field?
 
-      getter errors : Set(Error)
+      getter errors : Set(RuntimeError)
 
       def initialize(@query : Oxide::Query, @context : Oxide::Context? = nil)
         @current_path = [] of String
-        @errors = Set(Error).new
+        @errors = Set(RuntimeError).new
       end
     end
   end

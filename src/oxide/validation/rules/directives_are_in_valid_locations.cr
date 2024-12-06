@@ -29,7 +29,7 @@ module Oxide
         when "subscription"
           Directive::Location::SUBSCRIPTION
         else
-          raise "Invalid location"
+          raise SchemaError.new("Unsupported operation type '#{node.operation_type}'")
         end
 
         @adjacent_stack << {node, location}
@@ -50,7 +50,7 @@ module Oxide
             node, location = adjacent
 
             unless locations.includes?(location)
-              context.errors << Error.new("'@#{directive_name}' can't be applied to #{location.to_human} (allowed: #{locations.map(&.to_human).join(", ")})")
+              context.errors << ValidationError.new("'@#{directive_name}' can't be applied to #{location.to_human} (allowed: #{locations.map(&.to_human).join(", ")})")
             end
           end
         end

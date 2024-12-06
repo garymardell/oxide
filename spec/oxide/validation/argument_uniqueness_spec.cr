@@ -21,6 +21,6 @@ describe Oxide::Validation::ArgumentUniqueness do
     pipeline.execute
 
     pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Oxide::Error.new("There can be only one argument named \"name\""))
+    pipeline.errors.should contain(Oxide::ValidationError.new("There can be only one argument named \"name\""))
   end
 end

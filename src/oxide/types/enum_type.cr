@@ -31,7 +31,7 @@ module Oxide
         if enum_value
           enum_value.value
         else
-          raise "Value could be coerced into enum"
+          raise SerializationError.new("Enum value could not be serialized")
         end
       end
 

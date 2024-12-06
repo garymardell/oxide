@@ -19,6 +19,6 @@ describe Oxide::Validation::DirectivesAreInValidLocations do
     pipeline.execute
 
     pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Oxide::Error.new("'@skip' can't be applied to queries (allowed: fields, fragment spreads, inline fragments)"))
+    pipeline.errors.should contain(Oxide::ValidationError.new("'@skip' can't be applied to queries (allowed: fields, fragment spreads, inline fragments)"))
   end
 end

@@ -12,7 +12,7 @@ module Oxide
 
         unless definition
           if directive = context.directive
-            context.errors << Error.new("Directive '#{directive.name}' doesn't accept argument '#{node.name}'")
+            context.errors << ValidationError.new("Directive '#{directive.name}' doesn't accept argument '#{node.name}'")
           elsif field_definition && parent_type
             field_name, field = field_definition
 
@@ -20,7 +20,7 @@ module Oxide
               parent_type.name
             end
 
-            context.errors << Error.new("Field '#{field_name}' doesn't accept argument '#{node.name}'", [node.to_location])
+            context.errors << ValidationError.new("Field '#{field_name}' doesn't accept argument '#{node.name}'", [node.to_location])
           end
         end
       end

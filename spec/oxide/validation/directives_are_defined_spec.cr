@@ -21,7 +21,7 @@ describe Oxide::Validation::DirectivesAreDefined do
     pipeline.execute
 
     pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Oxide::Error.new("Directive @missing is not defined"))
+    pipeline.errors.should contain(Oxide::ValidationError.new("Directive @missing is not defined"))
   end
 
   it "example" do

@@ -75,7 +75,7 @@ module Oxide
         elsif value.responds_to?(:as_s)
           value.as_s
         else
-          raise "Could not coerce value to String"
+          raise InputCoercionError.new("Could not coerce value to String")
         end
       end
     end
@@ -164,7 +164,7 @@ module Oxide
         if value.responds_to?(:to_f32)
           value.to_f32
         else
-          raise "Cannot serialize value to float"
+          raise SerializationError.new("Cannot serialize value to float")
         end
       end
     end

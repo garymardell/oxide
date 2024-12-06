@@ -42,7 +42,7 @@ describe Oxide::Validation::ArgumentNames do
     pipeline.execute
 
     pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Oxide::Error.new("Field 'doesKnowCommand' doesn't accept argument 'command'", [Oxide::Location.new(2, 21)]))
+    pipeline.errors.should contain(Oxide::ValidationError.new("Field 'doesKnowCommand' doesn't accept argument 'command'", [Oxide::Location.new(2, 21)]))
   end
 
   it "counter example #133" do
@@ -63,7 +63,7 @@ describe Oxide::Validation::ArgumentNames do
     pipeline.execute
 
     pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Oxide::Error.new("Directive 'include' doesn't accept argument 'unless'"))
+    pipeline.errors.should contain(Oxide::ValidationError.new("Directive 'include' doesn't accept argument 'unless'"))
   end
 
   it "example #135" do

@@ -10,7 +10,7 @@ describe Oxide::Language::Parser do
       }
     INPUT
 
-    expect_raises Oxide::ParseException, "Syntax Error: Expected Name, found RBrace" do
+    expect_raises Oxide::ParseError, "Syntax Error: Expected Name, found RBrace" do
       Oxide::Language::Parser.parse(input)
     end
   end
@@ -24,7 +24,7 @@ describe Oxide::Language::Parser do
       }
     INPUT
 
-    expect_raises Oxide::ParseException, "Syntax Error: Expected Name, found LBrace" do
+    expect_raises Oxide::ParseError, "Syntax Error: Expected Name, found LBrace" do
       Oxide::Language::Parser.parse(input)
     end
   end

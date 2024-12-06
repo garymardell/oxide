@@ -6,7 +6,7 @@ module Oxide
         directive_definition = context.schema.directives.find { |directive| directive.name == directive_name }
 
         unless directive_definition
-          context.errors << Error.new("Directive @#{directive_name} is not defined")
+          context.errors << ValidationError.new("Directive @#{directive_name} is not defined")
         end
       end
     end

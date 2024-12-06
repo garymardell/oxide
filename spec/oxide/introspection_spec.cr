@@ -36,8 +36,6 @@ describe Oxide do
     runtime = Oxide::Execution::Runtime.new(DummySchema)
 
     result = runtime.execute(query: Oxide::Query.new(query_string)).data
-
-    pp result
   end
 
   it "supports full introspection" do
@@ -135,7 +133,5 @@ describe Oxide do
     runtime = Oxide::Execution::Runtime.new(DummySchema)
 
     result = runtime.execute(query: Oxide::Query.new(query_string)).data
-
-    pp result
   end
 end

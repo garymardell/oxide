@@ -43,6 +43,6 @@ describe Oxide::Validation::InputObjectFieldNames do
     pipeline.execute
 
     pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Oxide::Error.new("InputObject 'FindDogInput' doesn't accept argument 'favoriteCookieFlavor'"))
+    pipeline.errors.should contain(Oxide::ValidationError.new("InputObject 'FindDogInput' doesn't accept argument 'favoriteCookieFlavor'"))
   end
 end
