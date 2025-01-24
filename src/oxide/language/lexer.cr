@@ -152,7 +152,8 @@ module Oxide
           if next_char == '"'
             consume_block_string
           else
-            return ""
+            @token.raw_value = ""
+            return
           end
         else
           consume_simple_string
