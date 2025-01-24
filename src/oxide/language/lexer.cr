@@ -152,7 +152,7 @@ module Oxide
           if next_char == '"'
             consume_block_string
           else
-            consume_simple_string('"')
+            return ""
           end
         else
           consume_simple_string

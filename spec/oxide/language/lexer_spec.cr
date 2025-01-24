@@ -18,6 +18,10 @@ describe Oxide::Language::Lexer do
     Oxide::Language::Lexer.new("\"hello world\"").next_token.should eq(string_token("hello world"))
   end
 
+  it "handles empty strings" do
+    Oxide::Language::Lexer.new("\"\"").next_token.should eq(string_token(""))
+  end
+
   it "handles block strings" do
     input = <<-INPUT
     """
