@@ -210,7 +210,9 @@ DummySchema = Oxide::Schema.new(
           )
         },
         resolve: ->(object : Query, resolution : Oxide::Resolution){
-          nil
+          Charge.new(
+            id: 1, status: nil, reference: resolution.arguments["input"].as(Hash)["reference"].to_s
+          )
         }
       )
     }

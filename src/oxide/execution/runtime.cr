@@ -10,7 +10,7 @@ require "./context"
 require "./response"
 
 module Oxide
-  alias ArgumentValues = Hash(String, SerializedOutput)
+  alias ArgumentValues = Hash(String, CoercedInput)
 
   module Execution
     class Runtime
@@ -405,7 +405,7 @@ module Oxide
       end
 
       private def coerce_argument_values(argument_definitions, arguments, variable_values) : ArgumentValues
-        coerced_values = {} of String => SerializedOutput
+        coerced_values = {} of String => CoercedInput
 
         argument_values = arguments.each_with_object({} of String => Oxide::Language::Nodes::Value?) do |argument, memo|
           memo[argument.name] = argument.value
@@ -438,7 +438,7 @@ module Oxide
 
           if !has_value && argument_definition.has_default_value?
             # TODO: Something wrong with this conversion?
-            coerced_values[argument_name] = argument_definition.default_value.as(SerializedOutput)
+            coerced_values[argument_name] = argument_definition.default_value.as(CoercedInput)
           elsif argument_type.is_a?(Oxide::Types::NonNullType) && (!has_value || value.nil?)
             raise RuntimeError.new("Argument '#{argument_name}' received null value for non null type")
           elsif has_value
@@ -446,13 +446,13 @@ module Oxide
               coerced_values[argument_name] = nil
             elsif argument_value.is_a?(Oxide::Language::Nodes::Variable)
               coerced_values[argument_name] = if value.is_a?(Hash)
-                value.as(Hash(String, CoercedInput)).transform_values { |value| value.as(SerializedOutput) }
+                value.as(Hash(String, CoercedInput)).transform_values { |value| value.as(CoercedInput) }
               else
-                coerced_values[argument_name] = value.as(SerializedOutput)
+                coerced_values[argument_name] = value.as(CoercedInput)
               end
             else
               coerced_value = argument_type.coerce(value)
-              coerced_values[argument_name] = coerced_value.as(SerializedOutput)
+              coerced_values[argument_name] = coerced_value.as(CoercedInput)
             end
           end
         end

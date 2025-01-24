@@ -63,6 +63,10 @@ module Oxide
         value
       end
 
+      def coerce(value : Oxide::Language::Nodes::StringValue) : CoercedInput
+        value.value
+      end
+
       def coerce(value) : CoercedInput
         raise InputCoercionError.new("String cannot represent a non-string value")
       end
