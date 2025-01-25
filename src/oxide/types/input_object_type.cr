@@ -19,6 +19,14 @@ module Oxide
         coerce(value.as_h)
       end
 
+      def coerce(value : CoercedInput) : CoercedInput
+        if value.is_a?(Hash)
+          coerce(value.as(Hash))
+        else
+          raise InputCoercionError.new("INPUT_OBJECT did not receive a hash")
+        end
+      end
+
       def coerce(value : Hash) : CoercedInput
         cooerced_values = Hash(String, CoercedInput).new
 
