@@ -27,6 +27,25 @@ module Oxide
         end
       end
 
+      def coerce(value : Oxide::Language::Nodes::ObjectValue) : CoercedInput
+        cooerced_values = Hash(String, CoercedInput).new
+        object_value = value.value
+
+        input_fields.each do |name, argument|
+          has_value = object_value.has_key?(name)
+
+          if has_value
+            cooerced_values[name] = argument.type.coerce(object_value[name]).as(CoercedInput)
+          else
+            if argument.has_default_value?
+              cooerced_values[name] = argument.type.coerce(argument.default_value).as(CoercedInput)
+            end
+          end
+        end
+
+        cooerced_values
+      end
+
       def coerce(value : Hash) : CoercedInput
         cooerced_values = Hash(String, CoercedInput).new
 
