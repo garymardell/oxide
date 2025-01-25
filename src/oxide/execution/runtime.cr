@@ -10,7 +10,7 @@ require "./context"
 require "./response"
 
 module Oxide
-  alias ArgumentValues = Hash(String, CoercedInput)
+  alias ArgumentValues = Hash(String, JSON::Any::Type)
 
   module Execution
     class Runtime
@@ -68,7 +68,7 @@ module Oxide
         end
       end
 
-      private def execute_query(execution_context : Execution::Context, query, schema, coerced_variable_values, initial_value) : SerializedOutput
+      private def execute_query(execution_context : Execution::Context, query, schema, coerced_variable_values : Hash(String, JSON::Any), initial_value) : SerializedOutput
         if query_type = schema.query
 
           begin
@@ -112,7 +112,7 @@ module Oxide
         end
       end
 
-      private def execute_selection_set(execution_context : Execution::Context, selection_set, object_type, object_value, variable_values) : Hash(String, IntermediateType)
+      private def execute_selection_set(execution_context : Execution::Context, selection_set, object_type, object_value, variable_values : Hash(String, JSON::Any)) : Hash(String, IntermediateType)
         grouped_field_set = collect_fields(execution_context, object_type, selection_set, variable_values, nil)
 
         partial_results = grouped_field_set.each_with_object({} of String => IntermediateType) do |(key, fields), memo|
@@ -321,7 +321,7 @@ module Oxide
         schema.get_type_from_ast(ast)
       end
 
-      private def collect_fields(execution_context : Execution::Context, object_type, selection_set, variable_values, visited_fragments)
+      private def collect_fields(execution_context : Execution::Context, object_type, selection_set, variable_values : Hash(String, JSON::Any), visited_fragments)
         grouped_fields = {} of String => Array(Oxide::Language::Nodes::Field)
         visited_fragments ||= [] of String
 
@@ -335,9 +335,9 @@ module Oxide
 
                 case schema_directive.name
                 when "include"
-                  !directive_arguments["if"]
+                  !directive_arguments["if"].as_bool
                 when "skip"
-                  !!directive_arguments["if"]
+                  !!directive_arguments["if"].as_bool
                 else
                   false
                 end
@@ -404,8 +404,8 @@ module Oxide
         selection_set
       end
 
-      private def coerce_argument_values(argument_definitions, arguments, variable_values) : ArgumentValues
-        coerced_values = {} of String => CoercedInput
+      private def coerce_argument_values(argument_definitions, arguments, variable_values : Hash(String, JSON::Any)) : Hash(String, JSON::Any)
+        coerced_values = {} of String => JSON::Any
 
         argument_values = arguments.each_with_object({} of String => Oxide::Language::Nodes::Value?) do |argument, memo|
           memo[argument.name] = argument.value
@@ -436,23 +436,24 @@ module Oxide
             argument_value.try &.value
           end
 
+          pp value.class
+
           if !has_value && argument_definition.has_default_value?
             # TODO: Something wrong with this conversion?
-            coerced_values[argument_name] = argument_definition.default_value.as(CoercedInput)
+            coerced_values[argument_name] = JSON::Any.new(argument_definition.default_value.as(JSON::Any::Type))
           elsif argument_type.is_a?(Oxide::Types::NonNullType) && (!has_value || value.nil?)
             raise RuntimeError.new("Argument '#{argument_name}' received null value for non null type")
           elsif has_value
             if value.nil?
-              coerced_values[argument_name] = nil
+              coerced_values[argument_name] = JSON::Any.new(nil)
             elsif argument_value.is_a?(Oxide::Language::Nodes::Variable)
-              coerced_values[argument_name] = if value.is_a?(Hash)
-                value.as(Hash(String, CoercedInput)).transform_values { |value| value.as(CoercedInput) }
+              coerced_values[argument_name] = if value.is_a?(JSON::Any)
+                value
               else
-                coerced_values[argument_name] = value.as(CoercedInput)
+                JSON::Any.new(nil) # TODO
               end
             else
-              coerced_value = argument_type.coerce(value)
-              coerced_values[argument_name] = coerced_value.as(CoercedInput)
+              coerced_values[argument_name] = JSON::Any.new(argument_type.coerce(value))
             end
           end
         end
@@ -460,8 +461,8 @@ module Oxide
         coerced_values
       end
 
-      private def coerce_variable_values(schema, operation, variable_values)
-        coerced_variables = {} of String => CoercedInput # TODO: Type may change
+      private def coerce_variable_values(schema, operation, variable_values : Hash(String, JSON::Any)) : Hash(String, JSON::Any)
+        coerced_variables = {} of String => JSON::Any # TODO: Type may change
 
         variable_definitions = operation.variable_definitions
         variable_definitions.each do |variable_definition|
@@ -476,25 +477,25 @@ module Oxide
           value = variable_values.fetch(variable_name, nil)
 
           if !has_value && !variable_definition.default_value.nil?
-            coerced_variables[variable_name] = variable_definition.default_value.not_nil!.value.as(CoercedInput)
+            coerced_variables[variable_name] = JSON::Any.new(variable_definition.default_value.not_nil!.value.as(JSON::Any::Type))
           elsif variable_type.is_a?(Oxide::Language::Nodes::NonNullType) && (!has_value || value.nil?)
             raise RuntimeError.new("Variable '#{variable_name}' received null value for non null type")
           elsif has_value
             if value.nil?
-              coerced_variables[variable_name] = nil
+              coerced_variables[variable_name] = JSON::Any.new(nil)
             else
               # TODO: Support coercion for all types
               coerced_value = if variable_type.responds_to?(:coerce)
-                variable_type.coerce(value)
+                JSON::Any.new(variable_type.coerce(value))
               else
                 value
               end
 
               case coerced_value
               when JSON::Any
-                coerced_variables[variable_name] = coerced_value.raw.as(CoercedInput)
+                coerced_variables[variable_name] = coerced_value
               else
-                coerced_variables[variable_name] = coerced_value.as(CoercedInput)
+                coerced_variables[variable_name] = JSON::Any.new(coerced_value.as(JSON::Any::Type))
               end
             end
           end

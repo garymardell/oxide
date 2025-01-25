@@ -25,23 +25,23 @@ module Oxide
         "Represents a unique identifier that is Base64 obfuscated. It is often used to refetch an object or as key for a cache. The ID type appears in a JSON response as a String; however, it is not intended to be human-readable. When expected as an input type, any string (such as `\"VXNlci0xMA==\"`) or integer (such as `4`) input value will be accepted as an ID."
       end
 
-      def coerce(value : String)  : CoercedInput
+      def coerce(value : String)  : JSON::Any::Type
         value
       end
 
-      def coerce(value : Int)  : CoercedInput
+      def coerce(value : Int)  : JSON::Any::Type
         value.to_s
       end
 
-      def coerce(value : JSON::Any)  : CoercedInput
+      def coerce(value : JSON::Any)  : JSON::Any::Type
         value.as_s
       end
 
-      def coerce(value : Oxide::Language::Nodes::StringValue) : CoercedInput
+      def coerce(value : Oxide::Language::Nodes::StringValue) : JSON::Any::Type
         value.value
       end
 
-      def coerce(value)  : CoercedInput
+      def coerce(value)  : JSON::Any::Type
         raise InputCoercionError.new("Could not coerce id")
       end
 
@@ -59,19 +59,19 @@ module Oxide
         "Represents textual data as UTF-8 character sequences. This type is most often used by GraphQL to represent free-form human-readable text."
       end
 
-      def coerce(value : JSON::Any) : CoercedInput
+      def coerce(value : JSON::Any) : JSON::Any::Type
         value.as_s
       end
 
-      def coerce(value : String) : CoercedInput
+      def coerce(value : String) : JSON::Any::Type
         value
       end
 
-      def coerce(value : Oxide::Language::Nodes::StringValue) : CoercedInput
+      def coerce(value : Oxide::Language::Nodes::StringValue) : JSON::Any::Type
         value.value
       end
 
-      def coerce(value) : CoercedInput
+      def coerce(value) : JSON::Any::Type
         raise InputCoercionError.new("String cannot represent a non-string value")
       end
 
@@ -97,25 +97,23 @@ module Oxide
         "Represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1."
       end
 
-      def coerce(value : Int32) : CoercedInput
+      def coerce(value : Int32) : JSON::Any::Type
+        value.to_i64
+      end
+
+      def coerce(value : Int64) : JSON::Any::Type
         value
       end
 
-      def coerce(value : Int64) : CoercedInput
-        value.to_i32
-      rescue e : OverflowError
-        raise InputCoercionError.new("Cannot be converted to Int32")
+      def coerce(value : JSON::Any) : JSON::Any::Type
+        value.as_i64
       end
 
-      def coerce(value : JSON::Any) : CoercedInput
-        value.as_i
-      end
-
-      def coerce(value : Oxide::Language::Nodes::IntValue) : CoercedInput
+      def coerce(value : Oxide::Language::Nodes::IntValue) : JSON::Any::Type
         value.value
       end
 
-      def coerce(value) : CoercedInput
+      def coerce(value) : JSON::Any::Type
         raise InputCoercionError.new("Int cannot represent a non-interger value")
       end
 
@@ -152,27 +150,27 @@ module Oxide
         "Represents signed double-precision fractional values as specified by [IEEE 754](https://en.wikipedia.org/wiki/IEEE_floating_point)."
       end
 
-      def coerce(value : Float32)  : CoercedInput
+      def coerce(value : Float32)  : JSON::Any::Type
         value.to_f64
       end
 
-      def coerce(value : Float64)  : CoercedInput
+      def coerce(value : Float64)  : JSON::Any::Type
         value
       end
 
-      def coerce(value : Int32)  : CoercedInput
+      def coerce(value : Int32)  : JSON::Any::Type
         value.to_f64
       end
 
-      def coerce(value : JSON::Any) : CoercedInput
+      def coerce(value : JSON::Any) : JSON::Any::Type
         value.as_f
       end
 
-      def coerce(value : Oxide::Language::Nodes::FloatValue) : CoercedInput
+      def coerce(value : Oxide::Language::Nodes::FloatValue) : JSON::Any::Type
         value.value
       end
 
-      def coerce(value) : CoercedInput
+      def coerce(value) : JSON::Any::Type
         raise InputCoercionError.new("Could not coerce value to Float")
       end
 
@@ -194,19 +192,19 @@ module Oxide
         "Represents `true` or `false` values."
       end
 
-      def coerce(value : Bool) : CoercedInput
+      def coerce(value : Bool) : JSON::Any::Type
         value
       end
 
-      def coerce(value : JSON::Any)  : CoercedInput
+      def coerce(value : JSON::Any)  : JSON::Any::Type
         value.as_bool
       end
 
-      def coerce(value : Oxide::Language::Nodes::BooleanValue) : CoercedInput
+      def coerce(value : Oxide::Language::Nodes::BooleanValue) : JSON::Any::Type
         value.value
       end
 
-      def coerce(value) : CoercedInput
+      def coerce(value) : JSON::Any::Type
         raise InputCoercionError.new("Can't coerce non boolean value from #{value.class.name}")
       end
 
@@ -224,7 +222,7 @@ module Oxide
       def initialize(@name : String, @description : String? = nil, @specified_by_url : String? = nil, @applied_directives = [] of AppliedDirective)
       end
 
-      def coerce(value) : CoercedInput
+      def coerce(value) : JSON::Any::Type
       end
 
       def serialize(value) : SerializedOutput

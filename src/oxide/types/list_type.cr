@@ -17,7 +17,7 @@ module Oxide
         "LIST"
       end
 
-      def coerce(value : Array) : CoercedInput
+      def coerce(value : Array) : JSON::Any::Type
         value.map do |item|
           case of_type
           when ListType
@@ -25,19 +25,19 @@ module Oxide
               raise InputCoercionError.new("Incorrect item value")
             end
 
-            of_type.coerce(item).as(CoercedInput)
+            JSON::Any.new(of_type.coerce(item))
           else
-            of_type.coerce(item).as(CoercedInput)
+            JSON::Any.new(of_type.coerce(item))
           end
-        end
+        end.as(JSON::Any::Type)
       end
 
-      def coerce(value : Nil) : CoercedInput
+      def coerce(value : Nil) : JSON::Any::Type
         value
       end
 
-      def coerce(value) : CoercedInput
-        Array(CoercedInput).new(1, of_type.coerce(value))
+      def coerce(value) : JSON::Any::Type
+        Array(JSON::Any).new(1, JSON::Any.new(of_type.coerce(value))).as(JSON::Any::Type)
       end
 
       def serialize(value) : SerializedOutput

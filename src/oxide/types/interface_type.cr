@@ -19,7 +19,7 @@ module Oxide
         "INTERFACE"
       end
 
-      def coerce(value) : CoercedInput
+      def coerce(value) : JSON::Any::Type
         raise InputCoercionError.new("Invalid input type")
       end
 

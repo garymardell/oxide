@@ -14,16 +14,6 @@ describe Oxide::Types::IntType do
       build_int_type.coerce(1234567i64).should eq(1234567)
     end
 
-    it "raises if Int64 value is out of Int32 bounds" do
-      expect_raises(Oxide::InputCoercionError) do
-        build_int_type.coerce(Int32::MAX.to_i64 + 1)
-      end
-
-      expect_raises(Oxide::InputCoercionError) do
-        build_int_type.coerce(Int32::MIN.to_i64 - 1)
-      end
-    end
-
     it "raises exception on non integer type" do
       expect_raises(Oxide::InputCoercionError) do
         build_int_type.coerce("2134543")

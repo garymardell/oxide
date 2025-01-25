@@ -11,7 +11,7 @@ module Oxide
       def initialize(@name, @values, @description = nil, @applied_directives = [] of AppliedDirective)
       end
 
-      def coerce(value : String) : CoercedInput
+      def coerce(value : String) : JSON::Any::Type
         enum_value = values.find { |ev| ev.value == value }
 
         if enum_value
@@ -21,7 +21,7 @@ module Oxide
         end
       end
 
-      def coerce(value) : CoercedInput
+      def coerce(value) : JSON::Any::Type
         raise InputCoercionError.new("Value could not be coerced")
       end
 

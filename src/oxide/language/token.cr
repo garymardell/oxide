@@ -36,14 +36,14 @@ module Oxide
         @raw_value = ""
       end
 
-      def int_value : Int32
-        raw_value.to_i32
+      def int_value : Int64
+        raw_value.to_i64
       rescue exc : ArgumentError
         raise "parsing error"
       end
 
-      def float_value : Float32
-        raw_value.to_f32
+      def float_value : Float64
+        raw_value.to_f64
       rescue exc : ArgumentError
         raise "parsing error"
       end

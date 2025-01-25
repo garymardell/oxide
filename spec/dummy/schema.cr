@@ -209,9 +209,9 @@ DummySchema = Oxide::Schema.new(
             type: CreateChargeInputObject
           )
         },
-        resolve: ->(object : Query, resolution : Oxide::Resolution){
+        resolve: ->(object : Query, resolution : Oxide::Resolution) {
           Charge.new(
-            id: 1, status: nil, reference: resolution.arguments["input"].as(Hash)["reference"].to_s
+            id: 1, status: nil, reference: resolution.arguments["input"]["reference"].to_s
           )
         }
       )

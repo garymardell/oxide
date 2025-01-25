@@ -377,7 +377,7 @@ module Oxide
       end
 
       class IntValue < Value
-        getter value : Int32
+        getter value : Int64
 
         def initialize(@value)
         end
@@ -389,7 +389,7 @@ module Oxide
       end
 
       class FloatValue < Value
-        getter value : Float32
+        getter value : Float64
 
         def initialize(@value)
         end

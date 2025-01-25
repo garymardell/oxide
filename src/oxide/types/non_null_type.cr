@@ -19,7 +19,7 @@ module Oxide
         "NON_NULL"
       end
 
-      def coerce(value) : CoercedInput
+      def coerce(value) : JSON::Any::Type
         if value.nil?
           raise InputCoercionError.new("NON_NULL received null value")
         else

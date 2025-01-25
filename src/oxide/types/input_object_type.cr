@@ -15,11 +15,11 @@ module Oxide
         "INPUT_OBJECT"
       end
 
-      def coerce(value : JSON::Any) : CoercedInput
+      def coerce(value : JSON::Any) : JSON::Any::Type
         coerce(value.as_h)
       end
 
-      def coerce(value : CoercedInput) : CoercedInput
+      def coerce(value : JSON::Any::Type) : JSON::Any::Type
         if value.is_a?(Hash)
           coerce(value.as(Hash))
         else
@@ -27,18 +27,18 @@ module Oxide
         end
       end
 
-      def coerce(value : Oxide::Language::Nodes::ObjectValue) : CoercedInput
-        cooerced_values = Hash(String, CoercedInput).new
+      def coerce(value : Oxide::Language::Nodes::ObjectValue) : JSON::Any::Type
+        cooerced_values = Hash(String, JSON::Any).new
         object_value = value.value
 
         input_fields.each do |name, argument|
           has_value = object_value.has_key?(name)
 
           if has_value
-            cooerced_values[name] = argument.type.coerce(object_value[name]).as(CoercedInput)
+            cooerced_values[name] = JSON::Any.new(argument.type.coerce(object_value[name]))
           else
             if argument.has_default_value?
-              cooerced_values[name] = argument.type.coerce(argument.default_value).as(CoercedInput)
+              cooerced_values[name] = JSON::Any.new(argument.type.coerce(argument.default_value))
             end
           end
         end
@@ -46,25 +46,25 @@ module Oxide
         cooerced_values
       end
 
-      def coerce(value : Hash) : CoercedInput
-        cooerced_values = Hash(String, CoercedInput).new
+      def coerce(value : Hash) : JSON::Any::Type
+        cooerced_values = Hash(String, JSON::Any).new
 
         input_fields.each do |name, argument|
           has_value = value.has_key?(name)
 
           if has_value
-            cooerced_values[name] = argument.type.coerce(value[name]).as(CoercedInput)
+            cooerced_values[name] = JSON::Any.new(argument.type.coerce(value[name]))
           else
             if argument.has_default_value?
-              cooerced_values[name] = argument.type.coerce(argument.default_value).as(CoercedInput)
+              cooerced_values[name] = JSON::Any.new(argument.type.coerce(argument.default_value))
             end
           end
         end
 
-        cooerced_values
+        cooerced_values.as(JSON::Any::Type)
       end
 
-      def coerce(value) : CoercedInput
+      def coerce(value) : JSON::Any::Type
         raise InputCoercionError.new("INPUT_OBJECT did not receive a hash")
       end
 
