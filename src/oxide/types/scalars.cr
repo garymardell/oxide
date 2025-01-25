@@ -37,6 +37,10 @@ module Oxide
         value.as_s
       end
 
+      def coerce(value : Oxide::Language::Nodes::StringValue) : CoercedInput
+        value.value
+      end
+
       def coerce(value)  : CoercedInput
         raise InputCoercionError.new("Could not coerce id")
       end
@@ -107,6 +111,10 @@ module Oxide
         value.as_i
       end
 
+      def coerce(value : Oxide::Language::Nodes::IntValue) : CoercedInput
+        value.value
+      end
+
       def coerce(value) : CoercedInput
         raise InputCoercionError.new("Int cannot represent a non-interger value")
       end
@@ -160,6 +168,10 @@ module Oxide
         value.as_f
       end
 
+      def coerce(value : Oxide::Language::Nodes::FloatValue) : CoercedInput
+        value.value
+      end
+
       def coerce(value) : CoercedInput
         raise InputCoercionError.new("Could not coerce value to Float")
       end
@@ -188,6 +200,10 @@ module Oxide
 
       def coerce(value : JSON::Any)  : CoercedInput
         value.as_bool
+      end
+
+      def coerce(value : Oxide::Language::Nodes::BooleanValue) : CoercedInput
+        value.value
       end
 
       def coerce(value) : CoercedInput
