@@ -436,8 +436,6 @@ module Oxide
             argument_value.try &.value
           end
 
-          pp value.class
-
           if !has_value && argument_definition.has_default_value?
             # TODO: Something wrong with this conversion?
             coerced_values[argument_name] = JSON::Any.new(argument_definition.default_value.as(JSON::Any::Type))
