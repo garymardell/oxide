@@ -50,4 +50,42 @@ describe Oxide::Query do
     query.variables.should eq({ "id" => JSON::Any.new("12345") })
     query.operation_name.should be_nil
   end
+
+  it "serializes a query" do
+    expected_query = Oxide::Query.new(
+      query_string: "{ posts { id } }",
+      variables: { "input" => JSON::Any.new({ "id" => JSON::Any.new("1s") }) },
+      operation_name: "posts"
+    )
+
+    query = Oxide::Query.from_json(expected_query.to_json)
+    query.should eq(expected_query)
+  end
+
+  it "serializes a query with new lines" do
+    query_string = <<-GRAPHQL
+      mutation CreateModel($input: ModelCreateInput!) {
+        createModel(input: $input) {
+          model {
+            id
+            name
+            singular
+            plural
+          }
+          userErrors {
+            message
+          }
+        }
+      }
+    GRAPHQL
+
+    expected_query = Oxide::Query.new(
+      query_string: query_string,
+      variables: { "input" => JSON::Any.new({ "id" => JSON::Any.new("1") }) },
+      operation_name: "posts"
+    )
+
+    query = Oxide::Query.from_json(expected_query.to_json)
+    query.should eq(expected_query)
+  end
 end
