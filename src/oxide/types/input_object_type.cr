@@ -19,14 +19,6 @@ module Oxide
         coerce(value.as_h)
       end
 
-      def coerce(value : JSON::Any::Type) : JSON::Any::Type
-        if value.is_a?(Hash)
-          coerce(value.as(Hash))
-        else
-          raise InputCoercionError.new("INPUT_OBJECT did not receive a hash")
-        end
-      end
-
       def coerce(value : Oxide::Language::Nodes::ObjectValue) : JSON::Any::Type
         cooerced_values = Hash(String, JSON::Any).new
         object_value = value.value
