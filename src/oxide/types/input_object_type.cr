@@ -27,7 +27,7 @@ module Oxide
           has_value = object_value.has_key?(name)
 
           if has_value
-            raw_value = value[name]
+            raw_value = object_value[name]
 
             cooerced_values[name] = case raw_value
             when Nil
