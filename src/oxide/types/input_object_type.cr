@@ -27,10 +27,19 @@ module Oxide
           has_value = object_value.has_key?(name)
 
           if has_value
-            cooerced_values[name] = if object_value[name].nil?
-              nil
+            raw_value = value[name]
+
+            cooerced_values[name] = case raw_value
+            when Nil
+              JSON::Any.new(nil)
+            when JSON::Any
+              if raw_value.raw.nil?
+                JSON::Any.new(nil)
+              else
+                JSON::Any.new(argument.type.coerce(raw_value))
+              end
             else
-              JSON::Any.new(argument.type.coerce(object_value[name]))
+              JSON::Any.new(argument.type.coerce(raw_value))
             end
           else
             if argument.has_default_value?
@@ -49,7 +58,20 @@ module Oxide
           has_value = value.has_key?(name)
 
           if has_value
-            cooerced_values[name] = JSON::Any.new(argument.type.coerce(value[name]))
+            raw_value = value[name]
+
+            cooerced_values[name] = case raw_value
+            when Nil
+              JSON::Any.new(nil)
+            when JSON::Any
+              if raw_value.raw.nil?
+                JSON::Any.new(nil)
+              else
+                JSON::Any.new(argument.type.coerce(raw_value))
+              end
+            else
+              JSON::Any.new(argument.type.coerce(raw_value))
+            end
           else
             if argument.has_default_value?
               cooerced_values[name] = JSON::Any.new(argument.type.coerce(argument.default_value))
