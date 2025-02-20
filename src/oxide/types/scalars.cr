@@ -25,15 +25,15 @@ module Oxide
         "Represents a unique identifier that is Base64 obfuscated. It is often used to refetch an object or as key for a cache. The ID type appears in a JSON response as a String; however, it is not intended to be human-readable. When expected as an input type, any string (such as `\"VXNlci0xMA==\"`) or integer (such as `4`) input value will be accepted as an ID."
       end
 
-      def coerce(value : String)  : JSON::Any::Type
+      def coerce(value : String) : JSON::Any::Type
         value
       end
 
-      def coerce(value : Int)  : JSON::Any::Type
+      def coerce(value : Int) : JSON::Any::Type
         value.to_s
       end
 
-      def coerce(value : JSON::Any)  : JSON::Any::Type
+      def coerce(value : JSON::Any) : JSON::Any::Type
         value.as_s
       end
 
@@ -41,7 +41,7 @@ module Oxide
         value.value
       end
 
-      def coerce(value)  : JSON::Any::Type
+      def coerce(value) : JSON::Any::Type
         raise InputCoercionError.new("Could not coerce id")
       end
 
@@ -150,15 +150,15 @@ module Oxide
         "Represents signed double-precision fractional values as specified by [IEEE 754](https://en.wikipedia.org/wiki/IEEE_floating_point)."
       end
 
-      def coerce(value : Float32)  : JSON::Any::Type
+      def coerce(value : Float32) : JSON::Any::Type
         value.to_f64
       end
 
-      def coerce(value : Float64)  : JSON::Any::Type
+      def coerce(value : Float64) : JSON::Any::Type
         value
       end
 
-      def coerce(value : Int32)  : JSON::Any::Type
+      def coerce(value : Int32) : JSON::Any::Type
         value.to_f64
       end
 
@@ -196,7 +196,7 @@ module Oxide
         value
       end
 
-      def coerce(value : JSON::Any)  : JSON::Any::Type
+      def coerce(value : JSON::Any) : JSON::Any::Type
         value.as_bool
       end
 
