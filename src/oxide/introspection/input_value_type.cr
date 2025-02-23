@@ -24,9 +24,10 @@ module Oxide
         "defaultValue" => Oxide::Field.new(
           type: Oxide::Types::StringType.new,
           resolve: ->(object : ArgumentInfo, resolution : Oxide::Resolution) {
-            # TODO: Support printing all types
             if default_value = object.default_value
               case default_value
+              when Types::EnumValue
+                default_value.value
               when String
                 "\"#{default_value}\""
               else
