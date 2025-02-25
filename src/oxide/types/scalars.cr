@@ -213,6 +213,66 @@ module Oxide
       end
     end
 
+    class DateType < ScalarType
+      def name
+        "Date"
+      end
+
+      def description
+        "Represents a ISO8601 date value."
+      end
+
+      def coerce(value : Time) : JSON::Any::Type
+        value.to_s("%F")
+      end
+
+      def coerce(value : JSON::Any) : JSON::Any::Type
+        Time.parse_utc(value.to_s, "%F").to_s("%F")
+      end
+
+      def coerce(value : Oxide::Language::Nodes::StringValue) : JSON::Any::Type
+        value.value
+      end
+
+      def coerce(value) : JSON::Any::Type
+        raise InputCoercionError.new("Can't coerce non date value from #{value.class.name}")
+      end
+
+      def serialize(value) : SerializedOutput
+        coerce(value)
+      end
+    end
+
+    class DateTimeType < ScalarType
+      def name
+        "DateTime"
+      end
+
+      def description
+        "Represents a ISO8601 datetime value."
+      end
+
+      def coerce(value : Time) : JSON::Any::Type
+        value.to_rfc3339
+      end
+
+      def coerce(value : JSON::Any) : JSON::Any::Type
+        Time.parse_rfc3339(value.to_s).to_rfc3339
+      end
+
+      def coerce(value : Oxide::Language::Nodes::StringValue) : JSON::Any::Type
+        value.value
+      end
+
+      def coerce(value) : JSON::Any::Type
+        raise InputCoercionError.new("Can't coerce non datetime value from #{value.class.name}")
+      end
+
+      def serialize(value) : SerializedOutput
+        coerce(value)
+      end
+    end
+
     class CustomScalarType < ScalarType
       getter name : String
       getter description : String?
