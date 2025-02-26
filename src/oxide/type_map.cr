@@ -47,6 +47,10 @@ module Oxide
 
     def visit(type : Oxide::Types::InputObjectType)
       type_map[type.name] = type
+
+      type.input_fields.each do |name, field|
+        field.type.accept(self)
+      end
     end
 
     def visit(type : Oxide::Types::InterfaceType)
