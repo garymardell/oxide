@@ -7,13 +7,13 @@ module Oxide
       delegate token, to: @lexer
       delegate next_token, to: @lexer
 
-      def self.parse(input : String)
-        parser = self.new(input)
+      def self.parse(input : String, max_tokens : Int32? = nil)
+        parser = self.new(input, max_tokens)
         parser.parse
       end
 
-      def initialize(input : String)
-        @lexer = Lexer.new(input)
+      def initialize(input : String, max_tokens : Int32? = nil)
+        @lexer = Lexer.new(input, max_tokens)
 
         next_token
       end

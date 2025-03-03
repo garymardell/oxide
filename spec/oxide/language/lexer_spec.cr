@@ -39,6 +39,27 @@ describe Oxide::Language::Lexer do
 
     Oxide::Language::Lexer.new(input).next_token.should eq(string_token(output))
   end
+
+  it "raises an error if max tokens threshold is surpassed" do
+    input = <<-INPUT
+      query {
+        first
+        second
+        third
+        fourth
+      }
+    INPUT
+
+    lexer = Oxide::Language::Lexer.new(input, max_tokens: 4)
+    lexer.next_token
+    lexer.next_token
+    lexer.next_token
+    lexer.next_token
+
+    expect_raises Oxide::ParseError, "Syntax Error: Document contains more than 4 tokens" do
+      lexer.next_token
+    end
+  end
 end
 
 def string_token(value)

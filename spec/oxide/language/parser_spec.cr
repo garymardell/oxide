@@ -201,6 +201,22 @@ describe Oxide::Language::Parser do
     end
   end
 
+  it "raises an error if max tokens threshold is surpassed" do
+    input = <<-INPUT
+      query {
+        first
+        second
+        third
+        fourth
+      }
+    INPUT
+
+    expect_raises Oxide::ParseError, "Syntax Error: Document contains more than 4 tokens" do
+      parser = Oxide::Language::Parser.new(input, max_tokens: 4)
+      parser.parse
+    end
+  end
+
   it "supports list values" do
     schema = <<-QUERY
       query {

@@ -14,7 +14,7 @@ module Oxide
     @[JSON::Field(ignore: true)]
     @document : Oxide::Language::Nodes::Document?
 
-    def initialize(@query_string, @variables = {} of String => JSON::Any, @operation_name = nil)
+    def initialize(@query_string, @variables = {} of String => JSON::Any, @operation_name = nil, @max_tokens : Int32? = nil)
     end
 
     def accept(visitor : Language::Visitor)
@@ -26,7 +26,7 @@ module Oxide
     end
 
     private def parse(query_string)
-      Oxide::Language::Parser.parse(query_string)
+      Oxide::Language::Parser.parse(query_string, @max_tokens)
     end
   end
 end

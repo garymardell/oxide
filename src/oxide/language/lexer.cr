@@ -2,14 +2,17 @@ module Oxide
   module Language
     class Lexer
       getter token : Token
-      def initialize(input : String)
+
+      def initialize(input : String, @max_tokens : Int32? = nil)
         @reader = Char::Reader.new(input)
         @token = Token.new
+        @token_count = 0
         @line_number = 1
         @column_number = 1
       end
 
       def next_token : Token
+        increment_and_validate_max_tokens
         skip_whitespace
 
         @token.line_number = @line_number
@@ -277,6 +280,16 @@ module Oxide
           true
         else
           false
+        end
+      end
+
+      private def increment_and_validate_max_tokens
+        return unless @max_tokens
+
+        @token_count += 1
+
+        if @token_count > @max_tokens.not_nil!
+          raise "Document contains more than #{@max_tokens} tokens"
         end
       end
 
