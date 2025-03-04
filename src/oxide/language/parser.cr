@@ -774,6 +774,13 @@ module Oxide
         fields = [] of Nodes::ObjectField
 
         consume_token(Token::Kind::LBrace)
+
+        # We have an empty object so return early
+        if token.kind.r_brace?
+          consume_token(Token::Kind::RBrace)
+          return Nodes::ObjectValue.new
+        end
+
         loop do
           fields << parse_object_field(is_const)
           break if token.kind.r_brace?

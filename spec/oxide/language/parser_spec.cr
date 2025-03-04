@@ -188,6 +188,18 @@ describe Oxide::Language::Parser do
     Oxide::Language::Parser.parse(schema)
   end
 
+  it "supports empty object values" do
+    schema = <<-QUERY
+      query {
+        fieldWithObject(object: {}) {
+          name
+        }
+      }
+    QUERY
+
+    Oxide::Language::Parser.parse(schema)
+  end
+
   it "raises on incorrect operation type" do
     input = <<-INPUT
       notAnOperation {
