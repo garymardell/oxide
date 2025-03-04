@@ -283,6 +283,10 @@ module Oxide
         "Represents a UUID value."
       end
 
+      def coerce(value : UUID) : JSON::Any::Type
+        value.to_s
+      end
+
       def coerce(value : String) : JSON::Any::Type
         UUID.new(value).to_s
       end
