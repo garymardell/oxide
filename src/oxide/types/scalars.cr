@@ -1,4 +1,5 @@
-  require "../type"
+require "../type"
+require "uuid"
 
 module Oxide
   module Types
@@ -266,6 +267,40 @@ module Oxide
 
       def coerce(value) : JSON::Any::Type
         raise InputCoercionError.new("Can't coerce non datetime value from #{value.class.name}")
+      end
+
+      def serialize(value) : SerializedOutput
+        coerce(value)
+      end
+    end
+
+    class UUIDType < ScalarType
+      def name
+        "UUID"
+      end
+
+      def description
+        "Represents a UUID value."
+      end
+
+      def coerce(value : String) : JSON::Any::Type
+        UUID.new(value).to_s
+      end
+
+      def coerce(value : Bytes) : JSON::Any::Type
+        UUID.new(value).to_s
+      end
+
+      def coerce(value : JSON::Any) : JSON::Any::Type
+        UUID.new(value.as_s).to_s
+      end
+
+      def coerce(value : Oxide::Language::Nodes::StringValue) : JSON::Any::Type
+        UUID.new(value.value).to_s
+      end
+
+      def coerce(value) : JSON::Any::Type
+        raise InputCoercionError.new("Can't coerce non UUID value from #{value.class.name}")
       end
 
       def serialize(value) : SerializedOutput
