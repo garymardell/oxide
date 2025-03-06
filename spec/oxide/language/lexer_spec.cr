@@ -22,6 +22,10 @@ describe Oxide::Language::Lexer do
     Oxide::Language::Lexer.new("\"\"").next_token.should eq(string_token(""))
   end
 
+  it "handles empty strings with escaped characters" do
+    Oxide::Language::Lexer.new("\"\\\"test\\\"\"").next_token.should eq(string_token("\"test\""))
+  end
+
   it "handles block strings" do
     input = <<-INPUT
     """

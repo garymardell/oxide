@@ -168,14 +168,25 @@ module Oxide
       def consume_simple_string(initial_char : Char? = nil)
         @token.raw_value = String.build do |io|
           io << initial_char if initial_char
-          io << current_char
 
-          next_char
+          while current_char != 0x000A.unsafe_chr && current_char != 0x00D.unsafe_chr && current_char != '"'
+            if current_char < 0x0020.unsafe_chr && current_char != 0x0009.unsafe_chr
+              raise "Invalid character within string: #{current_char}"
+            end
 
-          while current_char != '\0'
-            case current_char
-            when '"' # Closing string
-              break
+            # Handle escaped characters
+            if current_char == '\\'
+              next_char
+
+              case current_char
+              when '"', '/', '\\', 'b', 'f', 'n', 'r', 't'
+                io << current_char
+                next_char
+              when 'u'
+                raise "Escaped unicode sequence not supported"
+              else
+                raise "Invalid character escape sequence"
+              end
             else
               io << current_char
               next_char
