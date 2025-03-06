@@ -36,6 +36,12 @@ module Oxide
         value
       end
 
+      def coerce(value : Oxide::Language::Nodes::ListValue) : JSON::Any::Type
+        value.values.map do |item|
+          JSON::Any.new(of_type.coerce(item))
+        end
+      end
+
       def coerce(value) : JSON::Any::Type
         Array(JSON::Any).new(1, JSON::Any.new(of_type.coerce(value))).as(JSON::Any::Type)
       end
