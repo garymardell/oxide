@@ -240,6 +240,35 @@ describe Oxide::Language::Parser do
 
     document = Oxide::Language::Parser.parse(schema)
   end
+
+  it "supports complex input object", focus: true do
+    schema = <<-QUERY
+      mutation CreateEntry {
+        createEntry(
+          input: {
+            fields: [
+              {
+                field: "b152e5e1-704c-427f-99da-ba75c82ff0e8", value: "title"
+              },
+              {
+                field: "b152e5e1-704c-427f-99da-ba75c82ff0e8", value: "title"
+              }
+            ]
+          }
+        ) {
+          entry {
+            fields
+          }
+          userErrors {
+            field
+            message
+          }
+        }
+      }
+    QUERY
+
+    Oxide::Language::Parser.parse(schema)
+  end
 end
 
 def print_input(input)

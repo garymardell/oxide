@@ -761,7 +761,6 @@ module Oxide
         consume_token(Token::Kind::LBracket)
         loop do
           values << parse_value_literal(is_const)
-          next_token
 
           break if token.kind.r_bracket?
         end
