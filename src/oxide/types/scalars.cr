@@ -232,7 +232,7 @@ module Oxide
       end
 
       def coerce(value : Oxide::Language::Nodes::StringValue) : JSON::Any::Type
-        value.value
+        Time.parse_utc(value.value, "%F").to_s("%F")
       end
 
       def coerce(value) : JSON::Any::Type
@@ -262,7 +262,7 @@ module Oxide
       end
 
       def coerce(value : Oxide::Language::Nodes::StringValue) : JSON::Any::Type
-        value.value
+        Time.parse_rfc3339(value.value).to_rfc3339
       end
 
       def coerce(value) : JSON::Any::Type
