@@ -3,7 +3,6 @@ require "./visitable"
 module Oxide
   module Language
     module Nodes
-      alias TypeDefinition = ScalarTypeDefinition | ObjectTypeDefinition | InterfaceTypeDefinition | UnionTypeDefinition | EnumTypeDefinition | InputObjectTypeDefinition
       alias Definition = OperationDefinition | FragmentDefinition | SchemaDefinition | TypeDefinition | DirectiveDefinition
       alias Selection = Field | FragmentSpread | InlineFragment
       alias DirectiveLocation = String
@@ -516,7 +515,11 @@ module Oxide
         def_equals_and_hash name, arguments
       end
 
-      class ScalarTypeDefinition < Node
+      abstract class TypeDefinition < Node
+        abstract def name : String
+      end
+
+      class ScalarTypeDefinition < TypeDefinition
         getter name : String
         getter description : String?
         getter directives : Array(Directive)
@@ -532,7 +535,7 @@ module Oxide
         def_equals_and_hash name, directives
       end
 
-      class ObjectTypeDefinition < Node
+      class ObjectTypeDefinition < TypeDefinition
         getter name : String
         getter description : String?
         getter implements : Array(NamedType)
@@ -559,7 +562,7 @@ module Oxide
         def_equals_and_hash name, implements, directives, field_definitions
       end
 
-      class FieldDefinition < Node
+      class FieldDefinition < TypeDefinition
         getter name : String
         getter description : String?
         getter argument_definitions : Array(InputValueDefinition)
@@ -586,7 +589,7 @@ module Oxide
         def_equals_and_hash name, argument_definitions, type, directives
       end
 
-      class InputValueDefinition < Node
+      class InputValueDefinition < TypeDefinition
         getter name : String
         getter type : NamedType | ListType | NonNullType | Nil
         getter default_value : Value | Nil
@@ -608,7 +611,7 @@ module Oxide
         def_equals_and_hash name, type, default_value, directives
       end
 
-      class InterfaceTypeDefinition < Node
+      class InterfaceTypeDefinition < TypeDefinition
         getter name : String
         getter description : String?
         getter implements_interfaces : Array(NamedType)
@@ -631,7 +634,7 @@ module Oxide
         def_equals_and_hash name, field_definitions, directives
       end
 
-      class UnionTypeDefinition < Node
+      class UnionTypeDefinition < TypeDefinition
         getter name : String
         getter description : String?
         getter member_types : Array(NamedType)
@@ -653,7 +656,7 @@ module Oxide
         def_equals_and_hash name, member_types, directives
       end
 
-      class EnumTypeDefinition < Node
+      class EnumTypeDefinition < TypeDefinition
         getter name : String
         getter description : String?
         getter value_definitions : Array(EnumValueDefinition)
@@ -675,7 +678,7 @@ module Oxide
         def_equals_and_hash name, value_definitions, directives
       end
 
-      class EnumValueDefinition < Node
+      class EnumValueDefinition < TypeDefinition
         getter name : String
         getter description : String?
         getter directives : Array(Directive)
@@ -691,7 +694,7 @@ module Oxide
         def_equals_and_hash name, directives
       end
 
-      class InputObjectTypeDefinition < Node
+      class InputObjectTypeDefinition < TypeDefinition
         getter name : String
         getter description : String?
         getter directives : Array(Directive)
@@ -706,7 +709,7 @@ module Oxide
         end
       end
 
-      class DirectiveDefinition < Node
+      class DirectiveDefinition < TypeDefinition
         getter name : String
         getter description : String?
         getter repeatable : Bool
