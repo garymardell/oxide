@@ -241,7 +241,7 @@ describe Oxide::Language::Parser do
     document = Oxide::Language::Parser.parse(schema)
   end
 
-  it "supports complex input object", focus: true do
+  it "supports complex input object" do
     schema = <<-QUERY
       mutation CreateEntry {
         createEntry(
