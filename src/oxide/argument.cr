@@ -1,6 +1,6 @@
 module Oxide
   class Argument
-    alias DefaultValue = String | Int32 | Float32 | Bool | Nil | Array(DefaultValue) | Hash(String, DefaultValue) | Types::EnumValue
+    alias DefaultValue = String | Int32 | Int64 | Float32 | Float64 | Bool | Nil | Array(DefaultValue) | Hash(String, DefaultValue) | Types::EnumValue
 
     getter type : Oxide::Type
     getter description : String?
