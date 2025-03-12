@@ -22,6 +22,13 @@ module Oxide
 
       abstract class Type < Node
         abstract def unwrap
+        abstract def to_s(io)
+
+        def to_s
+          String.build do |io|
+            to_s(io)
+          end
+        end
       end
 
       class Document < Node
@@ -281,6 +288,10 @@ module Oxide
           self
         end
 
+        def to_s(io)
+          io << name
+        end
+
         def accept(visitor : Visitor)
           visitor.enter(self)
           visitor.leave(self)
@@ -297,6 +308,12 @@ module Oxide
 
         def unwrap
           of_type.try &.unwrap
+        end
+
+        def to_s(io)
+          io << "["
+          of_type.to_s(io)
+          io << "]"
         end
 
         def accept(visitor : Visitor)
@@ -320,6 +337,11 @@ module Oxide
 
         def unwrap
           of_type.try &.unwrap
+        end
+
+        def to_s(io)
+          of_type.to_s(io)
+          io << "!"
         end
 
         def accept(visitor : Visitor)
