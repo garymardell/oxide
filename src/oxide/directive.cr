@@ -47,8 +47,9 @@ module Oxide
     getter arguments : Hash(String, Oxide::Argument)
     getter locations : Array(Location)
     getter repeatable : Bool
+    getter description : String?
 
-    def initialize(@name : String, @arguments = {} of String => Oxide::Argument, @locations = [] of Location, @repeatable = false)
+    def initialize(@name : String, @arguments = {} of String => Oxide::Argument, @locations = [] of Location, @repeatable = false, @description = nil)
     end
   end
 end
