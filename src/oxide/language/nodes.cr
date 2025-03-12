@@ -562,7 +562,7 @@ module Oxide
         def_equals_and_hash name, implements, directives, field_definitions
       end
 
-      class FieldDefinition < TypeDefinition
+      class FieldDefinition < Node
         getter name : String
         getter description : String?
         getter argument_definitions : Array(InputValueDefinition)
@@ -589,7 +589,7 @@ module Oxide
         def_equals_and_hash name, argument_definitions, type, directives
       end
 
-      class InputValueDefinition < TypeDefinition
+      class InputValueDefinition < Node
         getter name : String
         getter type : NamedType | ListType | NonNullType | Nil
         getter default_value : Value | Nil
@@ -678,7 +678,7 @@ module Oxide
         def_equals_and_hash name, value_definitions, directives
       end
 
-      class EnumValueDefinition < TypeDefinition
+      class EnumValueDefinition < Node
         getter name : String
         getter description : String?
         getter directives : Array(Directive)
@@ -709,7 +709,7 @@ module Oxide
         end
       end
 
-      class DirectiveDefinition < TypeDefinition
+      class DirectiveDefinition < Node
         getter name : String
         getter description : String?
         getter repeatable : Bool
