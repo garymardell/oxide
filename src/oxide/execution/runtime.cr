@@ -24,7 +24,7 @@ module Oxide
       end
 
       def execute(query : Oxide::Query, context : Oxide::Context? = nil, initial_value = nil) : Response
-        execution_context = Execution::Context.new(query, context)
+        execution_context = Execution::Context.new(schema, query, context)
 
         begin
           definitions = query.document.definitions.select(type: Oxide::Language::Nodes::OperationDefinition)

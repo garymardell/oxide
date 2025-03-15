@@ -3,6 +3,7 @@ module Oxide
     class Context
       delegate document, to: query
 
+      getter schema : Oxide::Schema
       getter query : Oxide::Query
       getter! context : Oxide::Context
 
@@ -12,7 +13,7 @@ module Oxide
 
       getter errors : Set(RuntimeError)
 
-      def initialize(@query : Oxide::Query, @context : Oxide::Context? = nil)
+      def initialize(@schema : Oxide::Schema, @query : Oxide::Query, @context : Oxide::Context? = nil)
         @current_path = [] of String
         @errors = Set(RuntimeError).new
       end
