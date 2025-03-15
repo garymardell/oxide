@@ -438,7 +438,13 @@ module Oxide
 
           if !has_value && argument_definition.has_default_value?
             # TODO: Something wrong with this conversion?
-            coerced_values[argument_name] = JSON::Any.new(argument_definition.default_value.as(JSON::Any::Type))
+            default_value = argument_definition.default_value
+
+            coerced_values[argument_name] = if default_value.is_a?(Types::EnumValue)
+              JSON::Any.new(default_value.value.as(JSON::Any::Type))
+            else
+              JSON::Any.new(default_value.as(JSON::Any::Type))
+            end
           elsif argument_type.is_a?(Oxide::Types::NonNullType) && (!has_value || value.nil?)
             raise RuntimeError.new("Argument '#{argument_name}' received null value for non null type")
           elsif has_value
