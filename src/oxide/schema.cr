@@ -47,6 +47,15 @@ module Oxide
       type_map[name]
     end
 
+    def resolve_type(type : Oxide::Type) : Oxide::Type
+      case type
+      when Oxide::Types::LateBoundType
+        get_type!(type.typename)
+      else
+        type
+      end
+    end
+
     def get_type_from_ast(ast_node)
       case ast_node
       when Oxide::Language::Nodes::NamedType

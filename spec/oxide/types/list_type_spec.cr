@@ -13,14 +13,14 @@ describe Oxide::Types::ListType do
     it "coerces a list according to spec" do
       int_list = build_list_type(Oxide::Types::IntType.new)
 
-      int_list.coerce([1, 2, 3]).should eq([1, 2, 3])
+      int_list.coerce(DummySchema, [1, 2, 3]).should eq([1, 2, 3])
 
       expect_raises(Oxide::InputCoercionError) do
-        int_list.coerce([1, "b", true])
+        int_list.coerce(DummySchema, [1, "b", true])
       end
 
-      int_list.coerce(1).should eq([1])
-      int_list.coerce(nil).should eq(nil)
+      int_list.coerce(DummySchema, 1).should eq([1])
+      int_list.coerce(DummySchema, nil).should eq(nil)
     end
 
     # [[Int]]	[[1], [2, 3]]	[[1], [2, 3]
@@ -30,14 +30,14 @@ describe Oxide::Types::ListType do
     it "coerces a list of lists according to spec" do
       int_list = build_list_type(build_list_type(Oxide::Types::IntType.new))
 
-      int_list.coerce([[1], [2, 3]]).should eq([[1], [2, 3]])
+      int_list.coerce(DummySchema, [[1], [2, 3]]).should eq([[1], [2, 3]])
 
       expect_raises(Oxide::InputCoercionError) do
-        int_list.coerce([1, 2, 3])
+        int_list.coerce(DummySchema, [1, 2, 3])
       end
 
-      int_list.coerce(1).should eq([[1]])
-      int_list.coerce(nil).should eq(nil)
+      int_list.coerce(DummySchema, 1).should eq([[1]])
+      int_list.coerce(DummySchema, nil).should eq(nil)
     end
   end
 end

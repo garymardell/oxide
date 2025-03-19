@@ -19,16 +19,16 @@ module Oxide
         "NON_NULL"
       end
 
-      def coerce(value) : JSON::Any::Type
+      def coerce(schema, value) : JSON::Any::Type
         if value.nil?
           raise InputCoercionError.new("NON_NULL received null value")
         else
-          of_type.coerce(value)
+          schema.resolve_type(of_type).coerce(schema, value)
         end
       end
 
       def serialize(value) : SerializedOutput
-        coerce(value)
+        value
       end
 
       def input_type? : Bool

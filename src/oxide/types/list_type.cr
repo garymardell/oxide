@@ -17,7 +17,7 @@ module Oxide
         "LIST"
       end
 
-      def coerce(value : Array) : JSON::Any::Type
+      def coerce(schema, value : Array) : JSON::Any::Type
         value.map do |item|
           case of_type
           when ListType
@@ -25,25 +25,25 @@ module Oxide
               raise InputCoercionError.new("Incorrect item value")
             end
 
-            JSON::Any.new(of_type.coerce(item))
+            JSON::Any.new(schema.resolve_type(of_type).coerce(schema, item))
           else
-            JSON::Any.new(of_type.coerce(item))
+            JSON::Any.new(schema.resolve_type(of_type).coerce(schema, item))
           end
         end.as(JSON::Any::Type)
       end
 
-      def coerce(value : Nil) : JSON::Any::Type
+      def coerce(schema, value : Nil) : JSON::Any::Type
         value
       end
 
-      def coerce(value : Oxide::Language::Nodes::ListValue) : JSON::Any::Type
+      def coerce(schema, value : Oxide::Language::Nodes::ListValue) : JSON::Any::Type
         value.values.map do |item|
-          JSON::Any.new(of_type.coerce(item))
+          JSON::Any.new(schema.resolve_type(of_type).coerce(schema, item))
         end
       end
 
-      def coerce(value) : JSON::Any::Type
-        Array(JSON::Any).new(1, JSON::Any.new(of_type.coerce(value))).as(JSON::Any::Type)
+      def coerce(schema, value) : JSON::Any::Type
+        Array(JSON::Any).new(1, JSON::Any.new(schema.resolve_type(of_type).coerce(schema, value))).as(JSON::Any::Type)
       end
 
       def serialize(value) : SerializedOutput

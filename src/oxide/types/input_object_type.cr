@@ -15,11 +15,11 @@ module Oxide
         "INPUT_OBJECT"
       end
 
-      def coerce(value : JSON::Any) : JSON::Any::Type
-        coerce(value.as_h)
+      def coerce(schema, value : JSON::Any) : JSON::Any::Type
+        coerce(schema, value.as_h)
       end
 
-      def coerce(value : Oxide::Language::Nodes::ObjectValue) : JSON::Any::Type
+      def coerce(schema, value : Oxide::Language::Nodes::ObjectValue) : JSON::Any::Type
         cooerced_values = Hash(String, JSON::Any).new
         object_value = value.value
 
@@ -36,14 +36,14 @@ module Oxide
               if raw_value.raw.nil?
                 JSON::Any.new(nil)
               else
-                JSON::Any.new(argument.type.coerce(raw_value))
+                JSON::Any.new(schema.resolve_type(argument.type).coerce(schema, raw_value))
               end
             else
-              JSON::Any.new(argument.type.coerce(raw_value))
+              JSON::Any.new(schema.resolve_type(argument.type).coerce(schema, raw_value))
             end
           else
             if argument.has_default_value?
-              cooerced_values[name] = JSON::Any.new(argument.type.coerce(argument.default_value))
+              cooerced_values[name] = JSON::Any.new(schema.resolve_type(argument.type).coerce(schema, argument.default_value))
             end
           end
         end
@@ -51,7 +51,7 @@ module Oxide
         cooerced_values
       end
 
-      def coerce(value : Hash) : JSON::Any::Type
+      def coerce(schema, value : Hash) : JSON::Any::Type
         cooerced_values = Hash(String, JSON::Any).new
 
         input_fields.each do |name, argument|
@@ -67,14 +67,14 @@ module Oxide
               if raw_value.raw.nil?
                 JSON::Any.new(nil)
               else
-                JSON::Any.new(argument.type.coerce(raw_value))
+                JSON::Any.new(schema.resolve_type(argument.type).coerce(schema, raw_value))
               end
             else
-              JSON::Any.new(argument.type.coerce(raw_value))
+              JSON::Any.new(schema.resolve_type(argument.type).coerce(schema, raw_value))
             end
           else
             if argument.has_default_value?
-              cooerced_values[name] = JSON::Any.new(argument.type.coerce(argument.default_value))
+              cooerced_values[name] = JSON::Any.new(schema.resolve_type(argument.type).coerce(schema, argument.default_value))
             end
           end
         end
@@ -82,7 +82,7 @@ module Oxide
         cooerced_values.as(JSON::Any::Type)
       end
 
-      def coerce(value) : JSON::Any::Type
+      def coerce(schema, value) : JSON::Any::Type
         raise InputCoercionError.new("INPUT_OBJECT did not receive a hash")
       end
 

@@ -457,7 +457,7 @@ module Oxide
                 JSON::Any.new(nil) # TODO
               end
             else
-              coerced_values[argument_name] = JSON::Any.new(argument_type.coerce(value))
+              coerced_values[argument_name] = JSON::Any.new(schema.resolve_type(argument_type).coerce(schema, value))
             end
           end
         end
@@ -490,7 +490,7 @@ module Oxide
             else
               # TODO: Support coercion for all types
               coerced_value = if variable_type.responds_to?(:coerce)
-                JSON::Any.new(variable_type.coerce(value))
+                JSON::Any.new(schema.resolve_type(variable_type).coerce(schema, value))
               else
                 value
               end

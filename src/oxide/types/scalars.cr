@@ -26,28 +26,28 @@ module Oxide
         "Represents a unique identifier that is Base64 obfuscated. It is often used to refetch an object or as key for a cache. The ID type appears in a JSON response as a String; however, it is not intended to be human-readable. When expected as an input type, any string (such as `\"VXNlci0xMA==\"`) or integer (such as `4`) input value will be accepted as an ID."
       end
 
-      def coerce(value : String) : JSON::Any::Type
+      def coerce(schema, value : String) : JSON::Any::Type
         value
       end
 
-      def coerce(value : Int) : JSON::Any::Type
+      def coerce(schema, value : Int) : JSON::Any::Type
         value.to_s
       end
 
-      def coerce(value : JSON::Any) : JSON::Any::Type
+      def coerce(schema, value : JSON::Any) : JSON::Any::Type
         value.as_s
       end
 
-      def coerce(value : Oxide::Language::Nodes::StringValue) : JSON::Any::Type
+      def coerce(schema, value : Oxide::Language::Nodes::StringValue) : JSON::Any::Type
         value.value
       end
 
-      def coerce(value) : JSON::Any::Type
+      def coerce(schema, value) : JSON::Any::Type
         raise InputCoercionError.new("Could not coerce id")
       end
 
       def serialize(value) : SerializedOutput
-        coerce(value)
+        value.to_s
       end
     end
 
@@ -60,19 +60,19 @@ module Oxide
         "Represents textual data as UTF-8 character sequences. This type is most often used by GraphQL to represent free-form human-readable text."
       end
 
-      def coerce(value : JSON::Any) : JSON::Any::Type
+      def coerce(schema, value : JSON::Any) : JSON::Any::Type
         value.as_s
       end
 
-      def coerce(value : String) : JSON::Any::Type
+      def coerce(schema, value : String) : JSON::Any::Type
         value
       end
 
-      def coerce(value : Oxide::Language::Nodes::StringValue) : JSON::Any::Type
+      def coerce(schema, value : Oxide::Language::Nodes::StringValue) : JSON::Any::Type
         value.value
       end
 
-      def coerce(value) : JSON::Any::Type
+      def coerce(schema, value) : JSON::Any::Type
         raise InputCoercionError.new("String cannot represent a non-string value")
       end
 
@@ -98,23 +98,23 @@ module Oxide
         "Represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1."
       end
 
-      def coerce(value : Int32) : JSON::Any::Type
+      def coerce(schema, value : Int32) : JSON::Any::Type
         value.to_i64
       end
 
-      def coerce(value : Int64) : JSON::Any::Type
+      def coerce(schema, value : Int64) : JSON::Any::Type
         value
       end
 
-      def coerce(value : JSON::Any) : JSON::Any::Type
+      def coerce(schema, value : JSON::Any) : JSON::Any::Type
         value.as_i64
       end
 
-      def coerce(value : Oxide::Language::Nodes::IntValue) : JSON::Any::Type
+      def coerce(schema, value : Oxide::Language::Nodes::IntValue) : JSON::Any::Type
         value.value
       end
 
-      def coerce(value) : JSON::Any::Type
+      def coerce(schema, value) : JSON::Any::Type
         raise InputCoercionError.new("Int cannot represent a non-interger value")
       end
 
@@ -151,27 +151,27 @@ module Oxide
         "Represents signed double-precision fractional values as specified by [IEEE 754](https://en.wikipedia.org/wiki/IEEE_floating_point)."
       end
 
-      def coerce(value : Float32) : JSON::Any::Type
+      def coerce(schema, value : Float32) : JSON::Any::Type
         value.to_f64
       end
 
-      def coerce(value : Float64) : JSON::Any::Type
+      def coerce(schema, value : Float64) : JSON::Any::Type
         value
       end
 
-      def coerce(value : Int32) : JSON::Any::Type
+      def coerce(schema, value : Int32) : JSON::Any::Type
         value.to_f64
       end
 
-      def coerce(value : JSON::Any) : JSON::Any::Type
+      def coerce(schema, value : JSON::Any) : JSON::Any::Type
         value.as_f
       end
 
-      def coerce(value : Oxide::Language::Nodes::FloatValue) : JSON::Any::Type
+      def coerce(schema, value : Oxide::Language::Nodes::FloatValue) : JSON::Any::Type
         value.value
       end
 
-      def coerce(value) : JSON::Any::Type
+      def coerce(schema, value) : JSON::Any::Type
         raise InputCoercionError.new("Could not coerce value to Float")
       end
 
@@ -193,24 +193,24 @@ module Oxide
         "Represents `true` or `false` values."
       end
 
-      def coerce(value : Bool) : JSON::Any::Type
+      def coerce(schema, value : Bool) : JSON::Any::Type
         value
       end
 
-      def coerce(value : JSON::Any) : JSON::Any::Type
+      def coerce(schema, value : JSON::Any) : JSON::Any::Type
         value.as_bool
       end
 
-      def coerce(value : Oxide::Language::Nodes::BooleanValue) : JSON::Any::Type
+      def coerce(schema, value : Oxide::Language::Nodes::BooleanValue) : JSON::Any::Type
         value.value
       end
 
-      def coerce(value) : JSON::Any::Type
+      def coerce(schema, value) : JSON::Any::Type
         raise InputCoercionError.new("Can't coerce non boolean value from #{value.class.name}")
       end
 
       def serialize(value) : SerializedOutput
-        coerce(value)
+        !!value
       end
     end
 
@@ -223,24 +223,24 @@ module Oxide
         "Represents a ISO8601 date value."
       end
 
-      def coerce(value : Time) : JSON::Any::Type
+      def coerce(schema, value : Time) : JSON::Any::Type
         value.to_s("%F")
       end
 
-      def coerce(value : JSON::Any) : JSON::Any::Type
+      def coerce(schema, value : JSON::Any) : JSON::Any::Type
         Time.parse_utc(value.to_s, "%F").to_s("%F")
       end
 
-      def coerce(value : Oxide::Language::Nodes::StringValue) : JSON::Any::Type
+      def coerce(schema, value : Oxide::Language::Nodes::StringValue) : JSON::Any::Type
         Time.parse_utc(value.value, "%F").to_s("%F")
       end
 
-      def coerce(value) : JSON::Any::Type
+      def coerce(schema, value) : JSON::Any::Type
         raise InputCoercionError.new("Can't coerce non date value from #{value.class.name}")
       end
 
       def serialize(value) : SerializedOutput
-        coerce(value)
+        value.to_s
       end
     end
 
@@ -253,24 +253,24 @@ module Oxide
         "Represents a ISO8601 datetime value."
       end
 
-      def coerce(value : Time) : JSON::Any::Type
+      def coerce(schema, value : Time) : JSON::Any::Type
         value.to_rfc3339
       end
 
-      def coerce(value : JSON::Any) : JSON::Any::Type
+      def coerce(schema, value : JSON::Any) : JSON::Any::Type
         Time.parse_rfc3339(value.to_s).to_rfc3339
       end
 
-      def coerce(value : Oxide::Language::Nodes::StringValue) : JSON::Any::Type
+      def coerce(schema, value : Oxide::Language::Nodes::StringValue) : JSON::Any::Type
         Time.parse_rfc3339(value.value).to_rfc3339
       end
 
-      def coerce(value) : JSON::Any::Type
+      def coerce(schema, value) : JSON::Any::Type
         raise InputCoercionError.new("Can't coerce non datetime value from #{value.class.name}")
       end
 
       def serialize(value) : SerializedOutput
-        coerce(value)
+        value.to_s
       end
     end
 
@@ -283,32 +283,32 @@ module Oxide
         "Represents a UUID value."
       end
 
-      def coerce(value : UUID) : JSON::Any::Type
+      def coerce(schema, value : UUID) : JSON::Any::Type
         value.to_s
       end
 
-      def coerce(value : String) : JSON::Any::Type
+      def coerce(schema, value : String) : JSON::Any::Type
         UUID.new(value).to_s
       end
 
-      def coerce(value : Bytes) : JSON::Any::Type
+      def coerce(schema, value : Bytes) : JSON::Any::Type
         UUID.new(value).to_s
       end
 
-      def coerce(value : JSON::Any) : JSON::Any::Type
+      def coerce(schema, value : JSON::Any) : JSON::Any::Type
         UUID.new(value.as_s).to_s
       end
 
-      def coerce(value : Oxide::Language::Nodes::StringValue) : JSON::Any::Type
+      def coerce(schema, value : Oxide::Language::Nodes::StringValue) : JSON::Any::Type
         UUID.new(value.value).to_s
       end
 
-      def coerce(value) : JSON::Any::Type
+      def coerce(schema, value) : JSON::Any::Type
         raise InputCoercionError.new("Can't coerce non UUID value from #{value.class.name}")
       end
 
       def serialize(value) : SerializedOutput
-        coerce(value)
+        value.to_s
       end
     end
 
@@ -321,7 +321,7 @@ module Oxide
       def initialize(@name : String, @description : String? = nil, @specified_by_url : String? = nil, @applied_directives = [] of AppliedDirective)
       end
 
-      def coerce(value) : JSON::Any::Type
+      def coerce(schema, value) : JSON::Any::Type
       end
 
       def serialize(value) : SerializedOutput

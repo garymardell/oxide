@@ -7,7 +7,7 @@ module Oxide
 
     abstract def name
     abstract def description
-    abstract def coerce(value) : JSON::Any::Type
+    abstract def coerce(schema, value) : JSON::Any::Type
     abstract def serialize(value) : SerializedOutput
 
     abstract def input_type? : Bool

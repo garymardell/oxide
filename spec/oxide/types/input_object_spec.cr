@@ -14,7 +14,7 @@ describe Oxide::Types::InputObjectType do
         }
       )
 
-      object = input_object.coerce({ "id" => JSON::Any.new("1") })
+      object = input_object.coerce(DummySchema, { "id" => JSON::Any.new("1") })
       object.should eq({ "id" => "1" })
     end
 
@@ -41,7 +41,7 @@ describe Oxide::Types::InputObjectType do
         }
       )
 
-      object = input_object.coerce({ "input" => JSON::Any.new({ "id" => JSON::Any.new("1") }) })
+      object = input_object.coerce(DummySchema, { "input" => JSON::Any.new({ "id" => JSON::Any.new("1") }) })
       object.should eq({"input" => { "id" => "1" }})
     end
   end
