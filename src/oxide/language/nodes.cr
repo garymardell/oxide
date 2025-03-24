@@ -261,7 +261,7 @@ module Oxide
 
       class VariableDefinition < Node
         getter! variable : Variable
-        getter type : Type?
+        getter! type : Type?
         getter default_value : Value?
 
         def initialize(@variable = nil, @type = nil, @default_value = nil)
