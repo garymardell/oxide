@@ -229,10 +229,14 @@ module Oxide
 
       def coerce(schema, value : JSON::Any) : JSON::Any::Type
         Time.parse_utc(value.to_s, "%F").to_s("%F")
+      rescue Time::Format::Error
+        raise InputCoercionError.new("Cannot coerce #{value.to_s} to Date")
       end
 
       def coerce(schema, value : Oxide::Language::Nodes::StringValue) : JSON::Any::Type
         Time.parse_utc(value.value, "%F").to_s("%F")
+      rescue Time::Format::Error
+        raise InputCoercionError.new("Cannot coerce #{value.value} to Date")
       end
 
       def coerce(schema, value) : JSON::Any::Type
@@ -259,10 +263,14 @@ module Oxide
 
       def coerce(schema, value : JSON::Any) : JSON::Any::Type
         Time.parse_rfc3339(value.to_s).to_rfc3339
+      rescue Time::Format::Error
+        raise InputCoercionError.new("Cannot coerce #{value.to_s} to DateTime")
       end
 
       def coerce(schema, value : Oxide::Language::Nodes::StringValue) : JSON::Any::Type
         Time.parse_rfc3339(value.value).to_rfc3339
+      rescue Time::Format::Error
+        raise InputCoercionError.new("Cannot coerce #{value.value} to DateTime")
       end
 
       def coerce(schema, value) : JSON::Any::Type
