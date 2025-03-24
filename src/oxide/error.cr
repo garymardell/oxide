@@ -1,22 +1,4 @@
 module Oxide
-  # Base error for all oxide errors to extend from
-  class Error < Exception
-  end
-
-  # When there is an issue with the schema such as incorrecy resolver types
-  class SchemaError < Error
-  end
-
-  # When there is an issue lexing / parsing the query
-  class ParseError < Error
-    getter line_number : Int32?
-    getter column_number : Int32?
-
-    def initialize(message, @line_number, @column_number)
-      super(message)
-    end
-  end
-
   record Location, line : Int32, column : Int32 do
     def to_json(builder : JSON::Builder)
       builder.object do
@@ -30,6 +12,45 @@ module Oxide
     end
 
     def_equals_and_hash line, column
+  end
+
+  # Base error for all oxide errors to extend from
+  class Error < Exception
+  end
+
+  # When there is an issue with the schema such as incorrecy resolver types
+  class SchemaError < Error
+  end
+
+  # When there is an issue lexing / parsing the query
+  class ParseError < Error
+    getter line_number : Int32?
+    getter column_number : Int32?
+
+    getter locations : Array(Location)
+
+    def initialize(message, @line_number, @column_number)
+      super(message)
+
+      @locations = [Location.new(line_number, column_number)]
+    end
+
+    def to_json(builder : JSON::Builder)
+      builder.object do
+        builder.field "message", message
+        builder.field "locations" do
+          builder.array do
+            locations.each do |location|
+              location.to_json(builder)
+            end
+          end
+        end
+      end
+    end
+
+    def to_h
+      { "message" => message, "locations" => locations.map(&.to_h) }
+    end
   end
 
   # Base for all issues that occur during runtime to provide accurate location responses
