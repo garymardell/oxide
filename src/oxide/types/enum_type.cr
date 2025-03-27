@@ -12,17 +12,21 @@ module Oxide
       end
 
       def coerce(schema, value : String) : JSON::Any::Type
-        enum_value = values.find { |ev| ev.value == value }
+        enum_value = values.find { |ev| ev.name == value }
 
         if enum_value
           enum_value.value
         else
-          raise InputCoercionError.new("Value could be coerced into enum")
+          raise InputCoercionError.new("Value could not be coerced into enum")
         end
       end
 
+      def coerce(schema, value : Oxide::Language::Nodes::EnumValue) : JSON::Any::Type
+        coerce(schema, value.value)
+      end
+
       def coerce(schema, value) : JSON::Any::Type
-        raise InputCoercionError.new("Value could not be coerced")
+        raise InputCoercionError.new("Value could not be coerced. #{value.class.name}")
       end
 
       def serialize(value) : SerializedOutput
