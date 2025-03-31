@@ -107,7 +107,7 @@ module Oxide
       end
 
       def coerce(schema, value : JSON::Any) : JSON::Any::Type
-        value.to_s.to_i64
+        value.as_s?.try &.to_i64
       end
 
       def coerce(schema, value : Oxide::Language::Nodes::IntValue) : JSON::Any::Type
@@ -164,7 +164,7 @@ module Oxide
       end
 
       def coerce(schema, value : JSON::Any) : JSON::Any::Type
-        value.to_s.to_f64
+        value.as_s?.try &.to_f64
       end
 
       def coerce(schema, value : Oxide::Language::Nodes::FloatValue) : JSON::Any::Type
