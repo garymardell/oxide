@@ -15,6 +15,12 @@ module Oxide
         @fields = fields.transform_values { |v| v.as(BaseField) }
       end
 
+      def all_fields
+        interfaces.reduce(fields) do |fields, interface|
+          fields.merge(interface.fields)
+        end
+      end
+
       def kind
         "INTERFACE"
       end

@@ -57,7 +57,7 @@ module Oxide
             case type
             when Types::ObjectType, Types::InterfaceType
               if resolution.arguments["includeDeprecated"]?
-                type.fields.map do |name, field|
+                type.all_fields.map do |name, field|
                   FieldInfo.new(name, field)
                 end
               else
