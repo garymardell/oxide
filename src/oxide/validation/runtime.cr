@@ -39,11 +39,15 @@ module Oxide
         end
       end
 
-      def execute : Hash(String, Array(Oxide::Error))?
+      def execute
         query.accept(self)
+      end
+
+      def execute!
+        execute
 
         if errors?
-          { "errors" => context.errors }
+          raise Oxide::CombinedError.new(context.errors)
         end
       end
 
