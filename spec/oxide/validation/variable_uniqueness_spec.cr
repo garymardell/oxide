@@ -12,16 +12,16 @@ describe Oxide::Validation::VariableUniqueness do
 
     query = Oxide::Query.new(query_string)
 
-    pipeline = Oxide::Validation::Pipeline.new(
+    runtime = Oxide::Validation::Runtime.new(
       ValidationsSchema,
       query,
       [Oxide::Validation::VariableUniqueness.new.as(Oxide::Validation::Rule)]
     )
 
-    pipeline.execute
+    runtime.execute
 
-    pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Oxide::ValidationError.new("There can only be one variable named \"atOtherHomes\""))
+    runtime.errors.size.should eq(1)
+    runtime.errors.should contain(Oxide::ValidationError.new("There can only be one variable named \"atOtherHomes\""))
   end
 
   it "example #169" do
@@ -43,14 +43,14 @@ describe Oxide::Validation::VariableUniqueness do
 
     query = Oxide::Query.new(query_string)
 
-    pipeline = Oxide::Validation::Pipeline.new(
+    runtime = Oxide::Validation::Runtime.new(
       ValidationsSchema,
       query,
       [Oxide::Validation::VariableUniqueness.new.as(Oxide::Validation::Rule)]
     )
 
-    pipeline.execute
+    runtime.execute
 
-    pipeline.errors.size.should eq(0)
+    runtime.errors.size.should eq(0)
   end
 end

@@ -12,16 +12,16 @@ describe Oxide::Validation::AllVariablesUsed do
 
     query = Oxide::Query.new(query_string)
 
-    pipeline = Oxide::Validation::Pipeline.new(
+    runtime = Oxide::Validation::Runtime.new(
       ValidationsSchema,
       query,
       [Oxide::Validation::AllVariablesUsed.new.as(Oxide::Validation::Rule)]
     )
 
-    pipeline.execute
+    runtime.execute
 
-    pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Oxide::ValidationError.new("Variable $atOtherHomes is declared by variableUnused but not used"))
+    runtime.errors.size.should eq(1)
+    runtime.errors.should contain(Oxide::ValidationError.new("Variable $atOtherHomes is declared by variableUnused but not used"))
   end
 
   it "example #181" do
@@ -39,15 +39,15 @@ describe Oxide::Validation::AllVariablesUsed do
 
     query = Oxide::Query.new(query_string)
 
-    pipeline = Oxide::Validation::Pipeline.new(
+    runtime = Oxide::Validation::Runtime.new(
       ValidationsSchema,
       query,
       [Oxide::Validation::AllVariablesUsed.new.as(Oxide::Validation::Rule)]
     )
 
-    pipeline.execute
+    runtime.execute
 
-    pipeline.errors.size.should eq(0)
+    runtime.errors.size.should eq(0)
   end
 
   it "counter example #182" do
@@ -65,16 +65,16 @@ describe Oxide::Validation::AllVariablesUsed do
 
     query = Oxide::Query.new(query_string)
 
-    pipeline = Oxide::Validation::Pipeline.new(
+    runtime = Oxide::Validation::Runtime.new(
       ValidationsSchema,
       query,
       [Oxide::Validation::AllVariablesUsed.new.as(Oxide::Validation::Rule)]
     )
 
-    pipeline.execute
+    runtime.execute
 
-    pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Oxide::ValidationError.new("Variable $atOtherHomes is declared by variableNotUsedWithinFragment but not used"))
+    runtime.errors.size.should eq(1)
+    runtime.errors.should contain(Oxide::ValidationError.new("Variable $atOtherHomes is declared by variableNotUsedWithinFragment but not used"))
   end
 
   it "counter example #183" do
@@ -98,15 +98,15 @@ describe Oxide::Validation::AllVariablesUsed do
 
     query = Oxide::Query.new(query_string)
 
-    pipeline = Oxide::Validation::Pipeline.new(
+    runtime = Oxide::Validation::Runtime.new(
       ValidationsSchema,
       query,
       [Oxide::Validation::AllVariablesUsed.new.as(Oxide::Validation::Rule)]
     )
 
-    pipeline.execute
+    runtime.execute
 
-    pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Oxide::ValidationError.new("Variable $extra is declared by queryWithExtraVar but not used"))
+    runtime.errors.size.should eq(1)
+    runtime.errors.should contain(Oxide::ValidationError.new("Variable $extra is declared by queryWithExtraVar but not used"))
   end
 end

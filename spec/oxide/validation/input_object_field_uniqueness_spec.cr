@@ -10,15 +10,15 @@ describe Oxide::Validation::InputObjectFieldUniqueness do
 
     query = Oxide::Query.new(query_string)
 
-    pipeline = Oxide::Validation::Pipeline.new(
+    runtime = Oxide::Validation::Runtime.new(
       ValidationsSchema,
       query,
       [Oxide::Validation::InputObjectFieldUniqueness.new.as(Oxide::Validation::Rule)]
     )
 
-    pipeline.execute
+    runtime.execute
 
-    pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Oxide::ValidationError.new("There can be only one input field named \"field\""))
+    runtime.errors.size.should eq(1)
+    runtime.errors.should contain(Oxide::ValidationError.new("There can be only one input field named \"field\""))
   end
 end

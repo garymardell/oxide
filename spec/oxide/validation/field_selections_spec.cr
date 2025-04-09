@@ -14,17 +14,17 @@ describe Oxide::Validation::FieldSelections do
 
     query = Oxide::Query.new(query_string)
 
-    pipeline = Oxide::Validation::Pipeline.new(
+    runtime = Oxide::Validation::Runtime.new(
       ValidationsSchema,
       query,
       [Oxide::Validation::FieldSelections.new.as(Oxide::Validation::Rule)]
     )
 
-    pipeline.execute
+    runtime.execute
 
-    pipeline.errors.size.should eq(2)
-    pipeline.errors.should contain(Oxide::ValidationError.new("Field 'meowVolume' doesn't exist on type 'Dog'"))
-    pipeline.errors.should contain(Oxide::ValidationError.new("Field 'kawVolume' doesn't exist on type 'Dog'"))
+    runtime.errors.size.should eq(2)
+    runtime.errors.should contain(Oxide::ValidationError.new("Field 'meowVolume' doesn't exist on type 'Dog'"))
+    runtime.errors.should contain(Oxide::ValidationError.new("Field 'kawVolume' doesn't exist on type 'Dog'"))
   end
 
   it "example #116" do
@@ -36,15 +36,15 @@ describe Oxide::Validation::FieldSelections do
 
     query = Oxide::Query.new(query_string)
 
-    pipeline = Oxide::Validation::Pipeline.new(
+    runtime = Oxide::Validation::Runtime.new(
       ValidationsSchema,
       query,
       [Oxide::Validation::FieldSelections.new.as(Oxide::Validation::Rule)]
     )
 
-    pipeline.execute
+    runtime.execute
 
-    pipeline.errors.size.should eq(0)
+    runtime.errors.size.should eq(0)
   end
 
   it "counter example #117" do
@@ -56,16 +56,16 @@ describe Oxide::Validation::FieldSelections do
 
     query = Oxide::Query.new(query_string)
 
-    pipeline = Oxide::Validation::Pipeline.new(
+    runtime = Oxide::Validation::Runtime.new(
       ValidationsSchema,
       query,
       [Oxide::Validation::FieldSelections.new.as(Oxide::Validation::Rule)]
     )
 
-    pipeline.execute
+    runtime.execute
 
-    pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Oxide::ValidationError.new("Field 'nickname' doesn't exist on type 'Pet'"))
+    runtime.errors.size.should eq(1)
+    runtime.errors.should contain(Oxide::ValidationError.new("Field 'nickname' doesn't exist on type 'Pet'"))
   end
 
   it "example #118" do
@@ -83,15 +83,15 @@ describe Oxide::Validation::FieldSelections do
 
     query = Oxide::Query.new(query_string)
 
-    pipeline = Oxide::Validation::Pipeline.new(
+    runtime = Oxide::Validation::Runtime.new(
       ValidationsSchema,
       query,
       [Oxide::Validation::FieldSelections.new.as(Oxide::Validation::Rule)]
     )
 
-    pipeline.execute
+    runtime.execute
 
-    pipeline.errors.size.should eq(0)
+    runtime.errors.size.should eq(0)
   end
 
   it "counter example #119" do
@@ -104,15 +104,15 @@ describe Oxide::Validation::FieldSelections do
 
     query = Oxide::Query.new(query_string)
 
-    pipeline = Oxide::Validation::Pipeline.new(
+    runtime = Oxide::Validation::Runtime.new(
       ValidationsSchema,
       query,
       [Oxide::Validation::FieldSelections.new.as(Oxide::Validation::Rule)]
     )
 
-    pipeline.execute
+    runtime.execute
 
-    pipeline.errors.size.should eq(2)
-    pipeline.errors.should contain(Oxide::ValidationError.new("Selections can't be made directly on unions (see selections on CatOrDog)"))
+    runtime.errors.size.should eq(2)
+    runtime.errors.should contain(Oxide::ValidationError.new("Selections can't be made directly on unions (see selections on CatOrDog)"))
   end
 end

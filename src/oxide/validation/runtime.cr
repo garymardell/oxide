@@ -4,7 +4,7 @@ require "../language/visitor"
 
 module Oxide
   module Validation
-    class Pipeline < Oxide::Language::Visitor
+    class Runtime < Oxide::Language::Visitor
       private getter rules : Array(Rule)
       private getter schema : Oxide::Schema
       private getter query : Oxide::Query

@@ -10,15 +10,15 @@ describe Oxide::Validation::LeafFieldSelections do
 
     query = Oxide::Query.new(query_string)
 
-    pipeline = Oxide::Validation::Pipeline.new(
+    runtime = Oxide::Validation::Runtime.new(
       ValidationsSchema,
       query,
       [Oxide::Validation::LeafFieldSelections.new.as(Oxide::Validation::Rule)]
     )
 
-    pipeline.execute
+    runtime.execute
 
-    pipeline.errors.size.should eq(0)
+    runtime.errors.size.should eq(0)
   end
 
   it "counter example #127" do
@@ -32,16 +32,16 @@ describe Oxide::Validation::LeafFieldSelections do
 
     query = Oxide::Query.new(query_string)
 
-    pipeline = Oxide::Validation::Pipeline.new(
+    runtime = Oxide::Validation::Runtime.new(
       ValidationsSchema,
       query,
       [Oxide::Validation::LeafFieldSelections.new.as(Oxide::Validation::Rule)]
     )
 
-    pipeline.execute
+    runtime.execute
 
-    pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Oxide::ValidationError.new("Selections can't be made on scalars (field 'barkVolume' returns Int but has selections [sinceWhen])"))
+    runtime.errors.size.should eq(1)
+    runtime.errors.should contain(Oxide::ValidationError.new("Selections can't be made on scalars (field 'barkVolume' returns Int but has selections [sinceWhen])"))
   end
 
   it "counter example #129" do
@@ -61,18 +61,18 @@ describe Oxide::Validation::LeafFieldSelections do
 
     query = Oxide::Query.new(query_string)
 
-    pipeline = Oxide::Validation::Pipeline.new(
+    runtime = Oxide::Validation::Runtime.new(
       ValidationsSchema,
       query,
       [Oxide::Validation::LeafFieldSelections.new.as(Oxide::Validation::Rule)]
     )
 
-    pipeline.execute
+    runtime.execute
 
-    pipeline.errors.size.should eq(3)
-    pipeline.errors.should contain(Oxide::ValidationError.new("Field must have selections (field 'human' returns Human but has no selections. Did you mean 'human { ... }'?)"))
-    pipeline.errors.should contain(Oxide::ValidationError.new("Field must have selections (field 'pet' returns Pet but has no selections. Did you mean 'pet { ... }'?)"))
-    pipeline.errors.should contain(Oxide::ValidationError.new("Field must have selections (field 'catOrDog' returns CatOrDog but has no selections. Did you mean 'catOrDog { ... }'?)"))
+    runtime.errors.size.should eq(3)
+    runtime.errors.should contain(Oxide::ValidationError.new("Field must have selections (field 'human' returns Human but has no selections. Did you mean 'human { ... }'?)"))
+    runtime.errors.should contain(Oxide::ValidationError.new("Field must have selections (field 'pet' returns Pet but has no selections. Did you mean 'pet { ... }'?)"))
+    runtime.errors.should contain(Oxide::ValidationError.new("Field must have selections (field 'catOrDog' returns CatOrDog but has no selections. Did you mean 'catOrDog { ... }'?)"))
   end
 
   it "example #130" do
@@ -86,14 +86,14 @@ describe Oxide::Validation::LeafFieldSelections do
 
     query = Oxide::Query.new(query_string)
 
-    pipeline = Oxide::Validation::Pipeline.new(
+    runtime = Oxide::Validation::Runtime.new(
       ValidationsSchema,
       query,
       [Oxide::Validation::LeafFieldSelections.new.as(Oxide::Validation::Rule)]
     )
 
-    pipeline.execute
+    runtime.execute
 
-    pipeline.errors.size.should eq(0)
+    runtime.errors.size.should eq(0)
   end
 end

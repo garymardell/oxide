@@ -12,15 +12,15 @@ describe Oxide::Validation::LoneAnonymousOperation do
 
     query = Oxide::Query.new(query_string)
 
-    pipeline = Oxide::Validation::Pipeline.new(
+    runtime = Oxide::Validation::Runtime.new(
       ValidationsSchema,
       query,
       [Oxide::Validation::LoneAnonymousOperation.new.as(Oxide::Validation::Rule)]
     )
 
-    pipeline.execute
+    runtime.execute
 
-    pipeline.errors.size.should eq(0)
+    runtime.errors.size.should eq(0)
   end
 
   it "counter example #109" do
@@ -42,15 +42,15 @@ describe Oxide::Validation::LoneAnonymousOperation do
 
     query = Oxide::Query.new(query_string)
 
-    pipeline = Oxide::Validation::Pipeline.new(
+    runtime = Oxide::Validation::Runtime.new(
       ValidationsSchema,
       query,
       [Oxide::Validation::LoneAnonymousOperation.new.as(Oxide::Validation::Rule)]
     )
 
-    pipeline.execute
+    runtime.execute
 
-    pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Oxide::ValidationError.new("Operation name is required when multiple operations are present"))
+    runtime.errors.size.should eq(1)
+    runtime.errors.should contain(Oxide::ValidationError.new("Operation name is required when multiple operations are present"))
   end
 end

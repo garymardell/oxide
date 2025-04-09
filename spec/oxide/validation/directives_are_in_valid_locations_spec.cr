@@ -10,15 +10,15 @@ describe Oxide::Validation::DirectivesAreInValidLocations do
 
     query = Oxide::Query.new(query_string)
 
-    pipeline = Oxide::Validation::Pipeline.new(
+    runtime = Oxide::Validation::Runtime.new(
       ValidationsSchema,
       query,
       [Oxide::Validation::DirectivesAreInValidLocations.new.as(Oxide::Validation::Rule)]
     )
 
-    pipeline.execute
+    runtime.execute
 
-    pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Oxide::ValidationError.new("'@skip' can't be applied to queries (allowed: fields, fragment spreads, inline fragments)"))
+    runtime.errors.size.should eq(1)
+    runtime.errors.should contain(Oxide::ValidationError.new("'@skip' can't be applied to queries (allowed: fields, fragment spreads, inline fragments)"))
   end
 end

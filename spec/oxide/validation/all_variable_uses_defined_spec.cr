@@ -12,15 +12,15 @@ describe Oxide::Validation::AllVariableUsesDefined do
 
     query = Oxide::Query.new(query_string)
 
-    pipeline = Oxide::Validation::Pipeline.new(
+    runtime = Oxide::Validation::Runtime.new(
       ValidationsSchema,
       query,
       [Oxide::Validation::AllVariableUsesDefined.new.as(Oxide::Validation::Rule)]
     )
 
-    pipeline.execute
+    runtime.execute
 
-    pipeline.errors.size.should eq(0)
+    runtime.errors.size.should eq(0)
   end
 
   it "counter example #174" do
@@ -34,16 +34,16 @@ describe Oxide::Validation::AllVariableUsesDefined do
 
     query = Oxide::Query.new(query_string)
 
-    pipeline = Oxide::Validation::Pipeline.new(
+    runtime = Oxide::Validation::Runtime.new(
       ValidationsSchema,
       query,
       [Oxide::Validation::AllVariableUsesDefined.new.as(Oxide::Validation::Rule)]
     )
 
-    pipeline.execute
+    runtime.execute
 
-    pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Oxide::ValidationError.new("Variable $atOtherHomes is used by variableIsNotDefined but not declared"))
+    runtime.errors.size.should eq(1)
+    runtime.errors.should contain(Oxide::ValidationError.new("Variable $atOtherHomes is used by variableIsNotDefined but not declared"))
   end
 
   it "example #175" do
@@ -61,15 +61,15 @@ describe Oxide::Validation::AllVariableUsesDefined do
 
     query = Oxide::Query.new(query_string)
 
-    pipeline = Oxide::Validation::Pipeline.new(
+    runtime = Oxide::Validation::Runtime.new(
       ValidationsSchema,
       query,
       [Oxide::Validation::AllVariableUsesDefined.new.as(Oxide::Validation::Rule)]
     )
 
-    pipeline.execute
+    runtime.execute
 
-    pipeline.errors.size.should eq(0)
+    runtime.errors.size.should eq(0)
   end
 
   it "counter example #176" do
@@ -87,16 +87,16 @@ describe Oxide::Validation::AllVariableUsesDefined do
 
     query = Oxide::Query.new(query_string)
 
-    pipeline = Oxide::Validation::Pipeline.new(
+    runtime = Oxide::Validation::Runtime.new(
       ValidationsSchema,
       query,
       [Oxide::Validation::AllVariableUsesDefined.new.as(Oxide::Validation::Rule)]
     )
 
-    pipeline.execute
+    runtime.execute
 
-    pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Oxide::ValidationError.new("Variable $atOtherHomes is used by isHouseTrainedFragment but not declared"))
+    runtime.errors.size.should eq(1)
+    runtime.errors.should contain(Oxide::ValidationError.new("Variable $atOtherHomes is used by isHouseTrainedFragment but not declared"))
   end
 
   it "counter example #177" do
@@ -118,16 +118,16 @@ describe Oxide::Validation::AllVariableUsesDefined do
 
     query = Oxide::Query.new(query_string)
 
-    pipeline = Oxide::Validation::Pipeline.new(
+    runtime = Oxide::Validation::Runtime.new(
       ValidationsSchema,
       query,
       [Oxide::Validation::AllVariableUsesDefined.new.as(Oxide::Validation::Rule)]
     )
 
-    pipeline.execute
+    runtime.execute
 
-    pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Oxide::ValidationError.new("Variable $atOtherHomes is used by isHouseTrainedFragment but not declared"))
+    runtime.errors.size.should eq(1)
+    runtime.errors.should contain(Oxide::ValidationError.new("Variable $atOtherHomes is used by isHouseTrainedFragment but not declared"))
   end
 
   it "example #178" do
@@ -151,15 +151,15 @@ describe Oxide::Validation::AllVariableUsesDefined do
 
     query = Oxide::Query.new(query_string)
 
-    pipeline = Oxide::Validation::Pipeline.new(
+    runtime = Oxide::Validation::Runtime.new(
       ValidationsSchema,
       query,
       [Oxide::Validation::AllVariableUsesDefined.new.as(Oxide::Validation::Rule)]
     )
 
-    pipeline.execute
+    runtime.execute
 
-    pipeline.errors.size.should eq(0)
+    runtime.errors.size.should eq(0)
   end
 
   it "counter example #179" do
@@ -183,15 +183,15 @@ describe Oxide::Validation::AllVariableUsesDefined do
 
     query = Oxide::Query.new(query_string)
 
-    pipeline = Oxide::Validation::Pipeline.new(
+    runtime = Oxide::Validation::Runtime.new(
       ValidationsSchema,
       query,
       [Oxide::Validation::AllVariableUsesDefined.new.as(Oxide::Validation::Rule)]
     )
 
-    pipeline.execute
+    runtime.execute
 
-    pipeline.errors.size.should eq(1)
-    pipeline.errors.should contain(Oxide::ValidationError.new("Variable $atOtherHomes is used by isHouseTrainedFragment but not declared"))
+    runtime.errors.size.should eq(1)
+    runtime.errors.should contain(Oxide::ValidationError.new("Variable $atOtherHomes is used by isHouseTrainedFragment but not declared"))
   end
 end
