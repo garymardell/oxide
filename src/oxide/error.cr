@@ -43,7 +43,9 @@ module Oxide
   end
 
   class CombinedError < Exception
-    def initialize(errors : Array(Error))
+    getter errors : Array(Error)
+
+    def initialize(@errors : Array(Error))
     end
 
     def to_json(builder : JSON::Builder)
