@@ -11,6 +11,10 @@ module Oxide
       def initialize(@name, @values, @description = nil, @applied_directives = [] of AppliedDirective)
       end
 
+      def coerce(schema, value : JSON::Any) : JSON::Any::Type
+        coerce(schema, value.as_s)
+      end
+
       def coerce(schema, value : String) : JSON::Any::Type
         enum_value = values.find { |ev| ev.name == value }
 
