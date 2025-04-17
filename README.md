@@ -16,44 +16,45 @@ This library was originally built to experiment with building dynamic schemas on
   - [ ] Raise errors during validation phase
   - [ ] Handle exceptions to generate an errored response
 - Static validation (https://spec.graphql.org/October2021/#sec-Validation)
-  - [x] Documents
-    - [ ] ~~Executable Definitions~~ _Currently all definitions are executable so enforced by the type system_
-  - [x] Operations
-    - [x] Named Operation Definitions
-    - [x] Anonymous Operation Definitions
-    - [ ] ~~Subscription Operation Definitions~~ _Subscriptions are not supported at this time_
-  - [ ] Fields
-    - [x] Field Selections
-    - [ ] Field Selection Merging
-    - [x] Leaf Field Selections
-  - [x] Arguments
-    - [x] Argument Names
-    - [x] Argument Uniqueness
-  - [ ] Fragments
-    - [ ] Fragment Declarations
-      - [ ] Fragment Name Uniqueness
-      - [ ] Fragment Spread Type Existence
-      - [ ] Fragments on Composite Types
-      - [ ] Fragments Must Be Used
-    - [ ] Fragment Spreads
-      - [ ] Fragment Spread Target Defined
-      - [ ] Fragment Spreads Must Not Form Cycles
-      - [ ] Fragment Spread is Possible
-  - [ ] Values
-    - [ ] Values of Correct Type
-    - [x] Input Object Field Names
-    - [x] Input Object Field Uniqueness
-    - [ ] Input Object Required Fields
-  - [x] Directives
-    - [x] Directives Are Defined
-    - [x] Directives Are In Valid Locations
-    - [x] Directives Are Unique Per Location
-  - [ ] Variables
-    - [x] Variable Uniqueness
-    - [x] Variables are Input Types
-    - [x] All Variable Uses Defined
-    - [x] All Variables Used
-    - [ ] All Variable Usages are Allowed
+  - [x] 5.1 Documents
+    - [ ] 5.1. ~~Executable Definitions~~ _Currently all definitions are executable so enforced by the type system_
+  - [x] 5.2 Operations
+    - [x] 5.2.1 Named Operation Definitions
+    - [x] 5.2.2 Anonymous Operation Definitions
+    - [ ] 5.2.3 ~~Subscription Operation Definitions~~ _Subscriptions are not supported at this time_
+  - [ ] 5.3 Fields
+    - [x] 5.3.1 Field Selections
+    - [ ] 5.3.2 Field Selection Merging
+    - [x] 5.3.3 Leaf Field Selections
+  - [x] 5.4 Arguments
+    - [x] 5.4.1 Argument Names
+    - [x] 5.4.2 Argument Uniqueness
+    - [ ] 5.4.3 Required arguments
+  - [ ] 5.5 Fragments
+    - [ ] 5.5.1 Fragment Declarations
+      - [ ] 5.5.1.1 Fragment Name Uniqueness
+      - [ ] 5.5.1.2 Fragment Spread Type Existence
+      - [ ] 5.5.1.3 Fragments on Composite Types
+      - [ ] 5.5.1.4 Fragments Must Be Used
+    - [ ] 5.5.2 Fragment Spreads
+      - [ ] 5.5.2.1 Fragment Spread Target Defined
+      - [ ] 5.5.2.2 Fragment Spreads Must Not Form Cycles
+      - [ ] 5.5.2.3 Fragment Spread is Possible
+  - [ ] 5.6 Values
+    - [ ] 5.6.1 Values of Correct Type
+    - [x] 5.6.2 Input Object Field Names
+    - [x] 5.6.3 Input Object Field Uniqueness
+    - [ ] 5.6.4 Input Object Required Fields
+  - [x] 5.7 Directives
+    - [x] 5.7.1 Directives Are Defined
+    - [x] 5.7.2 Directives Are In Valid Locations
+    - [x] 5.7.3 Directives Are Unique Per Location
+  - [ ] 5.8 Variables
+    - [x] 5.8.1 Variable Uniqueness
+    - [x] 5.8.2 Variables are Input Types
+    - [x] 5.8.3 All Variable Uses Defined
+    - [x] 5.8.4 All Variables Used
+    - [ ] 5.8.5 All Variable Usages are Allowed
 - [ ] Custom directives
   - [x] SCHEMA
   - [x] SCALAR
