@@ -74,10 +74,6 @@ This library was originally built to experiment with building dynamic schemas on
 
 ### Features
 
-#### Queries
-
-- [x] Libgraphqlpaser based parser
-
 #### Built-in Types
 
 - [x] Scalars
