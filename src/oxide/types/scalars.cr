@@ -118,6 +118,12 @@ module Oxide
         raise InputCoercionError.new("Int cannot represent a non-interger value")
       end
 
+      def serialize(value : JSON::Any) : SerializedOutput
+        return nil if value.raw.nil?
+
+        serialize(value.raw)
+      end
+
       def serialize(value) : SerializedOutput
         return value if value.nil?
 
@@ -175,6 +181,12 @@ module Oxide
         raise InputCoercionError.new("Could not coerce value to Float")
       end
 
+      def serialize(value : JSON::Any) : SerializedOutput
+        return nil if value.raw.nil?
+
+        serialize(value.raw)
+      end
+
       def serialize(value) : SerializedOutput
         if value.responds_to?(:to_f32)
           value.to_f32
@@ -207,6 +219,10 @@ module Oxide
 
       def coerce(schema, value) : JSON::Any::Type
         raise InputCoercionError.new("Can't coerce non boolean value from #{value.class.name}")
+      end
+
+      def serialize(value : JSON::Any) : SerializedOutput
+        value.as_bool
       end
 
       def serialize(value) : SerializedOutput
