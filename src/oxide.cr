@@ -13,8 +13,21 @@ module Oxide
 
     def initialize(@execution_context, @resolution_info, @arguments = {} of String => JSON::Any)
     end
+
+    def with(&block)
+      with self yield
+    end
+  end
+end
+
+macro resolver(type, &block)
+  begin
+    ->(object : {{type.id}}, resolution : Oxide::Resolution) {
+      resolution.with do
+        {{block.body}}
+      end
+    }
   end
 end
 
 require "./oxide/schema"
-# require "./oxide/utils/**"

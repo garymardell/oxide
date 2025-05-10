@@ -21,9 +21,9 @@ TransactionInterface = Oxide::Types::InterfaceType.new(
   fields: {
     "id" => Oxide::Field.new(
       type: Oxide::Types::IdType.new,
-      resolve: ->(object : (Charge | Refund), resolution : Oxide::Resolution){
+      resolve: resolver(Charge | Refund) do
         object.id
-      }
+      end
     ),
     "reference" => Oxide::Field.new(
       type: Oxide::Types::StringType.new,
