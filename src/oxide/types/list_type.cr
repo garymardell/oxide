@@ -17,6 +17,10 @@ module Oxide
         "LIST"
       end
 
+      def coerce(schema, value : JSON::Any) : JSON::Any::Type
+        coerce(schema, value.as_a)
+      end
+
       def coerce(schema, value : Array) : JSON::Any::Type
         value.map do |item|
           case of_type
