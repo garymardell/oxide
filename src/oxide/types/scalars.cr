@@ -170,7 +170,7 @@ module Oxide
       end
 
       def coerce(schema, value : JSON::Any) : JSON::Any::Type
-        value.as_s?.presence.try &.to_f64
+        value.to_s.to_f64
       end
 
       def coerce(schema, value : Oxide::Language::Nodes::FloatValue) : JSON::Any::Type
@@ -244,15 +244,17 @@ module Oxide
       end
 
       def coerce(schema, value : JSON::Any) : JSON::Any::Type
-        Time.parse_utc(value.to_s, "%F").to_s("%F")
-      rescue Time::Format::Error
-        raise InputCoercionError.new("Cannot coerce #{value.to_s} to Date")
+        coerce(schema, value.to_s)
       end
 
       def coerce(schema, value : Oxide::Language::Nodes::StringValue) : JSON::Any::Type
-        Time.parse_utc(value.value, "%F").to_s("%F")
+        coerce(schema, value.value)
+      end
+
+      def coerce(schema, value : String) : JSON::Any::Type
+        Time.parse_utc(value, "%F").to_s("%F")
       rescue Time::Format::Error
-        raise InputCoercionError.new("Cannot coerce #{value.value} to Date")
+        raise InputCoercionError.new("Cannot coerce #{value} to Date")
       end
 
       def coerce(schema, value) : JSON::Any::Type
@@ -278,15 +280,17 @@ module Oxide
       end
 
       def coerce(schema, value : JSON::Any) : JSON::Any::Type
-        Time.parse_rfc3339(value.to_s).to_rfc3339
-      rescue Time::Format::Error
-        raise InputCoercionError.new("Cannot coerce #{value.to_s} to DateTime")
+        coerce(schema, value.to_s)
       end
 
       def coerce(schema, value : Oxide::Language::Nodes::StringValue) : JSON::Any::Type
-        Time.parse_rfc3339(value.value).to_rfc3339
+        coerce(schema, value.value)
+      end
+
+      def coerce(schema, value : String) : JSON::Any::Type
+        Time.parse_rfc3339(value).to_rfc3339
       rescue Time::Format::Error
-        raise InputCoercionError.new("Cannot coerce #{value.value} to DateTime")
+        raise InputCoercionError.new("Cannot coerce #{value} to DateTime")
       end
 
       def coerce(schema, value) : JSON::Any::Type
