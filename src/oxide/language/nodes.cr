@@ -359,6 +359,13 @@ module Oxide
 
       abstract class Value < Node
         abstract def value
+        abstract def to_s(io)
+
+        def to_s
+          String.build do |io|
+            to_s(io)
+          end
+        end
 
         def accept(visitor : Visitor)
           visitor.enter(self)
@@ -373,6 +380,10 @@ module Oxide
         getter value : String
 
         def initialize(@value)
+        end
+
+        def to_s(io)
+          io << value
         end
 
         def accept(visitor : Visitor)
@@ -391,6 +402,10 @@ module Oxide
           name
         end
 
+        def to_s(io)
+          io << "$" << value
+        end
+
         def accept(visitor : Visitor)
           visitor.enter(self)
           visitor.leave(self)
@@ -401,6 +416,10 @@ module Oxide
         getter value : Int64
 
         def initialize(@value)
+        end
+
+        def to_s(io)
+          io << value
         end
 
         def accept(visitor : Visitor)
@@ -415,6 +434,10 @@ module Oxide
         def initialize(@value)
         end
 
+        def to_s(io)
+          io << value
+        end
+
         def accept(visitor : Visitor)
           visitor.enter(self)
           visitor.leave(self)
@@ -425,6 +448,10 @@ module Oxide
         getter value : Bool
 
         def initialize(@value)
+        end
+
+        def to_s(io)
+          io << value
         end
 
         def accept(visitor : Visitor)
@@ -438,6 +465,10 @@ module Oxide
           nil
         end
 
+        def to_s(io)
+          io << "null"
+        end
+
         def accept(visitor : Visitor)
           visitor.enter(self)
           visitor.leave(self)
@@ -448,6 +479,10 @@ module Oxide
         getter value : String
 
         def initialize(@value)
+        end
+
+        def to_s(io)
+          io << value
         end
 
         def accept(visitor : Visitor)
@@ -464,6 +499,15 @@ module Oxide
 
         def value
           values
+        end
+
+        def to_s(io)
+          io << "["
+          values.each_with_index(1) do |value, index|
+            value.to_s(io)
+            io << ", " if index < values.size
+          end
+          io << "]"
         end
 
         def accept(visitor : Visitor)
@@ -484,6 +528,16 @@ module Oxide
             memo[field.name] = field.value
             memo
           end
+        end
+
+        def to_s(io)
+          io << "{"
+          fields.each_with_index(1) do |field, index|
+            io << field.name << ": "
+            field.value.to_s(io)
+            io << ", " if index < fields.size
+          end
+          io << "}"
         end
 
         def accept(visitor : Visitor)

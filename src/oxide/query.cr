@@ -25,6 +25,10 @@ module Oxide
       @document ||= parse(query_string)
     end
 
+    def print(io : IO)
+      Oxide::Language::Printer.new(io, self).print
+    end
+
     private def parse(query_string)
       Oxide::Language::Parser.parse(query_string, @max_tokens)
     end
