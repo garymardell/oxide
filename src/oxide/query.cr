@@ -21,7 +21,7 @@ module Oxide
       document.accept(visitor)
     end
 
-    def document(max_tokens : Int32 = nil) : Oxide::Language::Nodes::Document
+    def document(max_tokens : Int32? = nil) : Oxide::Language::Nodes::Document
       @document ||= parse(query_string, max_tokens)
     end
 
