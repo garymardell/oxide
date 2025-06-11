@@ -32,7 +32,7 @@ module Oxide
       end
 
       class Document < Node
-        getter definitions : Array(Definition)
+        property definitions : Array(Definition)
 
         def initialize(@definitions = [] of Definition)
         end
@@ -51,11 +51,11 @@ module Oxide
       end
 
       class OperationDefinition < Node
-        getter name : String?
-        getter operation_type : String
-        getter! selection_set : SelectionSet
-        getter variable_definitions : Array(VariableDefinition)
-        getter directives : Array(Directive)
+        property name : String?
+        property operation_type : String
+        property! selection_set : SelectionSet
+        property variable_definitions : Array(VariableDefinition)
+        property directives : Array(Directive)
 
         def initialize(@operation_type, @name = nil, @selection_set = nil, @variable_definitions = [] of VariableDefinition, @directives = [] of Directive)
         end
@@ -80,7 +80,7 @@ module Oxide
       end
 
       class SelectionSet < Node
-        getter selections : Array(Selection)
+        property selections : Array(Selection)
 
         def initialize(@selections = [] of Selection)
         end
@@ -99,10 +99,10 @@ module Oxide
       end
 
       class FragmentDefinition < Node
-        getter name : String
-        getter! type_condition : NamedType
-        getter! selection_set : SelectionSet
-        getter directives : Array(Directive)
+        property name : String
+        property! type_condition : NamedType
+        property! selection_set : SelectionSet
+        property directives : Array(Directive)
 
         def initialize(@name, @type_condition = nil, @selection_set = nil, @directives = [] of Directive)
         end
@@ -123,9 +123,9 @@ module Oxide
       end
 
       class SchemaDefinition < Node
-        getter description : String?
-        getter directives : Array(Directive)
-        getter operation_type_definitions : Array(OperationTypeDefinition)
+        property description : String?
+        property directives : Array(Directive)
+        property operation_type_definitions : Array(OperationTypeDefinition)
 
         def initialize(@description = nil, @operation_type_definitions = [] of OperationTypeDefinition, @directives = [] of Directive)
         end
@@ -148,8 +148,8 @@ module Oxide
       end
 
       class OperationTypeDefinition < Node
-        getter operation_type : String
-        getter! named_type : NamedType
+        property operation_type : String
+        property! named_type : NamedType
 
         def initialize(@operation_type, @named_type = nil)
         end
@@ -163,8 +163,8 @@ module Oxide
       end
 
       class FragmentSpread < Node
-        getter name : String
-        getter directives : Array(Directive)
+        property name : String
+        property directives : Array(Directive)
 
         def initialize(@name, @directives = [] of Directive)
         end
@@ -183,9 +183,9 @@ module Oxide
       end
 
       class InlineFragment < Node
-        getter type_condition : NamedType?
-        getter! selection_set : SelectionSet
-        getter directives : Array(Directive)
+        property type_condition : NamedType?
+        property! selection_set : SelectionSet
+        property directives : Array(Directive)
 
         def initialize(@type_condition = nil, @selection_set = nil, @directives = [] of Directive)
         end
@@ -204,11 +204,11 @@ module Oxide
       end
 
       class Field < Node
-        getter alias : String?
-        getter name : String
-        getter arguments : Array(Argument)
-        getter selection_set : SelectionSet?
-        getter directives : Array(Directive)
+        property alias : String?
+        property name : String
+        property arguments : Array(Argument)
+        property selection_set : SelectionSet?
+        property directives : Array(Directive)
 
         def initialize(@name, @alias = nil, @arguments = [] of Argument, @selection_set = nil, @directives = [] of Directive)
         end
@@ -240,8 +240,8 @@ module Oxide
       end
 
       class Argument < Node
-        getter name : String
-        getter value : Value?
+        property name : String
+        property value : Value?
 
         def initialize(@name, @value = nil)
         end
@@ -260,9 +260,9 @@ module Oxide
       end
 
       class VariableDefinition < Node
-        getter! variable : Variable
-        getter! type : Type?
-        getter default_value : Value?
+        property! variable : Variable
+        property! type : Type?
+        property default_value : Value?
 
         def initialize(@variable = nil, @type = nil, @default_value = nil)
         end
@@ -279,7 +279,7 @@ module Oxide
       end
 
       class NamedType < Type
-        getter name : String
+        property name : String
 
         def initialize(@name)
         end
@@ -301,7 +301,7 @@ module Oxide
       end
 
       class ListType < Type
-        getter of_type : NamedType | ListType | Nil
+        property of_type : NamedType | ListType | Nil
 
         def initialize(@of_type = nil)
         end
@@ -330,7 +330,7 @@ module Oxide
       end
 
       class NonNullType < Type
-        getter of_type : NamedType | ListType | Nil
+        property of_type : NamedType | ListType | Nil
 
         def initialize(@of_type = nil)
         end
@@ -370,7 +370,7 @@ module Oxide
       end
 
       class StringValue < Value
-        getter value : String
+        property value : String
 
         def initialize(@value)
         end
@@ -382,7 +382,7 @@ module Oxide
       end
 
       class Variable < Value
-        getter name : String
+        property name : String
 
         def initialize(@name)
         end
@@ -398,7 +398,7 @@ module Oxide
       end
 
       class IntValue < Value
-        getter value : Int64
+        property value : Int64
 
         def initialize(@value)
         end
@@ -410,7 +410,7 @@ module Oxide
       end
 
       class FloatValue < Value
-        getter value : Float64
+        property value : Float64
 
         def initialize(@value)
         end
@@ -422,7 +422,7 @@ module Oxide
       end
 
       class BooleanValue < Value
-        getter value : Bool
+        property value : Bool
 
         def initialize(@value)
         end
@@ -445,7 +445,7 @@ module Oxide
       end
 
       class EnumValue < Value
-        getter value : String
+        property value : String
 
         def initialize(@value)
         end
@@ -457,7 +457,7 @@ module Oxide
       end
 
       class ListValue < Value
-        getter values : Array(Value)
+        property values : Array(Value)
 
         def initialize(@values = [] of Value)
         end
@@ -474,7 +474,7 @@ module Oxide
       end
 
       class ObjectValue < Value
-        getter fields : Array(ObjectField)
+        property fields : Array(ObjectField)
 
         def initialize(@fields = [] of ObjectField)
         end
@@ -500,8 +500,8 @@ module Oxide
       end
 
       class ObjectField < Node
-        getter name : String
-        getter value : Value
+        property name : String
+        property value : Value
 
         def initialize(@name, @value)
         end
@@ -518,8 +518,8 @@ module Oxide
       end
 
       class Directive < Node
-        getter name : String
-        getter arguments : Array(Argument)
+        property name : String
+        property arguments : Array(Argument)
 
         def initialize(@name, @arguments = [] of Argument)
         end
@@ -542,9 +542,9 @@ module Oxide
       end
 
       class ScalarTypeDefinition < TypeDefinition
-        getter name : String
-        getter description : String?
-        getter directives : Array(Directive)
+        property name : String
+        property description : String?
+        property directives : Array(Directive)
 
         def initialize(@name, @description = nil, @directives = [] of Directive)
         end
@@ -558,11 +558,11 @@ module Oxide
       end
 
       class ObjectTypeDefinition < TypeDefinition
-        getter name : String
-        getter description : String?
-        getter implements : Array(NamedType)
-        getter directives : Array(Directive)
-        getter field_definitions : Array(FieldDefinition)
+        property name : String
+        property description : String?
+        property implements : Array(NamedType)
+        property directives : Array(Directive)
+        property field_definitions : Array(FieldDefinition)
 
         def initialize(@name, @description = nil, @implements = [] of NamedType, @directives = [] of Directive, @field_definitions = [] of FieldDefinition)
         end
@@ -585,11 +585,11 @@ module Oxide
       end
 
       class FieldDefinition < Node
-        getter name : String
-        getter description : String?
-        getter argument_definitions : Array(InputValueDefinition)
-        getter type : NamedType | ListType | NonNullType | Nil
-        getter directives : Array(Directive)
+        property name : String
+        property description : String?
+        property argument_definitions : Array(InputValueDefinition)
+        property type : NamedType | ListType | NonNullType | Nil
+        property directives : Array(Directive)
 
         def initialize(@name, @description = nil, @argument_definitions = [] of InputValueDefinition, @type = nil, @directives = [] of Directive)
         end
@@ -612,10 +612,10 @@ module Oxide
       end
 
       class InputValueDefinition < Node
-        getter name : String
-        getter type : NamedType | ListType | NonNullType | Nil
-        getter default_value : Value | Nil
-        getter directives : Array(Directive)
+        property name : String
+        property type : NamedType | ListType | NonNullType | Nil
+        property default_value : Value | Nil
+        property directives : Array(Directive)
 
         def initialize(@name, @type = nil, @default_value = nil, @directives = [] of Directive)
         end
@@ -634,11 +634,11 @@ module Oxide
       end
 
       class InterfaceTypeDefinition < TypeDefinition
-        getter name : String
-        getter description : String?
-        getter implements_interfaces : Array(NamedType)
-        getter field_definitions : Array(FieldDefinition)
-        getter directives : Array(Directive)
+        property name : String
+        property description : String?
+        property implements_interfaces : Array(NamedType)
+        property field_definitions : Array(FieldDefinition)
+        property directives : Array(Directive)
 
         def initialize(@name, @description = nil, @implements_interfaces = [] of NamedType, @field_definitions = [] of FieldDefinition, @directives = [] of Directive)
         end
@@ -657,10 +657,10 @@ module Oxide
       end
 
       class UnionTypeDefinition < TypeDefinition
-        getter name : String
-        getter description : String?
-        getter member_types : Array(NamedType)
-        getter directives : Array(Directive)
+        property name : String
+        property description : String?
+        property member_types : Array(NamedType)
+        property directives : Array(Directive)
 
         def initialize(@name, @description = nil, @member_types = [] of NamedType, @directives = [] of Directive)
         end
@@ -679,10 +679,10 @@ module Oxide
       end
 
       class EnumTypeDefinition < TypeDefinition
-        getter name : String
-        getter description : String?
-        getter value_definitions : Array(EnumValueDefinition)
-        getter directives : Array(Directive)
+        property name : String
+        property description : String?
+        property value_definitions : Array(EnumValueDefinition)
+        property directives : Array(Directive)
 
         def initialize(@name, @description = nil, @directives = [] of Directive, @value_definitions = [] of EnumValueDefinition)
         end
@@ -701,9 +701,9 @@ module Oxide
       end
 
       class EnumValueDefinition < Node
-        getter name : String
-        getter description : String?
-        getter directives : Array(Directive)
+        property name : String
+        property description : String?
+        property directives : Array(Directive)
 
         def initialize(@name, @description = nil, @directives = [] of Directive)
         end
@@ -717,10 +717,10 @@ module Oxide
       end
 
       class InputObjectTypeDefinition < TypeDefinition
-        getter name : String
-        getter description : String?
-        getter directives : Array(Directive)
-        getter fields : Array(InputValueDefinition)
+        property name : String
+        property description : String?
+        property directives : Array(Directive)
+        property fields : Array(InputValueDefinition)
 
         def initialize(@name, @description = nil, @directives = [] of Directive, @fields = [] of InputValueDefinition)
         end
@@ -732,11 +732,11 @@ module Oxide
       end
 
       class DirectiveDefinition < Node
-        getter name : String
-        getter description : String?
-        getter repeatable : Bool
-        getter arguments_definitions : Array(InputValueDefinition)
-        getter directive_locations : Array(DirectiveLocation)
+        property name : String
+        property description : String?
+        property repeatable : Bool
+        property arguments_definitions : Array(InputValueDefinition)
+        property directive_locations : Array(DirectiveLocation)
 
         def initialize(@name, @description = nil, @repeatable = false, @arguments_definitions = [] of InputValueDefinition, @directive_locations = [] of DirectiveLocation)
         end
@@ -755,7 +755,7 @@ module Oxide
       end
 
       class ArgumentsDefintion < Node
-        getter input_value_definitions : Array(InputValueDefinition)
+        property input_value_definitions : Array(InputValueDefinition)
 
         def initialize(@input_value_definitions = [] of InputValueDefinition)
         end
