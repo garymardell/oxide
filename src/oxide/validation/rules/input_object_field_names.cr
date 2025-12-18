@@ -10,7 +10,16 @@ module Oxide
       def enter(node : Oxide::Language::Nodes::ObjectField, context)
         input_field_name = node.name
 
-        case input_type = context.input_type
+        # When we enter ObjectField, the context visitor has already pushed the field type
+        # So we need to look at the parent type (at index -2)
+        # But we want to check before that push happened, so let's look at the stack
+        parent_input_type = if context.input_type_stack.size >= 2
+          context.input_type_stack[-2]
+        else
+          context.input_type_stack[-1]
+        end
+
+        case input_type = parent_input_type
         when Oxide::Types::InputObjectType
           input_field_definition = input_type.input_fields[input_field_name]?
 

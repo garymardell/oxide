@@ -25,6 +25,7 @@ module Oxide
 
       def execute(query : Oxide::Query, context : Oxide::Context? = nil, initial_value = nil) : Response
         execution_context = Execution::Context.new(schema, query, context)
+        data = nil
 
         begin
           definitions = query.document.definitions.select(type: Oxide::Language::Nodes::OperationDefinition)
@@ -70,15 +71,8 @@ module Oxide
 
       private def execute_query(execution_context : Execution::Context, query, schema, coerced_variable_values : Hash(String, JSON::Any), initial_value) : SerializedOutput
         if query_type = schema.query
-
-          begin
-            result = execute_selection_set(execution_context, query.selection_set.selections, query_type, initial_value, coerced_variable_values)
-
-            serialize(result)
-          rescue e : FieldError
-            execution_context.errors << e
-            nil
-          end
+          result = execute_selection_set(execution_context, query.selection_set.selections, query_type, initial_value, coerced_variable_values)
+          serialize(result)
         end
       end
 
@@ -101,14 +95,8 @@ module Oxide
 
       private def execute_mutation(execution_context : Execution::Context, mutation, schema, coerced_variable_values, initial_value)
         if mutation_type = schema.mutation
-          begin
-            result = execute_selection_set(execution_context, mutation.selection_set.selections, mutation_type, initial_value, coerced_variable_values)
-
-            serialize(result)
-          rescue e : FieldError
-            execution_context.errors << e
-            nil
-          end
+          result = execute_selection_set(execution_context, mutation.selection_set.selections, mutation_type, initial_value, coerced_variable_values)
+          serialize(result)
         end
       end
 
@@ -121,7 +109,25 @@ module Oxide
           if field = get_field(object_type, field_name)
             field_type = field.type
 
-            memo[key] = execute_field(execution_context, object_type, object_value, field.type, fields, variable_values).as(IntermediateType)
+            # Add the response key to the path
+            execution_context.current_path << key
+            
+            begin
+              memo[key] = execute_field(execution_context, object_type, object_value, field.type, fields, variable_values).as(IntermediateType)
+            rescue e : FieldError
+              # Add path to error if not already set
+              if e.path.nil?
+                error_with_path = FieldError.new(e.message, e.locations, execution_context.current_path.dup)
+                execution_context.errors << error_with_path
+              else
+                execution_context.errors << e
+              end
+              # Return nil for this field
+              memo[key] = nil
+            ensure
+              # Remove the response key from the path after execution
+              execution_context.current_path.pop
+            end
           else
             raise SchemaError.new("error getting field #{field_name}")
           end
@@ -250,11 +256,19 @@ module Oxide
         if result.is_a?(Array)
           inner_type = field_type.of_type
 
-          partial_results = result.map do |result_item|
-            if result_item.is_a?(Proc(IntermediateType))
-              complete_value(execution_context, inner_type, fields, result_item.call, variable_values).as(IntermediateType)
-            else
-              complete_value(execution_context, inner_type, fields, result_item, variable_values).as(IntermediateType)
+          partial_results = result.map_with_index do |result_item, index|
+            # Add the list index to the path
+            execution_context.current_path << index
+            
+            begin
+              if result_item.is_a?(Proc(IntermediateType))
+                complete_value(execution_context, inner_type, fields, result_item.call, variable_values).as(IntermediateType)
+              else
+                complete_value(execution_context, inner_type, fields, result_item, variable_values).as(IntermediateType)
+              end
+            ensure
+              # Remove the list index from the path
+              execution_context.current_path.pop
             end
           end
 
@@ -480,14 +494,22 @@ module Oxide
           has_value = variable_values.has_key?(variable_name)
           value = variable_values.fetch(variable_name, nil)
 
+          # Check if this is a non-null type (could be either AST node or resolved type)
+          is_non_null = variable_type.is_a?(Oxide::Types::NonNullType)
+
           if !has_value && !variable_definition.default_value.nil?
+            # Use default value if variable not provided
             coerced_variables[variable_name] = JSON::Any.new(variable_definition.default_value.not_nil!.value.as(JSON::Any::Type))
-          elsif variable_type.is_a?(Oxide::Language::Nodes::NonNullType) && (!has_value || value.nil?)
-            raise RuntimeError.new("Variable '#{variable_name}' received null value for non null type")
+          elsif is_non_null && (!has_value || (value && value.raw.nil?))
+            # Non-null variable must be provided and must not be null
+            raise RuntimeError.new("Variable '$#{variable_name}' of non-null type must not be null.")
           elsif has_value
-            if value.nil?
+            # Variable was provided
+            if value && value.raw.nil?
+              # Null value provided for nullable type - store it directly without coercion
               coerced_variables[variable_name] = JSON::Any.new(nil)
             else
+              # Non-null value - coerce it
               # TODO: Support coercion for all types
               coerced_value = if variable_type.responds_to?(:coerce)
                 JSON::Any.new(schema.resolve_type(variable_type).coerce(schema, value))

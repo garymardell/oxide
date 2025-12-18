@@ -28,12 +28,14 @@ module Oxide
       property raw_value : String
       property line_number : Int32
       property column_number : Int32
+      property block_string : Bool
 
       def initialize
         @kind = :EOF
         @line_number = 0
         @column_number = 0
         @raw_value = ""
+        @block_string = false
       end
 
       def int_value : Int64

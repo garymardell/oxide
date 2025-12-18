@@ -17,18 +17,32 @@ module Oxide
   # Base error for all oxide errors to extend from
   class Error < Exception
     getter locations : Array(Location) = [] of Location
+    getter path : Array(String | Int32)? = nil
 
-    def initialize(message, @locations = [] of Location)
+    def initialize(message, @locations = [] of Location, @path = nil)
       super(message)
     end
 
     def to_json(builder : JSON::Builder)
       builder.object do
         builder.field "message", message
-        builder.field "locations" do
-          builder.array do
-            locations.each do |location|
-              location.to_json(builder)
+        
+        if locations.any?
+          builder.field "locations" do
+            builder.array do
+              locations.each do |location|
+                location.to_json(builder)
+              end
+            end
+          end
+        end
+        
+        if p = @path
+          builder.field "path" do
+            builder.array do
+              p.each do |segment|
+                segment.to_json(builder)
+              end
             end
           end
         end
@@ -36,10 +50,20 @@ module Oxide
     end
 
     def to_h
-      { "message" => message, "locations" => locations.map(&.to_h) }
+      result = { "message" => message } of String => (String | Array(Hash(String, Int32)) | Array(String | Int32))
+      
+      if locations.any?
+        result["locations"] = locations.map(&.to_h)
+      end
+      
+      if p = @path
+        result["path"] = p
+      end
+      
+      result
     end
 
-    def_equals_and_hash @message, @locations
+    def_equals_and_hash @message, @locations, @path
   end
 
   class CombinedError < Exception

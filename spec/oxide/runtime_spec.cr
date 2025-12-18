@@ -63,15 +63,17 @@ describe Oxide do
 
     result = runtime.execute(query: Oxide::Query.new(query_string), initial_value: Query.new)
 
+    # With path tracking, we get separate errors for each null in the list
     expected_errors = Set.new([
-      Oxide::FieldError.new("Cannot return null for non-nullable field Charge.status")
+      Oxide::FieldError.new("Cannot return null for non-nullable field Charge.status", [] of Oxide::Location, ["charges", 0, "status"] of (String | Int32)),
+      Oxide::FieldError.new("Cannot return null for non-nullable field Charge.status", [] of Oxide::Location, ["charges", 2, "status"] of (String | Int32))
     ])
 
     expected_data = {
       "charges" => [
-        nil,
+        { "id" => "1", "status" => nil },
         { "id" => "2", "status" => "PENDING" },
-        nil
+        { "id" => "3", "status" => nil }
       ]
     }
 

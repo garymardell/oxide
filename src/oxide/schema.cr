@@ -15,6 +15,7 @@ module Oxide
       Oxide::Directives::IncludeDirective,
       Oxide::Directives::DeprecatedDirective,
       Oxide::Directives::SpecifiedByDirective,
+      Oxide::Directives::OneOfDirective,
     ]
 
     getter query : Oxide::Types::ObjectType

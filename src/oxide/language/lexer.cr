@@ -153,12 +153,15 @@ module Oxide
 
         if is_quote
           if next_char == '"'
+            @token.block_string = true
             consume_block_string
           else
+            @token.block_string = false
             @token.raw_value = ""
             return
           end
         else
+          @token.block_string = false
           consume_simple_string
         end
 
@@ -179,13 +182,34 @@ module Oxide
               next_char
 
               case current_char
-              when '"', '/', '\\', 'b', 'f', 'n', 'r', 't'
-                io << current_char
+              when '"'
+                io << '"'
+                next_char
+              when '\\'
+                io << '\\'
+                next_char
+              when '/'
+                io << '/'
+                next_char
+              when 'b'
+                io << '\b'
+                next_char
+              when 'f'
+                io << '\f'
+                next_char
+              when 'n'
+                io << '\n'
+                next_char
+              when 'r'
+                io << '\r'
+                next_char
+              when 't'
+                io << '\t'
                 next_char
               when 'u'
-                raise "Escaped unicode sequence not supported"
+                io << parse_unicode_escape
               else
-                raise "Invalid character escape sequence"
+                raise "Invalid character escape sequence: \\#{current_char}"
               end
             else
               io << current_char
@@ -195,8 +219,92 @@ module Oxide
         end
       end
 
+      def parse_unicode_escape : Char
+        next_char
+        
+        # Check if it's variable-width format \u{...}
+        if current_char == '{'
+          next_char
+          hex_string = String.build do |hex_io|
+            while current_char != '}' && current_char != '\0'
+              unless current_char.hex?
+                raise "Invalid unicode escape sequence: expected hexadecimal digit"
+              end
+              hex_io << current_char
+              next_char
+            end
+          end
+          
+          if current_char != '}'
+            raise "Invalid unicode escape sequence: expected }"
+          end
+          next_char
+          
+          if hex_string.empty?
+            raise "Invalid unicode escape sequence: empty"
+          end
+          
+          code_point = hex_string.to_i(16)
+          validate_unicode_scalar(code_point)
+          code_point.chr
+        else
+          # Fixed-width format \uXXXX
+          hex_chars = String.build do |hex_io|
+            4.times do
+              unless current_char.hex?
+                raise "Invalid unicode escape sequence: expected 4 hexadecimal digits"
+              end
+              hex_io << current_char
+              next_char
+            end
+          end
+          
+          code_point = hex_chars.to_i(16)
+          
+          # Check for surrogate pairs
+          if code_point >= 0xD800 && code_point <= 0xDBFF
+            # Leading surrogate, expect trailing surrogate
+            unless current_char == '\\' && next_char == 'u'
+              raise "Invalid unicode escape sequence: unpaired surrogate"
+            end
+            next_char # consume 'u'
+            
+            trailing_hex = String.build do |hex_io|
+              4.times do
+                unless current_char.hex?
+                  raise "Invalid unicode escape sequence: expected 4 hexadecimal digits"
+                end
+                hex_io << current_char
+                next_char
+              end
+            end
+            
+            trailing_code_point = trailing_hex.to_i(16)
+            
+            unless trailing_code_point >= 0xDC00 && trailing_code_point <= 0xDFFF
+              raise "Invalid unicode escape sequence: expected trailing surrogate"
+            end
+            
+            # Combine surrogate pair
+            combined = (code_point - 0xD800) * 0x400 + (trailing_code_point - 0xDC00) + 0x10000
+            return combined.chr
+          elsif code_point >= 0xDC00 && code_point <= 0xDFFF
+            # Unpaired trailing surrogate
+            raise "Invalid unicode escape sequence: unpaired trailing surrogate"
+          else
+            validate_unicode_scalar(code_point)
+            code_point.chr
+          end
+        end
+      end
+
+      def validate_unicode_scalar(code_point : Int32)
+        unless (code_point >= 0 && code_point <= 0xD7FF) || (code_point >= 0xE000 && code_point <= 0x10FFFF)
+          raise "Invalid unicode escape sequence: code point out of range or invalid"
+        end
+      end
+
       def consume_block_string
-        # TODO: Consume block string
         @token.raw_value = String.build do |io|
           quote_count = 0
           next_char
@@ -209,6 +317,20 @@ module Oxide
               if quote_count == 3
                 break
               else
+                next_char
+              end
+            elsif current_char == '\\'
+              # Check for escaped triple quotes
+              quote_count.times { io << '"' }
+              quote_count = 0
+              
+              next_char
+              if current_char == '"' && next_char == '"' && next_char == '"'
+                io << "\"\"\""
+                next_char
+              else
+                io << '\\'
+                io << current_char
                 next_char
               end
             else

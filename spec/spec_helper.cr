@@ -258,6 +258,68 @@ FindDogInputType = Oxide::Types::InputObjectType.new(
   }
 )
 
+CatInputType = Oxide::Types::InputObjectType.new(
+  name: "CatInput",
+  input_fields: {
+    "name" => Oxide::Argument.new(
+      type: Oxide::Types::NonNullType.new(of_type: Oxide::Types::StringType.new)
+    ),
+    "nickname" => Oxide::Argument.new(
+      type: Oxide::Types::StringType.new
+    ),
+    "meowVolume" => Oxide::Argument.new(
+      type: Oxide::Types::IntType.new
+    )
+  }
+)
+
+DogInputType = Oxide::Types::InputObjectType.new(
+  name: "DogInput",
+  input_fields: {
+    "name" => Oxide::Argument.new(
+      type: Oxide::Types::NonNullType.new(of_type: Oxide::Types::StringType.new)
+    ),
+    "nickname" => Oxide::Argument.new(
+      type: Oxide::Types::StringType.new
+    ),
+    "barkVolume" => Oxide::Argument.new(
+      type: Oxide::Types::IntType.new
+    )
+  }
+)
+
+PetInputType = Oxide::Types::InputObjectType.new(
+  name: "PetInput",
+  input_fields: {
+    "cat" => Oxide::Argument.new(
+      type: CatInputType
+    ),
+    "dog" => Oxide::Argument.new(
+      type: DogInputType
+    )
+  }
+)
+
+abstract class PetPayload
+  abstract def name : String
+end
+
+class CatPayload < PetPayload
+  getter name : String
+  def initialize(@name)
+  end
+end
+
+PetPayloadType = Oxide::Types::ObjectType.new(
+  name: "Pet",
+  fields: {
+    "name" => Oxide::Field.new(
+      type: Oxide::Types::NonNullType.new(of_type: Oxide::Types::StringType.new),
+      resolve: ->(object : PetPayload, resolution : Oxide::Resolution) { object.name }
+    )
+  }
+)
+
 ArgumentsType = Oxide::Types::ObjectType.new(
   name: "Arguments",
   fields: {
@@ -370,6 +432,22 @@ ValidationsSchema = Oxide::Schema.new(
       "arguments" => Oxide::Field.new(
         type: ArgumentsType,
         resolve: ->(object : Query, resolution : Oxide::Resolution) { nil }
+      )
+    }
+  ),
+  mutation: Oxide::Types::ObjectType.new(
+    name: "Mutation",
+    fields: {
+      "addPet" => Oxide::Field.new(
+        arguments: {
+          "pet" => Oxide::Argument.new(
+            type: Oxide::Types::NonNullType.new(of_type: PetInputType)
+          )
+        },
+        type: PetPayloadType,
+        resolve: ->(object : Query, resolution : Oxide::Resolution) { 
+          CatPayload.new("Fluffy")
+        }
       )
     }
   ),

@@ -3,6 +3,59 @@ require "./lexer"
 
 module Oxide
   module Language
+    # Process block string value according to GraphQL spec BlockStringValue() algorithm
+    def self.process_block_string_value(raw_value : String) : String
+      # Implement BlockStringValue algorithm from spec
+      lines = raw_value.split('\n', remove_empty: false)
+      
+      # Find common indentation (skip first line)
+      common_indent : Int32? = nil
+      lines.each_with_index do |line, idx|
+        next if idx == 0  # Skip first line
+        
+        line_length = line.size
+        indent = 0
+        
+        line.each_char do |char|
+          break unless char == ' ' || char == '\t'
+          indent += 1
+        end
+        
+        # Only consider lines with content (not whitespace-only lines)
+        if indent < line_length
+          if common_indent.nil? || indent < common_indent
+            common_indent = indent
+          end
+        end
+      end
+      
+      # Remove common indentation
+      if common_indent && common_indent > 0
+        lines = lines.map_with_index do |line, idx|
+          if idx == 0
+            line
+          elsif line.size > common_indent
+            line[common_indent..]
+          else
+            # Line is shorter than common indent, treat as empty
+            ""
+          end
+        end
+      end
+      
+      # Remove leading blank lines (lines with only whitespace)
+      while lines.size > 0 && lines[0].strip.empty?
+        lines.shift
+      end
+      
+      # Remove trailing blank lines (lines with only whitespace)
+      while lines.size > 0 && lines[-1].strip.empty?
+        lines.pop
+      end
+      
+      lines.join('\n')
+    end
+
     class Parser
       delegate token, to: @lexer
       delegate next_token, to: @lexer
@@ -396,6 +449,7 @@ module Oxide
 
         Nodes::InputValueDefinition.new(
           name: name,
+          description: description,
           type: type,
           default_value: default_value,
           directives: directives
@@ -725,7 +779,8 @@ module Oxide
         when .float?
           Nodes::FloatValue.new(token.float_value).tap { next_token }
         when .string?
-          Nodes::StringValue.new(token.raw_value).tap { next_token }
+          value = token.block_string ? Language.process_block_string_value(token.raw_value) : token.raw_value
+          Nodes::StringValue.new(value).tap { next_token }
         when .name?
           # Could actually be a boolean value or null
           case token.raw_value

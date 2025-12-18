@@ -197,6 +197,8 @@ module Oxide
             directive.accept(visitor)
           end
 
+          selection_set.accept(visitor) if selection_set
+
           visitor.leave(self)
         end
 
@@ -613,11 +615,12 @@ module Oxide
 
       class InputValueDefinition < Node
         property name : String
+        property description : String?
         property type : NamedType | ListType | NonNullType | Nil
         property default_value : Value | Nil
         property directives : Array(Directive)
 
-        def initialize(@name, @type = nil, @default_value = nil, @directives = [] of Directive)
+        def initialize(@name, @description = nil, @type = nil, @default_value = nil, @directives = [] of Directive)
         end
 
         def accept(visitor : Visitor)

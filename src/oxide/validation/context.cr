@@ -13,7 +13,10 @@ module Oxide
       # default_value_stack
       property directive : Oxide::Directive?
       property argument : Oxide::Argument?
+      property argument_name : String?
       property enum_value : Oxide::Types::EnumValue?
+      property pending_input_type : Oxide::Type?
+      property object_field_name : String?
 
       getter errors : Array(Error)
 

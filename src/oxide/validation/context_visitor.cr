@@ -147,6 +147,7 @@ module Oxide
         type = definition.try &.type
 
         context.argument = definition
+        context.argument_name = node.name
         # context.default_value_stack <<
         context.input_type_stack << (type.try &.input_type? ? type : nil)
       end
@@ -163,6 +164,45 @@ module Oxide
       # }
 
       def enter(node : Oxide::Language::Nodes::ListType)
+        list_type = context.input_type
+        item_type = case list_type
+        when Oxide::Types::ListType
+          list_type.of_type
+        when Oxide::Types::NonNullType
+          inner = list_type.of_type
+          inner.is_a?(Oxide::Types::ListType) ? inner.of_type : nil
+        else
+          nil
+        end
+
+        context.input_type_stack << (item_type.try &.input_type? ? item_type : nil)
+      end
+
+      def enter(node : Oxide::Language::Nodes::ObjectValue)
+        # ObjectValue doesn't push anything - the type is already on the stack
+        # Either from an Argument, VariableDefinition, or ObjectField
+      end
+
+      def enter(node : Oxide::Language::Nodes::ObjectField)
+        # Track the field name for error messages
+        context.object_field_name = node.name
+        
+        # Push the field's type onto the stack so that the value node can validate against it
+        object_type = named_type(context.input_type)
+        
+        if object_type.is_a?(Oxide::Types::InputObjectType)
+          input_field = object_type.input_fields[node.name]?
+          if input_field
+            # Push the field's type onto the stack
+            context.input_type_stack << input_field.type
+          else
+            # Field doesn't exist, push nil
+            context.input_type_stack << nil
+          end
+        else
+          # Not an input object type, push nil
+          context.input_type_stack << nil
+        end
       end
 
       # case Kind.OBJECT_FIELD: {
@@ -228,6 +268,7 @@ module Oxide
 
       def leave(node : Oxide::Language::Nodes::Argument)
         context.argument = nil
+        context.argument_name = nil
         context.input_type_stack.pop
       end
 
@@ -237,6 +278,28 @@ module Oxide
 
       def leave(node : Oxide::Language::Nodes::Directive)
         context.directive = nil
+      end
+
+      def leave(node : Oxide::Language::Nodes::InlineFragment)
+        context.type_stack.pop
+      end
+
+      def leave(node : Oxide::Language::Nodes::FragmentDefinition)
+        context.type_stack.pop
+      end
+
+      def leave(node : Oxide::Language::Nodes::ListType)
+        context.input_type_stack.pop
+      end
+
+      def leave(node : Oxide::Language::Nodes::ObjectValue)
+        # ObjectValue doesn't pop anything - the type remains on the stack for the parent context
+      end
+
+      def leave(node : Oxide::Language::Nodes::ObjectField)
+        # Pop the field type from the stack
+        context.input_type_stack.pop
+        context.object_field_name = nil
       end
 
 
