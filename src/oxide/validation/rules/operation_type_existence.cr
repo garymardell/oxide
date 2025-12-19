@@ -23,13 +23,13 @@ module Oxide
             )
           end
         when "subscription"
-          # Subscription type is not yet implemented in the schema
-          # This will need to be added when subscriptions are supported
-          location = node.to_location
-          context.errors << ValidationError.new(
-            "Schema does not define a subscription type, but the operation is a subscription.",
-            [location]
-          )
+          unless context.schema.subscription
+            location = node.to_location
+            context.errors << ValidationError.new(
+              "Schema does not define a subscription type, but the operation is a subscription.",
+              [location]
+            )
+          end
         end
       end
     end

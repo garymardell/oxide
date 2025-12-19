@@ -8,6 +8,7 @@ require "./context"
 require "./type_map"
 require "./error"
 require "./utils/*"
+require "./transport"
 
 module Oxide
   class Schema
@@ -21,6 +22,7 @@ module Oxide
 
     getter query : Oxide::Types::ObjectType
     getter mutation : Oxide::Types::ObjectType | Nil
+    getter subscription : Oxide::Types::ObjectType | Nil
 
     getter description : String?
 
@@ -28,7 +30,7 @@ module Oxide
     getter directives : Array(Oxide::Directive)
     getter applied_directives : Array(AppliedDirective)
 
-    def initialize(@query, @mutation = nil, @orphan_types = [] of Oxide::Type, directives = [] of Directive, @description = nil, @applied_directives = [] of AppliedDirective)
+    def initialize(@query, @mutation = nil, @subscription = nil, @orphan_types = [] of Oxide::Type, directives = [] of Directive, @description = nil, @applied_directives = [] of AppliedDirective)
       @directives = DEFAULT_DIRECTIVES + directives
     end
 
