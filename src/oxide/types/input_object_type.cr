@@ -20,7 +20,7 @@ module Oxide
       end
 
       def coerce(schema, value : Oxide::Language::Nodes::ObjectValue) : JSON::Any::Type
-        cooerced_values = Hash(String, JSON::Any).new
+        coerced_values = Hash(String, JSON::Any).new
         object_value = value.value
 
         input_fields.each do |name, argument|
@@ -29,7 +29,7 @@ module Oxide
           if has_value
             raw_value = object_value[name]
 
-            cooerced_values[name] = case raw_value
+            coerced_values[name] = case raw_value
             when Nil
               JSON::Any.new(nil)
             when JSON::Any
@@ -43,16 +43,16 @@ module Oxide
             end
           else
             if argument.has_default_value?
-              cooerced_values[name] = JSON::Any.new(schema.resolve_type(argument.type).coerce(schema, argument.default_value))
+              coerced_values[name] = JSON::Any.new(schema.resolve_type(argument.type).coerce(schema, argument.default_value))
             end
           end
         end
 
-        cooerced_values
+        coerced_values
       end
 
       def coerce(schema, value : Hash) : JSON::Any::Type
-        cooerced_values = Hash(String, JSON::Any).new
+        coerced_values = Hash(String, JSON::Any).new
 
         input_fields.each do |name, argument|
           has_value = value.has_key?(name)
@@ -60,7 +60,7 @@ module Oxide
           if has_value
             raw_value = value[name]
 
-            cooerced_values[name] = case raw_value
+            coerced_values[name] = case raw_value
             when Nil
               JSON::Any.new(nil)
             when JSON::Any
@@ -74,12 +74,12 @@ module Oxide
             end
           else
             if argument.has_default_value?
-              cooerced_values[name] = JSON::Any.new(schema.resolve_type(argument.type).coerce(schema, argument.default_value))
+              coerced_values[name] = JSON::Any.new(schema.resolve_type(argument.type).coerce(schema, argument.default_value))
             end
           end
         end
 
-        cooerced_values.as(JSON::Any::Type)
+        coerced_values.as(JSON::Any::Type)
       end
 
       def coerce(schema, value) : JSON::Any::Type

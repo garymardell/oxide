@@ -12,7 +12,7 @@
 
 module Oxide
   module Validation
-    class FragmentSpreadsMusNotFormCycles < Rule
+    class FragmentSpreadsMustNotFormCycles < Rule
       def initialize
         @fragment_definitions = {} of String => Oxide::Language::Nodes::FragmentDefinition
         @fragment_spreads = {} of String => Array(String)

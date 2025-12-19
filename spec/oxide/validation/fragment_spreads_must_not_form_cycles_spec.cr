@@ -1,6 +1,6 @@
 require "../../spec_helper"
 
-describe Oxide::Validation::FragmentSpreadsMusNotFormCycles do
+describe Oxide::Validation::FragmentSpreadsMustNotFormCycles do
   describe "counter example #155" do
     it "detects direct cycle - fragment spreading itself" do
       query_string = <<-QUERY
@@ -21,7 +21,7 @@ describe Oxide::Validation::FragmentSpreadsMusNotFormCycles do
       runtime = Oxide::Validation::Runtime.new(
         ValidationsSchema,
         query,
-        [Oxide::Validation::FragmentSpreadsMusNotFormCycles.new.as(Oxide::Validation::Rule)]
+        [Oxide::Validation::FragmentSpreadsMustNotFormCycles.new.as(Oxide::Validation::Rule)]
       )
 
       runtime.execute
@@ -58,7 +58,7 @@ describe Oxide::Validation::FragmentSpreadsMusNotFormCycles do
       runtime = Oxide::Validation::Runtime.new(
         ValidationsSchema,
         query,
-        [Oxide::Validation::FragmentSpreadsMusNotFormCycles.new.as(Oxide::Validation::Rule)]
+        [Oxide::Validation::FragmentSpreadsMustNotFormCycles.new.as(Oxide::Validation::Rule)]
       )
 
       runtime.execute
@@ -96,7 +96,7 @@ describe Oxide::Validation::FragmentSpreadsMusNotFormCycles do
       runtime = Oxide::Validation::Runtime.new(
         ValidationsSchema,
         query,
-        [Oxide::Validation::FragmentSpreadsMusNotFormCycles.new.as(Oxide::Validation::Rule)]
+        [Oxide::Validation::FragmentSpreadsMustNotFormCycles.new.as(Oxide::Validation::Rule)]
       )
 
       runtime.execute
@@ -130,7 +130,7 @@ describe Oxide::Validation::FragmentSpreadsMusNotFormCycles do
     runtime = Oxide::Validation::Runtime.new(
       ValidationsSchema,
       query,
-      [Oxide::Validation::FragmentSpreadsMusNotFormCycles.new.as(Oxide::Validation::Rule)]
+      [Oxide::Validation::FragmentSpreadsMustNotFormCycles.new.as(Oxide::Validation::Rule)]
     )
 
     runtime.execute
@@ -151,7 +151,7 @@ describe Oxide::Validation::FragmentSpreadsMusNotFormCycles do
     runtime = Oxide::Validation::Runtime.new(
       ValidationsSchema,
       query,
-      [Oxide::Validation::FragmentSpreadsMusNotFormCycles.new.as(Oxide::Validation::Rule)]
+      [Oxide::Validation::FragmentSpreadsMustNotFormCycles.new.as(Oxide::Validation::Rule)]
     )
 
     runtime.execute
@@ -193,7 +193,7 @@ describe Oxide::Validation::FragmentSpreadsMusNotFormCycles do
     runtime = Oxide::Validation::Runtime.new(
       ValidationsSchema,
       query,
-      [Oxide::Validation::FragmentSpreadsMusNotFormCycles.new.as(Oxide::Validation::Rule)]
+      [Oxide::Validation::FragmentSpreadsMustNotFormCycles.new.as(Oxide::Validation::Rule)]
     )
 
     runtime.execute
@@ -230,7 +230,7 @@ describe Oxide::Validation::FragmentSpreadsMusNotFormCycles do
     runtime = Oxide::Validation::Runtime.new(
       ValidationsSchema,
       query,
-      [Oxide::Validation::FragmentSpreadsMusNotFormCycles.new.as(Oxide::Validation::Rule)]
+      [Oxide::Validation::FragmentSpreadsMustNotFormCycles.new.as(Oxide::Validation::Rule)]
     )
 
     runtime.execute
@@ -257,7 +257,7 @@ describe Oxide::Validation::FragmentSpreadsMusNotFormCycles do
     runtime = Oxide::Validation::Runtime.new(
       ValidationsSchema,
       query,
-      [Oxide::Validation::FragmentSpreadsMusNotFormCycles.new.as(Oxide::Validation::Rule)]
+      [Oxide::Validation::FragmentSpreadsMustNotFormCycles.new.as(Oxide::Validation::Rule)]
     )
 
     runtime.execute

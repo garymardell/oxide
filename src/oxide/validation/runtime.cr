@@ -77,7 +77,7 @@ module Oxide
           FragmentsOnCompositeTypes.new.as(Rule),
           FragmentsMustBeUsed.new.as(Rule),
           FragmentSpreadTargetDefined.new.as(Rule),
-          FragmentSpreadsMusNotFormCycles.new.as(Rule),
+          FragmentSpreadsMustNotFormCycles.new.as(Rule),
           FragmentSpreadIsPossible.new.as(Rule),
           # 5.6 Values
           ValuesOfCorrectType.new.as(Rule),
