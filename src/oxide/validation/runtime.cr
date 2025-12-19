@@ -57,30 +57,44 @@ module Oxide
 
       private def all_rules
         [
-          # Operations
+          # 5.1 Documents
+          ExecutableDefinitions.new.as(Rule),
+          # 5.2 Operations
           OperationNameUniqueness.new.as(Rule),
           LoneAnonymousOperation.new.as(Rule),
-          # Fields
+          OperationTypeExistence.new.as(Rule),
+          # 5.3 Fields
           FieldSelections.new.as(Rule),
+          FieldSelectionMerging.new.as(Rule),
           LeafFieldSelections.new.as(Rule),
-          # Arguments
+          # 5.4 Arguments
           ArgumentNames.new.as(Rule),
           ArgumentUniqueness.new.as(Rule),
-          # Fragments
-          # FragmentNameUniqueness.new.as(Rule),
-          # FragmentsMustBeUsed.new.as(Rule),
-          # Values
+          RequiredArguments.new.as(Rule),
+          # 5.5 Fragments
+          FragmentNameUniqueness.new.as(Rule),
+          FragmentSpreadTypeExistence.new.as(Rule),
+          FragmentsOnCompositeTypes.new.as(Rule),
+          FragmentsMustBeUsed.new.as(Rule),
+          FragmentSpreadTargetDefined.new.as(Rule),
+          FragmentSpreadsMusNotFormCycles.new.as(Rule),
+          FragmentSpreadIsPossible.new.as(Rule),
+          # 5.6 Values
+          ValuesOfCorrectType.new.as(Rule),
           InputObjectFieldNames.new.as(Rule),
           InputObjectFieldUniqueness.new.as(Rule),
-          # Directives
+          InputObjectRequiredFields.new.as(Rule),
+          OneOfInputObjects.new.as(Rule),
+          # 5.7 Directives
           DirectivesAreDefined.new.as(Rule),
           DirectivesAreInValidLocations.new.as(Rule),
           DirectivesAreUniquePerLocation.new.as(Rule),
-          # Variables
+          # 5.8 Variables
           VariableUniqueness.new.as(Rule),
           VariablesAreInputTypes.new.as(Rule),
           AllVariableUsesDefined.new.as(Rule),
-          AllVariablesUsed.new.as(Rule)
+          AllVariablesUsed.new.as(Rule),
+          AllVariableUsagesAreAllowed.new.as(Rule)
         ]
       end
     end
