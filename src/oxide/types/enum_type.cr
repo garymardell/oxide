@@ -37,7 +37,7 @@ module Oxide
         enum_value = values.find { |ev| ev.value == value.to_s }
 
         if enum_value
-          enum_value.value
+          enum_value.name
         else
           raise SerializationError.new("Enum value could not be serialized")
         end
