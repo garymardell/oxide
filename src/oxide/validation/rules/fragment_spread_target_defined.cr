@@ -28,9 +28,15 @@ module Oxide
       def leave(node : Oxide::Language::Nodes::Document, context)
         @spread_fragments.each do |fragment_name, spread_node|
           unless @defined_fragments.includes?(fragment_name)
-            context.errors << ValidationError.new(
-              "Fragment '#{fragment_name}' is not defined."
-            )
+            message = "Unknown fragment \"#{fragment_name}\"."
+            
+            # Add suggestions for similar fragment names
+            suggestions = Utils::SuggestionList.suggest(fragment_name, @defined_fragments.to_a)
+            if suggestion_message = Utils::SuggestionList.did_you_mean_message(suggestions)
+              message += suggestion_message
+            end
+            
+            context.errors << ValidationError.new(message)
           end
         end
       end

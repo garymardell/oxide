@@ -22,7 +22,7 @@ describe Oxide::Validation::FragmentSpreadTargetDefined do
       runtime.execute
 
       runtime.errors.size.should eq(1)
-      runtime.errors.first.message.should match(/undefinedFragment.*not defined|not defined.*undefinedFragment/i)
+      runtime.errors.first.message.should eq("Unknown fragment \"undefinedFragment\".")
     end
   end
 

@@ -24,7 +24,13 @@ module Oxide
           input_field_definition = input_type.input_fields[input_field_name]?
 
           if input_field_definition.nil?
-            context.errors << ValidationError.new("InputObject '#{input_type.name}' doesn't accept argument '#{input_field_name}'")
+            message = "Field \"#{input_field_name}\" is not defined by type \"#{input_type.name}\"."
+            field_names = input_type.input_fields.keys
+            suggestions = Utils::SuggestionList.suggest(input_field_name, field_names)
+            if suggestion_message = Utils::SuggestionList.did_you_mean_message(suggestions)
+              message += suggestion_message
+            end
+            context.errors << ValidationError.new(message)
           end
         end
       end

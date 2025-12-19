@@ -21,7 +21,7 @@ describe Oxide::Validation::AllVariablesUsed do
     runtime.execute
 
     runtime.errors.size.should eq(1)
-    runtime.errors.should contain(Oxide::ValidationError.new("Variable $atOtherHomes is declared by variableUnused but not used"))
+    runtime.errors.should contain(Oxide::ValidationError.new("Variable \"$atOtherHomes\" is never used."))
   end
 
   it "example #181" do
@@ -74,7 +74,7 @@ describe Oxide::Validation::AllVariablesUsed do
     runtime.execute
 
     runtime.errors.size.should eq(1)
-    runtime.errors.should contain(Oxide::ValidationError.new("Variable $atOtherHomes is declared by variableNotUsedWithinFragment but not used"))
+    runtime.errors.should contain(Oxide::ValidationError.new("Variable \"$atOtherHomes\" is never used."))
   end
 
   it "counter example #183" do
@@ -107,6 +107,6 @@ describe Oxide::Validation::AllVariablesUsed do
     runtime.execute
 
     runtime.errors.size.should eq(1)
-    runtime.errors.should contain(Oxide::ValidationError.new("Variable $extra is declared by queryWithExtraVar but not used"))
+    runtime.errors.should contain(Oxide::ValidationError.new("Variable \"$extra\" is never used."))
   end
 end

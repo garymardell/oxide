@@ -128,7 +128,7 @@ module Oxide
         when "directive"
           parse_directive_definition(description)
         else
-          raise "Expected (query, mutation, subscription, fragment), found #{token.raw_value}"
+          raise "Unexpected #{token_desc(token)}."
         end
       end
 
@@ -210,7 +210,7 @@ module Oxide
       def parse_enum_value_name : String
         case token.raw_value
         when "true", "false", "null"
-          raise "#{token.raw_value} is reserved and cannot be used for an enum value."
+          raise "#{token_desc(token)} is reserved and cannot be used for an enum value."
         else
           parse_name
         end
@@ -481,7 +481,7 @@ module Oxide
         Directive::Location.parse(name)
         name.as(Nodes::DirectiveLocation)
       rescue e : ArgumentError
-        raise "Invalid directive location \"#{name}\""
+        raise "Invalid directive location \"#{name}\"."
       end
 
       def parse_description : String?
@@ -519,14 +519,12 @@ module Oxide
 
       def parse_operation_definition_type
         operation = token.raw_value
-        consume_token(Token::Kind::Name)
-
-        case operation
-        when "query", "mutation", "subscription"
-          operation
-        else
-          raise "Expected (query, mutation, subscription), found #{operation}"
+        unless operation == "query" || operation == "mutation" || operation == "subscription"
+          raise "Unexpected #{token_desc(token)}."
         end
+
+        consume_token(Token::Kind::Name)
+        operation
       end
 
       with_location def parse_fragment_definition : Nodes::FragmentDefinition
@@ -862,20 +860,84 @@ module Oxide
 
       def expect_current_token(kind : Token::Kind)
         unless token.kind == kind
-          raise "Expected #{kind}, found #{token.kind}."
+          raise "Expected #{token_kind_desc(kind)}, found #{token_desc(token)}."
         end
       end
 
       def expect_keyword_and_consume(value : String)
         unless token.raw_value == value
-          raise "Expected #{value}, found #{token.raw_value}."
+          raise "Expected \"#{value}\", found #{token_desc(token)}."
         end
 
         next_token
       end
 
       def raise_unexpected
-        raise "Unexpected #{token.kind}"
+        raise "Unexpected #{token_desc(token)}."
+      end
+
+      # Format token kind for error messages
+      # Punctuators are quoted, other kinds are not
+      private def token_kind_desc(kind : Token::Kind) : String
+        kind_string = kind.to_s
+        
+        if kind_string == "Bang"
+          %("!")
+        elsif kind_string == "Dollar"
+          %("$")
+        elsif kind_string == "Amp"
+          %("&")
+        elsif kind_string == "LParen"
+          %q{"("}
+        elsif kind_string == "RParen"
+          %q{")"}
+        elsif kind_string == "Spread"
+          %("...")
+        elsif kind_string == "Colon"
+          %(":")
+        elsif kind_string == "Equals"
+          %("=")
+        elsif kind_string == "At"
+          %("@")
+        elsif kind_string == "LBracket"
+          %("[")
+        elsif kind_string == "RBracket"
+          %("]")
+        elsif kind_string == "Pipe"
+          %("|")
+        elsif kind_string == "LBrace"
+          %("{")
+        elsif kind_string == "RBrace"
+          %("}")
+        elsif kind_string == "QuestionMark"
+          %("?")
+        elsif kind_string == "String"
+          "String"
+        elsif kind_string == "Int"
+          "Int"
+        elsif kind_string == "Float"
+          "Float"
+        elsif kind_string == "Name"
+          "Name"
+        elsif kind_string == "EOF"
+          "EOF"
+        else
+          kind_string
+        end
+      end
+
+      # Format token description for error messages
+      # Includes token value if present
+      private def token_desc(token : Token) : String
+        value = token.raw_value
+        kind_desc = token_kind_desc(token.kind)
+
+        # For Name tokens and keywords, show the value
+        if token.kind.name? && !value.empty?
+          %(Name "#{value}")
+        else
+          kind_desc
+        end
       end
 
       private def raise(message)

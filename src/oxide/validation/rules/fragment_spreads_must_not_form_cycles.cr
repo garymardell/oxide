@@ -33,7 +33,7 @@ module Oxide
         @fragment_definitions.each_key do |fragment_name|
           if has_cycle?(fragment_name, Set(String).new, [] of String)
             context.errors << ValidationError.new(
-              "Fragment '#{fragment_name}' forms a cycle (cannot spread itself directly or indirectly)."
+              "Cannot spread fragment \"#{fragment_name}\" within itself."
             )
           end
         end

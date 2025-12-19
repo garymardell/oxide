@@ -27,7 +27,7 @@ describe Oxide::Validation::FragmentSpreadsMusNotFormCycles do
       runtime.execute
 
       runtime.errors.size.should be >= 1
-      runtime.errors.first.message.should match(/nameFragment.*cycle|cycle.*nameFragment/i)
+      runtime.errors.first.message.should match(/Cannot spread fragment "nameFragment" within itself/)
     end
   end
 
@@ -65,7 +65,7 @@ describe Oxide::Validation::FragmentSpreadsMusNotFormCycles do
 
       runtime.errors.size.should be >= 1
       error_messages = runtime.errors.map(&.message).join(" ")
-      error_messages.should match(/cycle/i)
+      error_messages.should match(/Cannot spread fragment/)
     end
   end
 
@@ -103,7 +103,7 @@ describe Oxide::Validation::FragmentSpreadsMusNotFormCycles do
 
       runtime.errors.size.should be >= 1
       error_messages = runtime.errors.map(&.message).join(" ")
-      error_messages.should match(/cycle/i)
+      error_messages.should match(/Cannot spread fragment/)
     end
   end
 
@@ -263,6 +263,6 @@ describe Oxide::Validation::FragmentSpreadsMusNotFormCycles do
     runtime.execute
 
     runtime.errors.size.should be >= 1
-    runtime.errors.first.message.should match(/nameFragment.*cycle|cycle.*nameFragment/i)
+    runtime.errors.first.message.should match(/Cannot spread fragment "nameFragment" within itself/)
   end
 end

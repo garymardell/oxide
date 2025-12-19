@@ -19,6 +19,6 @@ describe Oxide::Validation::DirectivesAreInValidLocations do
     runtime.execute
 
     runtime.errors.size.should eq(1)
-    runtime.errors.should contain(Oxide::ValidationError.new("'@skip' can't be applied to queries (allowed: fields, fragment spreads, inline fragments)"))
+    runtime.errors.should contain(Oxide::ValidationError.new("Directive \"@skip\" may not be used on queries."))
   end
 end

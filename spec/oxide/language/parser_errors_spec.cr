@@ -33,7 +33,7 @@ describe Oxide::Language::Parser do
         }
       INPUT
 
-      expect_raises Oxide::ParseError, "Syntax Error: Expected Name, found RBrace" do
+      expect_raises Oxide::ParseError, "Syntax Error: Expected Name, found \"}\"." do
         Oxide::Language::Parser.parse(input)
       end
     end
@@ -41,7 +41,7 @@ describe Oxide::Language::Parser do
     it "handles missing opening brace" do
       input = "query MyQuery field }"
 
-      expect_raises Oxide::ParseError, "Syntax Error: Expected LBrace, found Name" do
+      expect_raises Oxide::ParseError, "Syntax Error: Expected \"{\", found Name \"field\"." do
         Oxide::Language::Parser.parse(input)
       end
     end
@@ -49,7 +49,7 @@ describe Oxide::Language::Parser do
     it "handles empty selection set" do
       input = "{ }"
 
-      expect_raises Oxide::ParseError, "Syntax Error: Expected Name, found RBrace" do
+      expect_raises Oxide::ParseError, "Syntax Error: Expected Name, found \"}\"." do
         Oxide::Language::Parser.parse(input)
       end
     end
@@ -65,7 +65,7 @@ describe Oxide::Language::Parser do
         }
       INPUT
 
-      expect_raises Oxide::ParseError, "Syntax Error: Expected Name, found LBrace" do
+      expect_raises Oxide::ParseError, "Syntax Error: Expected Name, found \"{\"." do
         Oxide::Language::Parser.parse(input)
       end
     end
@@ -75,7 +75,7 @@ describe Oxide::Language::Parser do
         { field(arg "value") }
       GRAPHQL
 
-      expect_raises Oxide::ParseError, "Syntax Error: Expected Colon, found String" do
+      expect_raises Oxide::ParseError, "Syntax Error: Expected \":\", found String." do
         Oxide::Language::Parser.parse(input)
       end
     end
@@ -83,7 +83,7 @@ describe Oxide::Language::Parser do
     it "handles missing argument value" do
       input = "{ field(arg: ) }"
 
-      expect_raises Oxide::ParseError, "Syntax Error: Unexpected RParen" do
+      expect_raises Oxide::ParseError, "Syntax Error: Unexpected \")\"." do
         Oxide::Language::Parser.parse(input)
       end
     end
@@ -93,7 +93,7 @@ describe Oxide::Language::Parser do
         { field(arg: "value" }
       GRAPHQL
 
-      expect_raises Oxide::ParseError, "Syntax Error: Expected Name, found RBrace" do
+      expect_raises Oxide::ParseError, "Syntax Error: Expected Name, found \"}\"." do
         Oxide::Language::Parser.parse(input)
       end
     end
@@ -117,7 +117,7 @@ describe Oxide::Language::Parser do
     it "handles missing variable name" do
       input = "query ($) { field }"
 
-      expect_raises Oxide::ParseError, "Syntax Error: Expected Name, found RParen" do
+      expect_raises Oxide::ParseError, "Syntax Error: Expected Name, found \")\"." do
         Oxide::Language::Parser.parse(input)
       end
     end
@@ -125,7 +125,7 @@ describe Oxide::Language::Parser do
     it "handles missing colon in variable definition" do
       input = "query ($var String) { field }"
 
-      expect_raises Oxide::ParseError, "Syntax Error: Expected Colon, found Name" do
+      expect_raises Oxide::ParseError, "Syntax Error: Expected \":\", found Name \"String\"." do
         Oxide::Language::Parser.parse(input)
       end
     end
@@ -135,7 +135,7 @@ describe Oxide::Language::Parser do
     it "handles unclosed list type" do
       input = "query ($var: [String) { field }"
 
-      expect_raises Oxide::ParseError, "Syntax Error: Expected RBracket, found RParen" do
+      expect_raises Oxide::ParseError, "Syntax Error: Expected \"]\", found \")\"." do
         Oxide::Language::Parser.parse(input)
       end
     end
@@ -143,7 +143,7 @@ describe Oxide::Language::Parser do
     it "handles missing type in list" do
       input = "query ($var: []) { field }"
 
-      expect_raises Oxide::ParseError, "Syntax Error: Expected Name, found RBracket" do
+      expect_raises Oxide::ParseError, "Syntax Error: Expected Name, found \"]\"." do
         Oxide::Language::Parser.parse(input)
       end
     end
@@ -153,7 +153,7 @@ describe Oxide::Language::Parser do
     it "handles 'on' as fragment name" do
       input = "fragment on on User { id }"
 
-      expect_raises Oxide::ParseError, "Syntax Error: Unexpected Name" do
+      expect_raises Oxide::ParseError, "Syntax Error: Unexpected Name \"on\"." do
         Oxide::Language::Parser.parse(input)
       end
     end
@@ -161,7 +161,7 @@ describe Oxide::Language::Parser do
     it "handles missing fragment name" do
       input = "fragment on User { id }"
 
-      expect_raises Oxide::ParseError, "Syntax Error: Unexpected Name" do
+      expect_raises Oxide::ParseError, "Syntax Error: Unexpected Name \"on\"." do
         Oxide::Language::Parser.parse(input)
       end
     end
@@ -169,7 +169,7 @@ describe Oxide::Language::Parser do
     it "handles missing 'on' keyword" do
       input = "fragment UserFields User { id }"
 
-      expect_raises Oxide::ParseError, "Syntax Error: Expected on, found User" do
+      expect_raises Oxide::ParseError, "Syntax Error: Expected \"on\", found Name \"User\"." do
         Oxide::Language::Parser.parse(input)
       end
     end
@@ -177,7 +177,7 @@ describe Oxide::Language::Parser do
     it "handles missing type condition" do
       input = "fragment UserFields on { id }"
 
-      expect_raises Oxide::ParseError, "Syntax Error: Expected Name, found LBrace" do
+      expect_raises Oxide::ParseError, "Syntax Error: Expected Name, found \"{\"." do
         Oxide::Language::Parser.parse(input)
       end
     end
@@ -187,7 +187,7 @@ describe Oxide::Language::Parser do
     it "handles missing directive name" do
       input = "{ field @ }"
 
-      expect_raises Oxide::ParseError, "Syntax Error: Expected Name, found RBrace" do
+      expect_raises Oxide::ParseError, "Syntax Error: Expected Name, found \"}\"." do
         Oxide::Language::Parser.parse(input)
       end
     end
@@ -197,7 +197,7 @@ describe Oxide::Language::Parser do
     it "handles incomplete list" do
       input = "{ field(arg: [1, 2, ) }"
 
-      expect_raises Oxide::ParseError, "Syntax Error: Unexpected RParen" do
+      expect_raises Oxide::ParseError, "Syntax Error: Unexpected \")\"." do
         Oxide::Language::Parser.parse(input)
       end
     end
@@ -205,7 +205,7 @@ describe Oxide::Language::Parser do
     it "handles incomplete object" do
       input = "{ field(arg: {key: }) }"
 
-      expect_raises Oxide::ParseError, "Syntax Error: Unexpected RBrace" do
+      expect_raises Oxide::ParseError, "Syntax Error: Unexpected \"}\"." do
         Oxide::Language::Parser.parse(input)
       end
     end
@@ -215,7 +215,7 @@ describe Oxide::Language::Parser do
         { field(arg: {key "value"}) }
       GRAPHQL
 
-      expect_raises Oxide::ParseError, "Syntax Error: Expected Colon, found String" do
+      expect_raises Oxide::ParseError, "Syntax Error: Expected \":\", found String." do
         Oxide::Language::Parser.parse(input)
       end
     end
@@ -223,7 +223,7 @@ describe Oxide::Language::Parser do
     it "handles unclosed list" do
       input = "{ field(arg: [1, 2, 3 }"
 
-      expect_raises Oxide::ParseError, "Syntax Error: Unexpected RBrace" do
+      expect_raises Oxide::ParseError, "Syntax Error: Unexpected \"}\"." do
         Oxide::Language::Parser.parse(input)
       end
     end
@@ -233,7 +233,7 @@ describe Oxide::Language::Parser do
         { field(arg: {key: "value" }
       GRAPHQL
 
-      expect_raises Oxide::ParseError, "Syntax Error: Expected Name, found EOF" do
+      expect_raises Oxide::ParseError, "Syntax Error: Expected Name, found EOF." do
         Oxide::Language::Parser.parse(input)
       end
     end
@@ -243,7 +243,7 @@ describe Oxide::Language::Parser do
     it "handles invalid operation type" do
       input = "invalid { field }"
 
-      expect_raises Oxide::ParseError, "Syntax Error: Expected (query, mutation, subscription, fragment), found invalid" do
+      expect_raises Oxide::ParseError, "Syntax Error: Unexpected Name \"invalid\"." do
         Oxide::Language::Parser.parse(input)
       end
     end
@@ -251,7 +251,7 @@ describe Oxide::Language::Parser do
     it "handles invalid operation type in explicit definition" do
       input = "operation MyOp { field }"
 
-      expect_raises Oxide::ParseError, "Syntax Error: Expected (query, mutation, subscription, fragment), found operation" do
+      expect_raises Oxide::ParseError, "Syntax Error: Unexpected Name \"operation\"." do
         Oxide::Language::Parser.parse(input)
       end
     end
@@ -266,7 +266,7 @@ describe Oxide::Language::Parser do
         }
       INPUT
 
-      expect_raises Oxide::ParseError, "Syntax Error: true is reserved and cannot be used for an enum value" do
+      expect_raises Oxide::ParseError, "Syntax Error: Name \"true\" is reserved and cannot be used for an enum value." do
         Oxide::Language::Parser.parse(input)
       end
     end
@@ -274,7 +274,7 @@ describe Oxide::Language::Parser do
     it "handles 'false' as enum value" do
       input = "enum Bool { false }"
 
-      expect_raises Oxide::ParseError, "Syntax Error: false is reserved and cannot be used for an enum value" do
+      expect_raises Oxide::ParseError, "Syntax Error: Name \"false\" is reserved and cannot be used for an enum value." do
         Oxide::Language::Parser.parse(input)
       end
     end
@@ -282,7 +282,7 @@ describe Oxide::Language::Parser do
     it "handles 'null' as enum value" do
       input = "enum Maybe { null }"
 
-      expect_raises Oxide::ParseError, "Syntax Error: null is reserved and cannot be used for an enum value" do
+      expect_raises Oxide::ParseError, "Syntax Error: Name \"null\" is reserved and cannot be used for an enum value." do
         Oxide::Language::Parser.parse(input)
       end
     end
@@ -290,7 +290,7 @@ describe Oxide::Language::Parser do
     it "handles invalid directive location" do
       input = "directive @test on INVALID_LOCATION"
 
-      expect_raises Oxide::ParseError, "Syntax Error: Invalid directive location \"INVALID_LOCATION\"" do
+      expect_raises Oxide::ParseError, "Syntax Error: Invalid directive location \"INVALID_LOCATION\"." do
         Oxide::Language::Parser.parse(input)
       end
     end
@@ -302,7 +302,7 @@ describe Oxide::Language::Parser do
         }
       INPUT
 
-      expect_raises Oxide::ParseError, "Syntax Error: Expected Colon, found Name" do
+      expect_raises Oxide::ParseError, "Syntax Error: Expected \":\", found Name \"String\"." do
         Oxide::Language::Parser.parse(input)
       end
     end
@@ -312,7 +312,7 @@ describe Oxide::Language::Parser do
     it "handles unexpected token in value position" do
       input = "{ field(arg: ]) }"
 
-      expect_raises Oxide::ParseError, "Syntax Error: Unexpected RBracket" do
+      expect_raises Oxide::ParseError, "Syntax Error: Unexpected \"]\"." do
         Oxide::Language::Parser.parse(input)
       end
     end
@@ -320,7 +320,7 @@ describe Oxide::Language::Parser do
     it "handles unexpected end of input" do
       input = "query MyQuery"
 
-      expect_raises Oxide::ParseError, "Syntax Error: Expected LBrace, found EOF" do
+      expect_raises Oxide::ParseError, "Syntax Error: Expected \"{\", found EOF." do
         Oxide::Language::Parser.parse(input)
       end
     end

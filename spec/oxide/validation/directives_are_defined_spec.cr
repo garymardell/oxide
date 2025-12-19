@@ -21,7 +21,7 @@ describe Oxide::Validation::DirectivesAreDefined do
     runtime.execute
 
     runtime.errors.size.should eq(1)
-    runtime.errors.should contain(Oxide::ValidationError.new("Directive @missing is not defined"))
+    runtime.errors.should contain(Oxide::ValidationError.new(%q{Unknown directive "@missing".}))
   end
 
   it "example" do

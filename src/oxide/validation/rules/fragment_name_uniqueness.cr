@@ -31,7 +31,7 @@ module Oxide
         @fragment_names.each do |name, fragments|
           if fragments.size > 1
             context.errors << ValidationError.new(
-              "There can be only one fragment named '#{name}'."
+              "There can be only one fragment named \"#{name}\"."
             )
           end
         end

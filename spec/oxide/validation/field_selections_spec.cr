@@ -23,8 +23,8 @@ describe Oxide::Validation::FieldSelections do
     runtime.execute
 
     runtime.errors.size.should eq(2)
-    runtime.errors.should contain(Oxide::ValidationError.new("Field 'meowVolume' doesn't exist on type 'Dog'"))
-    runtime.errors.should contain(Oxide::ValidationError.new("Field 'kawVolume' doesn't exist on type 'Dog'"))
+    runtime.errors.should contain(Oxide::ValidationError.new("Cannot query field \"meowVolume\" on type \"Dog\". Did you mean \"barkVolume\"?"))
+    runtime.errors.should contain(Oxide::ValidationError.new("Cannot query field \"kawVolume\" on type \"Dog\". Did you mean \"barkVolume\"?"))
   end
 
   it "example #116" do
@@ -65,7 +65,7 @@ describe Oxide::Validation::FieldSelections do
     runtime.execute
 
     runtime.errors.size.should eq(1)
-    runtime.errors.should contain(Oxide::ValidationError.new("Field 'nickname' doesn't exist on type 'Pet'"))
+    runtime.errors.should contain(Oxide::ValidationError.new("Cannot query field \"nickname\" on type \"Pet\". Did you mean \"name\"?"))
   end
 
   it "example #118" do
@@ -113,6 +113,6 @@ describe Oxide::Validation::FieldSelections do
     runtime.execute
 
     runtime.errors.size.should eq(2)
-    runtime.errors.should contain(Oxide::ValidationError.new("Selections can't be made directly on unions (see selections on CatOrDog)"))
+    runtime.errors.should contain(Oxide::ValidationError.new("Selections can't be made directly on unions (see selections on \"CatOrDog\")."))
   end
 end

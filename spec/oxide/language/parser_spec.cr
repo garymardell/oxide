@@ -207,7 +207,7 @@ describe Oxide::Language::Parser do
       }
     INPUT
 
-    expect_raises Oxide::ParseError, "Expected (query, mutation, subscription, fragment), found notAnOperation" do
+    expect_raises Oxide::ParseError, "Syntax Error: Unexpected Name \"notAnOperation\"." do
       parser = Oxide::Language::Parser.new(input)
       parser.parse
     end

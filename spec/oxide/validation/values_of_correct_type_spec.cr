@@ -57,7 +57,7 @@ describe Oxide::Validation::ValuesOfCorrectType do
 
     runtime.errors.size.should eq(2)
     error_messages = runtime.errors.map(&.message)
-    error_messages.should contain("Argument 'intArg' on Field 'intArgField' has an invalid value (\"123\"). Expected type 'Int'.")
-    error_messages.should contain("Argument 'name' on InputObject 'FindDogInput' has an invalid value (123). Expected type 'String'.")
+    error_messages.should contain("Argument \"intArg\" on Field \"intArgField\" has an invalid value (\"123\"). Expected type \"Int\".")
+    error_messages.should contain("Argument \"name\" on InputObject \"FindDogInput\" has an invalid value (123). Expected type \"String\".")
   end
 end

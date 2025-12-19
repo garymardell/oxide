@@ -41,7 +41,7 @@ describe Oxide::Validation::LeafFieldSelections do
     runtime.execute
 
     runtime.errors.size.should eq(1)
-    runtime.errors.should contain(Oxide::ValidationError.new("Selections can't be made on scalars (field 'barkVolume' returns Int but has selections [sinceWhen])"))
+    runtime.errors.should contain(Oxide::ValidationError.new("Field \"barkVolume\" must not have a selection since type \"Int\" has no subfields."))
   end
 
   it "counter example #129" do
@@ -70,9 +70,9 @@ describe Oxide::Validation::LeafFieldSelections do
     runtime.execute
 
     runtime.errors.size.should eq(3)
-    runtime.errors.should contain(Oxide::ValidationError.new("Field must have selections (field 'human' returns Human but has no selections. Did you mean 'human { ... }'?)"))
-    runtime.errors.should contain(Oxide::ValidationError.new("Field must have selections (field 'pet' returns Pet but has no selections. Did you mean 'pet { ... }'?)"))
-    runtime.errors.should contain(Oxide::ValidationError.new("Field must have selections (field 'catOrDog' returns CatOrDog but has no selections. Did you mean 'catOrDog { ... }'?)"))
+    runtime.errors.should contain(Oxide::ValidationError.new("Field \"human\" of type \"Human\" must have a selection of subfields. Did you mean \"human { ... }\"?"))
+    runtime.errors.should contain(Oxide::ValidationError.new("Field \"pet\" of type \"Pet\" must have a selection of subfields. Did you mean \"pet { ... }\"?"))
+    runtime.errors.should contain(Oxide::ValidationError.new("Field \"catOrDog\" of type \"CatOrDog\" must have a selection of subfields. Did you mean \"catOrDog { ... }\"?"))
   end
 
   it "example #130" do

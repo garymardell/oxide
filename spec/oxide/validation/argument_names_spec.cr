@@ -42,7 +42,7 @@ describe Oxide::Validation::ArgumentNames do
     runtime.execute
 
     runtime.errors.size.should eq(1)
-    runtime.errors.should contain(Oxide::ValidationError.new("Field 'doesKnowCommand' doesn't accept argument 'command'", [Oxide::Location.new(2, 21)]))
+    runtime.errors.should contain(Oxide::ValidationError.new("Unknown argument \"command\" on field \"Dog.doesKnowCommand\". Did you mean \"dogCommand\"?", [Oxide::Location.new(2, 21)]))
   end
 
   it "counter example #133" do
@@ -63,7 +63,7 @@ describe Oxide::Validation::ArgumentNames do
     runtime.execute
 
     runtime.errors.size.should eq(1)
-    runtime.errors.should contain(Oxide::ValidationError.new("Directive 'include' doesn't accept argument 'unless'"))
+    runtime.errors.should contain(Oxide::ValidationError.new("Unknown argument \"unless\" on directive \"@include\"."))
   end
 
   it "example #135" do

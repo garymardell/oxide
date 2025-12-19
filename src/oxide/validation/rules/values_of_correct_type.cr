@@ -82,7 +82,7 @@ module Oxide
           location = node.to_location
           type_name = get_type_name(expected_type) || "Unknown"
           context.errors << ValidationError.new(
-            "Enum value \"#{node.value}\" cannot be used for type '#{type_name}'.",
+            "Enum value \"#{node.value}\" cannot be used for type \"#{type_name}\".",
             [location]
           )
           return
@@ -92,10 +92,16 @@ module Oxide
         enum_type = expected_type.as(Oxide::Types::EnumType)
         unless enum_type.values.any? { |v| v.name == node.value }
           location = node.to_location
-          context.errors << ValidationError.new(
-            "Enum value \"#{node.value}\" is not defined in enum '#{enum_type.name}'.",
-            [location]
-          )
+          message = "Value \"#{node.value}\" does not exist in \"#{enum_type.name}\" enum."
+          
+          # Add suggestions for similar enum values
+          enum_value_names = enum_type.values.map(&.name)
+          suggestions = Utils::SuggestionList.suggest(node.value, enum_value_names)
+          if suggestion_message = Utils::SuggestionList.did_you_mean_message(suggestions)
+            message += suggestion_message
+          end
+          
+          context.errors << ValidationError.new(message, [location])
         end
       end
 
@@ -109,7 +115,7 @@ module Oxide
           inner_type = expected_type.of_type
           type_name = get_full_type_name(expected_type)
           context.errors << ValidationError.new(
-            "Null value cannot be used for non-null type '#{type_name}'.",
+            "Null value cannot be used for non-null type \"#{type_name}\".",
             [location]
           )
         end
@@ -191,21 +197,21 @@ module Oxide
               unwrapped = unwrapped.of_type
             end
             parent_type_name = get_type_name(unwrapped)
-            "Argument '#{object_field_name}' on InputObject '#{parent_type_name}' has an invalid value (#{value_repr}). Expected type '#{type_name}'."
+            "Argument \"#{object_field_name}\" on InputObject \"#{parent_type_name}\" has an invalid value (#{value_repr}). Expected type \"#{type_name}\"."
           else
-            "Field '#{object_field_name}' has an invalid value (#{value_repr}). Expected type '#{type_name}'."
+            "Field \"#{object_field_name}\" has an invalid value (#{value_repr}). Expected type \"#{type_name}\"."
           end
         elsif argument = context.argument
           # We're in a field argument
           arg_name = context.argument_name
           if field_def = context.field_definition
             field_name, _field = field_def
-            "Argument '#{arg_name}' on Field '#{field_name}' has an invalid value (#{value_repr}). Expected type '#{type_name}'."
+            "Argument \"#{arg_name}\" on Field \"#{field_name}\" has an invalid value (#{value_repr}). Expected type \"#{type_name}\"."
           else
-            "Argument '#{arg_name}' has an invalid value (#{value_repr}). Expected type '#{type_name}'."
+            "Argument \"#{arg_name}\" has an invalid value (#{value_repr}). Expected type \"#{type_name}\"."
           end
         else
-          "Value has an invalid type. Expected '#{type_name}', got '#{value_type_name}'."
+          "Value has an invalid type. Expected \"#{type_name}\", got \"#{value_type_name}\"."
         end
       end
     end

@@ -12,7 +12,16 @@ module Oxide
 
         unless definition
           if directive = context.directive
-            context.errors << ValidationError.new("Directive '#{directive.name}' doesn't accept argument '#{node.name}'")
+            message = "Unknown argument \"#{node.name}\" on directive \"@#{directive.name}\"."
+            
+            # Add suggestions for similar argument names
+            arg_names = directive.arguments.keys
+            suggestions = Utils::SuggestionList.suggest(node.name, arg_names)
+            if suggestion_message = Utils::SuggestionList.did_you_mean_message(suggestions)
+              message += suggestion_message
+            end
+            
+            context.errors << ValidationError.new(message)
           elsif field_definition && parent_type
             field_name, field = field_definition
 
@@ -20,7 +29,20 @@ module Oxide
               parent_type.name
             end
 
-            context.errors << ValidationError.new("Field '#{field_name}' doesn't accept argument '#{node.name}'", [node.to_location])
+            message = if type_name
+              "Unknown argument \"#{node.name}\" on field \"#{type_name}.#{field_name}\"."
+            else
+              "Unknown argument \"#{node.name}\" on field \"#{field_name}\"."
+            end
+            
+            # Add suggestions for similar argument names
+            arg_names = field.arguments.keys
+            suggestions = Utils::SuggestionList.suggest(node.name, arg_names)
+            if suggestion_message = Utils::SuggestionList.did_you_mean_message(suggestions)
+              message += suggestion_message
+            end
+            
+            context.errors << ValidationError.new(message, [node.to_location])
           end
         end
       end

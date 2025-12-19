@@ -11,13 +11,13 @@ module Oxide
 
             unless selection_set.nil? || selection_set.selections.empty?
               selection_names = selection_set.selections.select(Oxide::Language::Nodes::Field).map(&.name)
-              context.errors << ValidationError.new("Selections can't be made on scalars (field '#{node.name}' returns #{selection_type.name} but has selections [#{selection_names.join(",")}])")
+              context.errors << ValidationError.new("Field \"#{node.name}\" must not have a selection since type \"#{selection_type.name}\" has no subfields.")
             end
           when Types::ObjectType, Types::InterfaceType, Types::UnionType
             selection_set = node.selection_set
 
             if selection_set.nil? || selection_set.selections.empty?
-              context.errors << ValidationError.new("Field must have selections (field '#{node.name}' returns #{selection_type.name} but has no selections. Did you mean '#{node.name} { ... }'?)")
+              context.errors << ValidationError.new("Field \"#{node.name}\" of type \"#{selection_type.name}\" must have a selection of subfields. Did you mean \"#{node.name} { ... }\"?")
             end
           end
         end

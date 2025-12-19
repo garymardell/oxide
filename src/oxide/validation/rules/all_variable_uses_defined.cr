@@ -80,7 +80,15 @@ module Oxide
 
           variables_used.each do |variable|
             unless variables_defined.includes?(variable)
-              context.errors << ValidationError.new("Variable $#{variable} is used by #{operation.name} but not declared")
+              message = "Variable \"$#{variable}\" is not defined."
+              
+              # Add suggestions for similar variable names
+              suggestions = Utils::SuggestionList.suggest(variable, variables_defined.compact)
+              if suggestion_message = Utils::SuggestionList.did_you_mean_message(suggestions)
+                message += suggestion_message
+              end
+              
+              context.errors << ValidationError.new(message)
             end
           end
 
@@ -89,7 +97,15 @@ module Oxide
             fragment_variables_used = @fragment_variables_used[fragment]
             fragment_variables_used.each do |variable|
               unless variables_defined.includes?(variable)
-                context.errors << ValidationError.new("Variable $#{variable} is used by #{fragment} but not declared")
+                message = "Variable \"$#{variable}\" is not defined."
+                
+                # Add suggestions for similar variable names
+                suggestions = Utils::SuggestionList.suggest(variable, variables_defined.compact)
+                if suggestion_message = Utils::SuggestionList.did_you_mean_message(suggestions)
+                  message += suggestion_message
+                end
+                
+                context.errors << ValidationError.new(message)
               end
             end
           end

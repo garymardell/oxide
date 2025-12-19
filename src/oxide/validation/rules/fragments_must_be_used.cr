@@ -28,7 +28,7 @@ module Oxide
         
         unused_fragments.each do |fragment_name|
           context.errors << ValidationError.new(
-            "Fragment '#{fragment_name}' is never used."
+            "Fragment \"#{fragment_name}\" is never used."
           )
         end
       end

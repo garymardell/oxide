@@ -460,7 +460,7 @@ module Oxide
               JSON::Any.new(default_value.as(JSON::Any::Type))
             end
           elsif argument_type.is_a?(Oxide::Types::NonNullType) && (!has_value || value.nil?)
-            raise RuntimeError.new("Argument '#{argument_name}' received null value for non null type")
+            raise RuntimeError.new("Argument \"#{argument_name}\" of required type must not be null.")
           elsif has_value
             if value.nil?
               coerced_values[argument_name] = JSON::Any.new(nil)
@@ -502,7 +502,7 @@ module Oxide
             coerced_variables[variable_name] = JSON::Any.new(variable_definition.default_value.not_nil!.value.as(JSON::Any::Type))
           elsif is_non_null && (!has_value || (value && value.raw.nil?))
             # Non-null variable must be provided and must not be null
-            raise RuntimeError.new("Variable '$#{variable_name}' of non-null type must not be null.")
+            raise RuntimeError.new("Variable \"$#{variable_name}\" of required type must not be null.")
           elsif has_value
             # Variable was provided
             if value && value.raw.nil?

@@ -6,88 +6,16 @@ Oxide is a low level library that implements the core of GraphQL following the s
 
 This library was originally built to experiment with building dynamic schemas on a per tenant basis. An early prototype allowed a user to define their models within a UI and a custom GraphQL API would be generated at runtime.
 
-## 🚀 Implementation Progress
+### GraphQL-JS Compatibility
 
-**Spec Version**: [GraphQL September 2025](https://spec.graphql.org/September2025/)  
-**Status**: 17.4% Complete (37 of 213+ spec examples covered)  
-**Test Suite**: 376 tests passing (100% pass rate)
+Oxide's error messages are designed to match the [GraphQL-JS](https://github.com/graphql/graphql-js) reference implementation for consistency and compatibility:
 
-This project is actively working towards full GraphQL specification compliance. See [plan.md](plan.md) for the complete implementation roadmap and [PROGRESS.md](PROGRESS.md) for detailed progress tracking.
+- **Error Message Format**: All error messages use double quotes, proper punctuation, and consistent formatting
+- **"Did You Mean?" Suggestions**: Fuzzy matching using Levenshtein distance algorithm provides helpful suggestions for typos
+- **Identifier Prefixes**: Variables prefixed with `$`, directives with `@`
+- **Comprehensive Coverage**: Parser errors, validation errors, and execution errors all follow GraphQL-JS conventions
 
-### Milestone Completion Status (6 of 7 Complete - 86%)
-
-- ✅ **Milestone 1: Language & Parser** - COMPLETE (100%)
-- ✅ **Milestone 2: Type System** - COMPLETE (100%)
-- ✅ **Milestone 3: Validation Rules** - COMPLETE (100%)  
-- ✅ **Milestone 4: Execution Engine** - COMPLETE (100%)
-- ✅ **Milestone 5: Introspection System** - COMPLETE (100%)
-- ✅ **Milestone 6: Response Format** - COMPLETE (100%)
-- ❌ **Milestone 7: Subscriptions** - NOT STARTED (deferred)
-
-### Recently Completed ✨
-
-#### ✅ Language & Parser Complete (Milestone 1)
-- **Parser Error Messages**: 32 comprehensive tests with line/column information
-- **Document Descriptions (§2.2)**: 15 tests covering all definition types
-- **Bug Fix**: Added missing description support for InputValueDefinition
-- **Schema Coordinates (§2.14)**: Underlying functionality verified
-- **Test Coverage**: 47 new tests, bringing parser to 100% completion
-
-#### ✅ Execution Engine Complete (Milestone 4)
-- **Directive Execution**: @skip and @include directives working in all contexts
-- **Value Completion**: All types (scalars, enums, lists, objects, non-null)
-- **Serial Mutation Execution**: Mutations execute in order with side effect guarantees
-- **Comprehensive Error Handling**: Field-level errors with paths
-- **Test Coverage**: 30 new tests covering all execution scenarios
-
-#### ✅ Response Format Compliance (Milestone 6)
-- **Error Path Tracking** (§7.1.4): Full path implementation with field names and list indices
-- **Error Format** (§7.1.6): Complete error objects with message, locations, and path
-- **Array Serialization**: Errors properly serialized as JSON array
-- **Field-level Error Handling**: Errors caught and tracked at field boundaries
-- **Path in Context**: Execution context tracks current path through response
-- **Test Coverage**: 6 response format tests + 3 integration tests for error paths
-
-#### ✅ Complete Validation Rule Implementation (Milestone 3)
-- **All Fragment Validation Rules** (§5.5):
-  - Fragment Name Uniqueness, Type Existence, Composite Types
-  - Fragments Must Be Used, Spread Target Defined
-  - Fragment Spreads Must Not Form Cycles (with cycle detection algorithm)
-  - Fragment Spread Is Possible (full type compatibility checking)
-- **Value Validation** (§5.6): Values of Correct Type, Input Object Required Fields
-- **Variable Validation** (§5.8): All Variable Usages Are Allowed
-- **Field Validation** (§5.3.2): Field Selection Merging
-- **Operation Validation** (§5.2): Operation Type Existence
-- **OneOf Input Objects** (§3.10.1): Complete @oneOf directive implementation
-- **Test Coverage**: 141 validation tests, all passing
-
-#### ✅ Execution Engine Improvements (Milestone 4)
-- **Variable Coercion** (§6.1.2): Full implementation with null handling - examples #31-32
-- **Argument Coercion** (§6.4.1): Complete coercion algorithm - examples #9-12  
-- **Query Execution**: Basic queries, mutations, nested selections - examples #1-8
-- **Field Aliases**: Full alias support - examples #13-16
-- **Fragment Execution**: Named fragments and inline fragments - examples #17-18
-- **Test Coverage**: 31 execution tests, all passing
-
-#### ✅ String & Block String Parsing (Milestone 1)
-- **Complete Unicode escape support**: `\uXXXX` and `\u{X...}` including surrogate pairs
-- **All standard escapes**: `\"`, `\\`, `\/`, `\b`, `\f`, `\n`, `\r`, `\t`
-- **Block strings**: Full `BlockStringValue()` algorithm implementation
-- **Test Coverage**: 41 tests covering spec examples #24-27
-
-#### 🔧 Critical Bug Fixes
-- Fixed variable coercion null handling (non-null type checking and nullable type coercion)
-- Fixed argument name context tracking in validation
-- Corrected inline fragment visitor traversal
-- Fixed block string processing placement
-
-### Implementation Statistics
-
-- **Total Tests**: 376 passing (100% pass rate)
-- **Milestones Complete**: 6 of 7 (86%)
-- **Validation Rules**: 14+ rules fully implemented
-- **Spec Examples Covered**: 37 of 213+ (17.4%)
-- **Code Quality**: Zero test failures, zero errors
+See [ERROR_MESSAGES.md](ERROR_MESSAGES.md) for detailed documentation on error message formats and examples.
 
 ### TODO
 

@@ -18,7 +18,7 @@ module Oxide
         # Each variable in variables must be used at least once in either the operation scope itself or any fragment transitively referenced by that operation.
         variable_definitions.each do |variable_definition|
           unless variable_is_used?(variable_definition.variable, node)
-            context.errors << ValidationError.new("Variable $#{variable_definition.variable.name} is declared by #{node.name} but not used")
+            context.errors << ValidationError.new("Variable \"$#{variable_definition.variable.name}\" is never used.")
           end
         end
       end

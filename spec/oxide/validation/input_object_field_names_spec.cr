@@ -43,6 +43,6 @@ describe Oxide::Validation::InputObjectFieldNames do
     runtime.execute
 
     runtime.errors.size.should eq(1)
-    runtime.errors.should contain(Oxide::ValidationError.new("InputObject 'FindDogInput' doesn't accept argument 'favoriteCookieFlavor'"))
+    runtime.errors.should contain(Oxide::ValidationError.new("Field \"favoriteCookieFlavor\" is not defined by type \"FindDogInput\"."))
   end
 end

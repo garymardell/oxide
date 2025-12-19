@@ -23,7 +23,7 @@ module Oxide
         unless composite_type?(type)
           type_kind = get_type_kind(type)
           context.errors << ValidationError.new(
-            "Fragment '#{node.name}' cannot condition on non-composite type '#{type_name}' (#{type_kind})."
+            "Fragment \"#{node.name}\" cannot condition on non composite type \"#{type_name}\"."
           )
         end
       end
@@ -39,7 +39,7 @@ module Oxide
         unless composite_type?(type)
           type_kind = get_type_kind(type)
           context.errors << ValidationError.new(
-            "Inline fragment cannot condition on non-composite type '#{type_name}' (#{type_kind})."
+            "Fragment cannot condition on non composite type \"#{type_name}\"."
           )
         end
       end

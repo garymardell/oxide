@@ -43,7 +43,7 @@ describe Oxide::Validation::AllVariableUsesDefined do
     runtime.execute
 
     runtime.errors.size.should eq(1)
-    runtime.errors.should contain(Oxide::ValidationError.new("Variable $atOtherHomes is used by variableIsNotDefined but not declared"))
+    runtime.errors.should contain(Oxide::ValidationError.new("Variable \"$atOtherHomes\" is not defined."))
   end
 
   it "example #175" do
@@ -96,7 +96,7 @@ describe Oxide::Validation::AllVariableUsesDefined do
     runtime.execute
 
     runtime.errors.size.should eq(1)
-    runtime.errors.should contain(Oxide::ValidationError.new("Variable $atOtherHomes is used by isHouseTrainedFragment but not declared"))
+    runtime.errors.should contain(Oxide::ValidationError.new("Variable \"$atOtherHomes\" is not defined."))
   end
 
   it "counter example #177" do
@@ -127,7 +127,7 @@ describe Oxide::Validation::AllVariableUsesDefined do
     runtime.execute
 
     runtime.errors.size.should eq(1)
-    runtime.errors.should contain(Oxide::ValidationError.new("Variable $atOtherHomes is used by isHouseTrainedFragment but not declared"))
+    runtime.errors.should contain(Oxide::ValidationError.new("Variable \"$atOtherHomes\" is not defined."))
   end
 
   it "example #178" do
@@ -192,6 +192,6 @@ describe Oxide::Validation::AllVariableUsesDefined do
     runtime.execute
 
     runtime.errors.size.should eq(1)
-    runtime.errors.should contain(Oxide::ValidationError.new("Variable $atOtherHomes is used by isHouseTrainedFragment but not declared"))
+    runtime.errors.should contain(Oxide::ValidationError.new("Variable \"$atOtherHomes\" is not defined."))
   end
 end

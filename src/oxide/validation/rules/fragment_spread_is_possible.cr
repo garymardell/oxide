@@ -39,8 +39,7 @@ module Oxide
         
         unless spread_is_possible?(fragment_type, parent_type, context)
           context.errors << ValidationError.new(
-            "Fragment '#{node.name}' cannot be spread here as objects of type '#{type_name(parent_type)}' " \
-            "can never be of type '#{type_name(fragment_type)}'."
+            "Fragment \"#{node.name}\" cannot be spread here as objects of type \"#{type_name(parent_type)}\" can never be of type \"#{type_name(fragment_type)}\"."
           )
         end
       end
@@ -55,8 +54,7 @@ module Oxide
         
         unless spread_is_possible?(fragment_type, parent_type, context)
           context.errors << ValidationError.new(
-            "Inline fragment cannot be spread here as objects of type '#{type_name(parent_type)}' " \
-            "can never be of type '#{type_name(fragment_type)}'."
+            "Fragment cannot be spread here as objects of type \"#{type_name(parent_type)}\" can never be of type \"#{type_name(fragment_type)}\"."
           )
         end
       end

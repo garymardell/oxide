@@ -50,7 +50,7 @@ module Oxide
             node, location = adjacent
 
             unless locations.includes?(location)
-              context.errors << ValidationError.new("'@#{directive_name}' can't be applied to #{location.to_human} (allowed: #{locations.map(&.to_human).join(", ")})")
+              context.errors << ValidationError.new("Directive \"@#{directive_name}\" may not be used on #{location.to_human}.")
             end
           end
         end
