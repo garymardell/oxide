@@ -63,6 +63,8 @@ module Oxide
           OperationNameUniqueness.new.as(Rule),
           LoneAnonymousOperation.new.as(Rule),
           OperationTypeExistence.new.as(Rule),
+          # 5.2.3.1 Subscription Operations
+          SingleRootField.new.as(Rule),
           # 5.3 Fields
           FieldSelections.new.as(Rule),
           FieldSelectionMerging.new.as(Rule),

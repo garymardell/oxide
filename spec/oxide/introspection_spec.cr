@@ -134,4 +134,69 @@ describe Oxide do
 
     result = runtime.execute(query: Oxide::Query.new(query_string)).data
   end
+
+  it "exposes subscription type when present" do
+    subscription_type = Oxide::Types::ObjectType.new(
+      name: "Subscription",
+      fields: {
+        "test" => Oxide::Field.new(
+          type: Oxide::Types::StringType.new,
+          resolve: ->(object : Nil, resolution : Oxide::Resolution) { "test" }
+        )
+      }
+    )
+
+    schema_with_subscription = Oxide::Schema.new(
+      query: Oxide::Types::ObjectType.new(
+        name: "Query",
+        fields: {
+          "test" => Oxide::Field.new(
+            type: Oxide::Types::StringType.new,
+            resolve: ->(object : Nil, resolution : Oxide::Resolution) { "test" }
+          )
+        }
+      ),
+      subscription: subscription_type
+    )
+
+    query_string = <<-QUERY
+      {
+        __schema {
+          queryType { name }
+          mutationType { name }
+          subscriptionType { name }
+        }
+      }
+    QUERY
+
+    runtime = Oxide::Execution::Runtime.new(schema_with_subscription)
+    result = runtime.execute(query: Oxide::Query.new(query_string)).data
+
+    result.should eq({
+      "__schema" => {
+        "queryType" => { "name" => "Query" },
+        "mutationType" => nil,
+        "subscriptionType" => { "name" => "Subscription" }
+      }
+    })
+  end
+
+  it "returns null for subscription type when not present" do
+    query_string = <<-QUERY
+      {
+        __schema {
+          subscriptionType { name }
+        }
+      }
+    QUERY
+
+    runtime = Oxide::Execution::Runtime.new(DummySchema)
+    result = runtime.execute(query: Oxide::Query.new(query_string)).data
+
+    result.should eq({
+      "__schema" => {
+        "subscriptionType" => nil
+      }
+    })
+  end
 end

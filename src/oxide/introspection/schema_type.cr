@@ -32,7 +32,7 @@ module Oxide
         ),
         "subscriptionType" => Oxide::Field.new(
           type: Oxide::Types::LateBoundType.new("__Type"),
-          resolve: ->(object : Oxide::Schema, resolution : Oxide::Resolution) { nil }
+          resolve: ->(object : Oxide::Schema, resolution : Oxide::Resolution) { object.subscription }
         ),
         "directives" => Oxide::Field.new(
           type: Oxide::Types::NonNullType.new(

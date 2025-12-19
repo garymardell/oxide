@@ -39,6 +39,8 @@ module Oxide
             execute_query(execution_context, operation, schema, coerced_variable_values, initial_value)
           when "mutation"
             execute_mutation(execution_context, operation, schema, coerced_variable_values, initial_value)
+          when "subscription"
+            raise RuntimeError.new("Subscriptions must be executed using execute_subscription, not execute")
           end
         rescue e : RuntimeError
           execution_context.errors << e
@@ -547,6 +549,150 @@ module Oxide
           resolved_type
         else
           raise "abstract type could not be resolved"
+        end
+      end
+
+      # GraphQL Subscription Execution
+      # Based on GraphQL spec Section 6.3.3: https://spec.graphql.org/October2021/#sec-Subscription
+
+      # Execute a subscription operation and return an EventStream
+      # The stream will emit Response objects for each event
+      def execute_subscription(query : Oxide::Query, context : Oxide::Context? = nil, initial_value = nil) : EventStream(Response)
+        execution_context = Execution::Context.new(schema, query, context)
+
+        begin
+          definitions = query.document.definitions.select(type: Oxide::Language::Nodes::OperationDefinition)
+          operation = get_operation(definitions, query.operation_name)
+
+          # Validate this is a subscription operation
+          unless operation.operation_type == "subscription"
+            raise RuntimeError.new("execute_subscription called with non-subscription operation")
+          end
+
+          coerced_variable_values = coerce_variable_values(schema, operation, query.variables)
+
+          # Get the root field and subscription field for the response stream
+          subscription_type = schema.subscription
+          raise RuntimeError.new("Schema does not define a subscription type") unless subscription_type
+
+          root_fields = operation.selection_set.selections.select do |selection|
+            selection.is_a?(Oxide::Language::Nodes::Field) && !selection.name.starts_with?("__")
+          end
+          
+          if root_fields.empty?
+            raise RuntimeError.new("Subscription operation must have exactly one root field")
+          end
+          
+          root_field_node = root_fields.first.as(Oxide::Language::Nodes::Field)
+          
+          field = get_field(subscription_type, root_field_node.name)
+          raise RuntimeError.new("Subscription field not found") unless field
+          raise RuntimeError.new("Field must be a SubscriptionField") unless field.is_a?(Oxide::SubscriptionField)
+          
+          argument_values = coerce_argument_values(field.arguments, root_field_node.arguments, coerced_variable_values)
+
+          # CreateSourceEventStream - call the subscribe function
+          resolution_info = Execution::ResolutionInfo.new(
+            schema: schema,
+            context: execution_context,
+            field: field,
+            field_name: root_field_node.name
+          )
+          
+          source_stream = field.subscribe(initial_value, argument_values, execution_context, resolution_info)
+
+          # MapSourceToResponseEvent - wrap the stream to transform events to responses
+          # We need to handle the polymorphic return type from subscribe
+          # The cast to EventStream(Response) erases the specific event type
+          return SubscriptionResponseStream.new(self, execution_context, schema, source_stream, field, root_field_node, argument_values).as(EventStream(Response))
+        rescue e : RuntimeError
+          # If subscription fails to start, return an empty stream with the error
+          execution_context.errors << e
+          return EmptyEventStream(Response).new.as(EventStream(Response))
+        end
+      end
+
+    end
+
+    # SubscriptionResponseStream wraps a source event stream and transforms each event into a GraphQL Response
+    class SubscriptionResponseStream(T) < EventStream(Response)
+      @subscription_field : Oxide::BaseField
+      
+      def initialize(
+        @runtime : Runtime,
+        @execution_context : Context,
+        @schema : Oxide::Schema,
+        @source_stream : EventStream(T),
+        subscription_field : Oxide::BaseField,
+        @root_field_node : Oxide::Language::Nodes::Field,
+        @argument_values : Hash(String, JSON::Any)
+      )
+        @subscription_field = subscription_field
+      end
+
+      def next : Response?
+        event = @source_stream.next
+        return nil unless event
+
+        # MapSourceToResponseEvent - transform the event into a Response
+        map_source_to_response_event(event)
+      end
+
+      def close : Nil
+        @source_stream.close
+      end
+
+      # Helper to convert any value to SerializedOutput
+      private def to_serialized_output(value) : SerializedOutput
+        case value
+        when String, Int32, Float32, Float64, Bool, Nil
+          value.as(SerializedOutput)
+        when Hash
+          value.transform_values { |v| to_serialized_output(v) }.as(SerializedOutput)
+        when Array
+          value.map { |v| to_serialized_output(v) }.as(SerializedOutput)
+        else
+          # For other types, convert to string or nil
+          value.to_s.as(SerializedOutput)
+        end
+      end
+
+      private def map_source_to_response_event(event) : Response
+        subscription_type = @schema.subscription
+        return Response.new(nil, Set{RuntimeError.new("No subscription type")}) unless subscription_type
+
+        begin
+          # Cast to SubscriptionField to access resolve method
+          unless @subscription_field.is_a?(Oxide::SubscriptionField)
+            return Response.new(nil, Set{RuntimeError.new("Field must be a SubscriptionField")})
+          end
+          
+          resolution_info = Execution::ResolutionInfo.new(
+            schema: @schema,
+            context: @execution_context,
+            field: @subscription_field,
+            field_name: @root_field_node.name
+          )
+
+          # Resolve the event to get the root value for this response
+          resolved_value = @subscription_field.resolve(event, @argument_values, @execution_context, resolution_info)
+
+          # Build the response data
+          field_key = @root_field_node.alias || @root_field_node.name
+          
+          # Convert resolved_value to SerializedOutput
+          serialized = to_serialized_output(resolved_value)
+          data = {field_key => serialized}.as(Hash(String, SerializedOutput))
+          
+          if @execution_context.errors.any?
+            errors = @execution_context.errors.dup
+            @execution_context.errors.clear  # Clear for next event
+            Response.new(data, errors)
+          else
+            Response.new(data, nil)
+          end
+        rescue e : RuntimeError
+          Response.new(nil, Set{e})
         end
       end
     end
