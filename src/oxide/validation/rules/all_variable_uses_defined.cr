@@ -124,20 +124,29 @@ module Oxide
       end
 
       private def find_all_referenced_fragments(operation)
-        fragments_referenced = [] of String
-
-        # Find all directly referenced fragments
+        fragments_referenced = Set(String).new
+        
+        # Recursively collect all fragments referenced by the operation
         @operation_fragments_referenced[operation].each do |fragment|
-          fragments_referenced << fragment
+          collect_fragments_recursively(fragment, fragments_referenced, Set(String).new)
+        end
+        
+        fragments_referenced.to_a
+      end
 
-          # For each fragment, find any fragments they reference
-          # TODO: Make this recusive to find all fragments of fragments etc
-          @fragment_fragments_referenced[fragment].each do |subfragment|
-            fragments_referenced << subfragment
+      private def collect_fragments_recursively(fragment_name : String, collected : Set(String), visited : Set(String))
+        # Avoid infinite loops in case of circular fragment references
+        return if visited.includes?(fragment_name)
+        
+        visited.add(fragment_name)
+        collected.add(fragment_name)
+        
+        # Recursively collect fragments referenced by this fragment
+        if @fragment_fragments_referenced.has_key?(fragment_name)
+          @fragment_fragments_referenced[fragment_name].each do |subfragment|
+            collect_fragments_recursively(subfragment, collected, visited)
           end
         end
-
-        fragments_referenced
       end
     end
   end
